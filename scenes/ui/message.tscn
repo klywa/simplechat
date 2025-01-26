@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmmwsp3qeepka"]
+
+[ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_nv13e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ai5sd"]
+content_margin_left = 24.0
+content_margin_top = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+bg_color = Color(0.832474, 0.832474, 0.832474, 1)
+corner_radius_top_left = 32
+corner_radius_bottom_right = 32
+
+[node name="Message" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+theme = ExtResource("1_nv13e")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftSpace" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 5.0
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/MarginContainer2"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+text = "名字"
+
+[node name="Label2" type="Label" parent="HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+text = "aaaa"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 24
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ai5sd")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/MarginContainer/PanelContainer"]
+layout_mode = 2
+text = "aaa
+aaa
+aa"
+fit_content = true
+scroll_active = false
+
+[node name="RightSpace" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3

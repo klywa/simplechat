@@ -1,0 +1,11 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://exgmmsg3rnfw"]
+
+[ext_resource type="FontFile" uid="uid://bihf0pqhdmqjw" path="res://assets/fonts/zpix.ttf" id="1_6bb3x"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ahid4"]
+
+[resource]
+default_font = ExtResource("1_6bb3x")
+default_font_size = 36
+TitleLabel/base_type = &"Label"
+TitleLabel/styles/normal = SubResource("StyleBoxTexture_ahid4")

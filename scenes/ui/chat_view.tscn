@@ -1,0 +1,84 @@
+[gd_scene load_steps=3 format=3 uid="uid://1hsdrtjegx44"]
+
+[ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_55lbm"]
+[ext_resource type="PackedScene" uid="uid://cmmwsp3qeepka" path="res://scenes/ui/message.tscn" id="2_ik8f6"]
+
+[node name="ChatView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("1_55lbm")
+text = "Name"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Message12" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message2" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message3" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message4" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message5" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message6" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message7" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message9" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message10" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message8" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message11" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message13" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
+
+[node name="Message14" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+layout_mode = 2
