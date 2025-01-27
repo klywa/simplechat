@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://crwc6y0dgjx7t"]
+
+[ext_resource type="PackedScene" uid="uid://dlgopi2re43x5" path="res://scenes/ui/chat_item.tscn" id="1_j540d"]
+[ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_vy8db"]
+
+[node name="ChatList" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_vy8db")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChatItem" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem2" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem3" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem4" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem5" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem6" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem7" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem8" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2
+
+[node name="ChatItem9" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+layout_mode = 2

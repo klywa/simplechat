@@ -1,84 +1,212 @@
-[gd_scene load_steps=3 format=3 uid="uid://1hsdrtjegx44"]
+[gd_scene load_steps=5 format=3 uid="uid://1hsdrtjegx44"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_55lbm"]
 [ext_resource type="PackedScene" uid="uid://cmmwsp3qeepka" path="res://scenes/ui/message.tscn" id="2_ik8f6"]
+[ext_resource type="Texture2D" uid="uid://c6bidroy5cjdw" path="res://assets/avatars/sample_avatar_01.png" id="3_l3sia"]
+[ext_resource type="Texture2D" uid="uid://bxxg1hfy3m70m" path="res://assets/avatars/sample_avatar_02.png" id="4_f6n05"]
 
-[node name="ChatView" type="Control"]
-layout_mode = 3
+[node name="ChatView" type="MarginContainer"]
+clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_55lbm")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
+theme_override_constants/separation = 4
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+[node name="NamePanel" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/NamePanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="Label" type="Label" parent="VBoxContainer/MarginContainer"]
+[node name="BackButton" type="Button" parent="VBoxContainer/NamePanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "后退"
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/NamePanel/MarginContainer"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="VBoxContainer/NamePanel/MarginContainer/CenterContainer"]
 layout_mode = 2
 theme = ExtResource("1_55lbm")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 48
 text = "Name"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+[node name="ScenePanel" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer/ScenePanel"]
+custom_minimum_size = Vector2(0, 480)
+layout_mode = 2
+size_flags_stretch_ratio = 0.8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScenePanel/MarginContainer2"]
+clip_contents = true
+custom_minimum_size = Vector2(0, 256)
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VBoxContainer/ScenePanel/MarginContainer2/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ScenePanel/MarginContainer2/VBoxContainer"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="Control" type="Control" parent="VBoxContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 2
+texture = ExtResource("3_l3sia")
+flip_h = true
+
+[node name="Control2" type="Control" parent="VBoxContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextureRect2" type="TextureRect" parent="VBoxContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(160, 160)
+layout_mode = 2
+texture = ExtResource("4_f6n05")
+
+[node name="Control3" type="Control" parent="VBoxContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChatWindow" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/ChatWindow"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ChatWindow/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Message12" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="Message12" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="Message" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message2" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="LeftSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message/HBoxContainer" index="0"]
+size_flags_horizontal = 3
+
+[node name="LeftSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="0"]
+size_flags_horizontal = 3
+
+[node name="LeftSideLabel" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="1"]
+text = "aaaa"
+
+[node name="RightSideLabel" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="3"]
+text = ""
+
+[node name="RightSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="4"]
+size_flags_horizontal = 1
+
+[node name="RightSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message/HBoxContainer" index="2"]
+size_flags_horizontal = 1
+
+[node name="Message2" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message3" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="Message6" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message4" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="LeftSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message6/HBoxContainer" index="0"]
+size_flags_horizontal = 3
+
+[node name="LeftSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message6/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="0"]
+size_flags_horizontal = 3
+
+[node name="LeftSideLabel" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message6/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="1"]
+text = "aaaa"
+
+[node name="RightSideLabel" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message6/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="3"]
+text = ""
+
+[node name="RightSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message6/HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer" index="4"]
+size_flags_horizontal = 1
+
+[node name="RightSpace" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message6/HBoxContainer" index="2"]
+size_flags_horizontal = 1
+
+[node name="Message3" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message5" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="Message4" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message6" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="Message5" parent="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message7" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="MessagePanel" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Message9" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="MarginContainer3" type="MarginContainer" parent="VBoxContainer/MessagePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MessagePanel/MarginContainer3"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/MessagePanel/MarginContainer3/VBoxContainer"]
 layout_mode = 2
 
-[node name="Message10" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "action"
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+item_count = 1
+popup/item_0/text = "自言自语"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MessagePanel/MarginContainer3/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 29
+
+[node name="Input" type="LineEdit" parent="VBoxContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_55lbm")
+text = "aaaa"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Message8" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
+[node name="Button" type="Button" parent="VBoxContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer/MarginContainer"]
 layout_mode = 2
+theme = ExtResource("1_55lbm")
+text = "发送"
 
-[node name="Message11" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
-layout_mode = 2
-
-[node name="Message13" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
-layout_mode = 2
-
-[node name="Message14" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_ik8f6")]
-layout_mode = 2
+[editable path="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message"]
+[editable path="VBoxContainer/ChatWindow/ScrollContainer/VBoxContainer/Message6"]

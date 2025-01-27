@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://dpykheahwpkhb"]
+
+[ext_resource type="PackedScene" uid="uid://crwc6y0dgjx7t" path="res://scenes/ui/chat_list.tscn" id="1_3aecm"]
+[ext_resource type="PackedScene" uid="uid://byko857acfcoc" path="res://player_icon.tscn" id="2_6weoe"]
+[ext_resource type="PackedScene" uid="uid://1hsdrtjegx44" path="res://scenes/ui/chat_view.tscn" id="2_mb0rq"]
+[ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="2_yy0rm"]
+
+[node name="MainView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_yy0rm")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/PanelContainer/MarginContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="PlayerIcon" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer" instance=ExtResource("2_6weoe")]
+layout_mode = 2
+
+[node name="ChatList" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer" instance=ExtResource("1_3aecm")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Button" type="Button" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme = ExtResource("2_yy0rm")
+text = "设置"
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChatView" parent="HBoxContainer/MarginContainer" instance=ExtResource("2_mb0rq")]
+layout_mode = 2
+size_flags_horizontal = 3
