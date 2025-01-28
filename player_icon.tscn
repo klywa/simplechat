@@ -24,7 +24,7 @@ theme_override_constants/margin_top = 48
 theme_override_constants/margin_right = 48
 theme_override_constants/margin_bottom = 48
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer"]
+[node name="PlayerAvatar" type="TextureRect" parent="MarginContainer"]
 layout_mode = 2
 texture = ExtResource("2_kkvec")
 expand_mode = 4

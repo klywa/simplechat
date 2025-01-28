@@ -67,7 +67,7 @@ theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 24
 
-[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/MarginContainer"]
+[node name="Content" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/MarginContainer"]
 clip_contents = false
 layout_mode = 2
 theme = ExtResource("1_nv13e")

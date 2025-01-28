@@ -5,5 +5,9 @@
 [node name="Game" type="Node"]
 
 [node name="MainView" parent="." instance=ExtResource("1_5m754")]
+offset_left = 765.0
+offset_top = 244.0
+offset_right = 765.0
+offset_bottom = 244.0
 
 [node name="NPCs" type="Node" parent="."]

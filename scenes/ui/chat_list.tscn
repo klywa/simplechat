@@ -14,33 +14,33 @@ theme = ExtResource("1_vy8db")
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+[node name="List" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ChatItem" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem2" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem2" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem3" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem3" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem4" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem4" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem5" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem5" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem6" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem6" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem7" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem7" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem8" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem8" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2
 
-[node name="ChatItem9" parent="ScrollContainer/VBoxContainer" instance=ExtResource("1_j540d")]
+[node name="ChatItem9" parent="ScrollContainer/List" instance=ExtResource("1_j540d")]
 layout_mode = 2

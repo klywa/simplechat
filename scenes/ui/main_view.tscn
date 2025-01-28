@@ -22,43 +22,43 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer"]
+[node name="Sidebar" type="PanelContainer" parent="HBoxContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/Sidebar"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Sidebar/MarginContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="PlayerIcon" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer" instance=ExtResource("2_6weoe")]
+[node name="PlayerIcon" parent="HBoxContainer/Sidebar/MarginContainer/VBoxContainer" instance=ExtResource("2_6weoe")]
 layout_mode = 2
 
-[node name="ChatList" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer" instance=ExtResource("1_3aecm")]
+[node name="ChatList" parent="HBoxContainer/Sidebar/MarginContainer/VBoxContainer" instance=ExtResource("1_3aecm")]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/Sidebar/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 32
 theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 32
 theme_override_constants/margin_bottom = 32
 
-[node name="Button" type="Button" parent="HBoxContainer/PanelContainer/MarginContainer/VBoxContainer/MarginContainer"]
+[node name="SettingButton" type="Button" parent="HBoxContainer/Sidebar/MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme = ExtResource("2_yy0rm")
 text = "设置"
 
-[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+[node name="ChatWindow" type="MarginContainer" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ChatView" parent="HBoxContainer/MarginContainer" instance=ExtResource("2_mb0rq")]
+[node name="ChatRoom" parent="HBoxContainer/ChatWindow" instance=ExtResource("2_mb0rq")]
 layout_mode = 2
 size_flags_horizontal = 3
