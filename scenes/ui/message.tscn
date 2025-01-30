@@ -1,73 +1,73 @@
-[gd_scene load_steps=2 format=3 uid="uid://cmmwsp3qeepka"]
+[gd_scene load_steps=3 format=3 uid="uid://cmmwsp3qeepka"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_nv13e"]
+[ext_resource type="Script" path="res://scripts/ui/message.gd" id="2_b5f6f"]
 
-[node name="MessageItem" type="MarginContainer"]
+[node name="Message" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_vertical = 3
 theme = ExtResource("1_nv13e")
+script = ExtResource("2_b5f6f")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="MessageContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="LeftSpace" type="Control" parent="HBoxContainer"]
+[node name="LeftSpace" type="Control" parent="MessageContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MessageContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 5.0
 
-[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="NameContainer" type="MarginContainer" parent="MessageContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 6
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/MarginContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MessageContainer/VBoxContainer/NameContainer"]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 theme = ExtResource("1_nv13e")
 theme_override_constants/separation = 4
 
-[node name="LeftSpace" type="Control" parent="HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+[node name="LeftSpace" type="Control" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="LeftSideLabel" type="Label" parent="HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+[node name="LeftSideLabel" type="Label" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 vertical_alignment = 2
 
-[node name="NameLabel" type="Label" parent="HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+[node name="NameLabel" type="Label" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 36
 text = "名字"
 
-[node name="RightSideLabel" type="Label" parent="HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+[node name="RightSideLabel" type="Label" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "aaaa"
 vertical_alignment = 2
 
-[node name="RightSpace" type="Control" parent="HBoxContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+[node name="RightSpace" type="Control" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="ContentContainer" type="MarginContainer" parent="MessageContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 24
 
-[node name="Content" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/MarginContainer"]
+[node name="Content" type="RichTextLabel" parent="MessageContainer/VBoxContainer/ContentContainer"]
 clip_contents = false
 layout_mode = 2
 theme = ExtResource("1_nv13e")
@@ -78,6 +78,6 @@ aa"
 fit_content = true
 scroll_active = false
 
-[node name="RightSpace" type="Control" parent="HBoxContainer"]
+[node name="RightSpace" type="Control" parent="MessageContainer"]
 layout_mode = 2
 size_flags_horizontal = 3

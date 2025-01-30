@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dlgopi2re43x5"]
+[gd_scene load_steps=4 format=3 uid="uid://dlgopi2re43x5"]
 
 [ext_resource type="Texture2D" uid="uid://c6bidroy5cjdw" path="res://assets/avatars/sample_avatar_01.png" id="1_akc7r"]
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_bcw5s"]
+[ext_resource type="Script" path="res://scripts/ui/chat_item.gd" id="2_1bawu"]
 
 [node name="ChatItem" type="Button"]
 custom_minimum_size = Vector2(160, 160)
@@ -11,6 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_bcw5s")
+script = ExtResource("2_1bawu")
 
 [node name="PanelContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -37,6 +39,6 @@ flip_h = true
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 24
 text = "AAA
 "

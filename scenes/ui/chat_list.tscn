@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://crwc6y0dgjx7t"]
+[gd_scene load_steps=4 format=3 uid="uid://crwc6y0dgjx7t"]
 
 [ext_resource type="PackedScene" uid="uid://dlgopi2re43x5" path="res://scenes/ui/chat_item.tscn" id="1_j540d"]
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_vy8db"]
+[ext_resource type="Script" path="res://scripts/ui/chat_list.gd" id="2_6qdnd"]
 
 [node name="ChatList" type="PanelContainer"]
 anchors_preset = 15
@@ -10,6 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_vy8db")
+script = ExtResource("2_6qdnd")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 2

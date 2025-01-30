@@ -1,0 +1,43 @@
+{
+	"player": {
+		"npc_name": "小明",
+		"npc_setting": "小明是一个普通的大学生",
+		"npc_style": "小明是一个普通的大学生",
+		"npc_example": "小明是一个普通的大学生",
+		"npc_status": "小明是一个普通的大学生",
+		"npc_inventory": {},
+		"npc_skill": {}
+	},
+	"npcs": [
+		{
+			"npc_name": "小红",
+			"npc_setting": "小红是一个普通的大学生",
+			"npc_style": "小红是一个普通的大学生",
+			"npc_example": "小红是一个普通的大学生",
+			"npc_status": "小红是一个普通的大学生",
+			"npc_inventory": {},
+			"npc_skill": {}
+		},
+		{
+			"npc_name": "小刚",
+			"npc_setting": "小刚是一个普通的大学生",
+			"npc_style": "小刚是一个普通的大学生",
+			"npc_example": "小刚是一个普通的大学生",
+			"npc_status": "小刚是一个普通的大学生",
+			"npc_inventory": {},
+			"npc_skill": {}
+		}
+	],
+	"locations": [
+		{
+			"location_name": "图书馆",
+			"location_short_description": "图书馆是一个安静的地方",
+			"location_description": "图书馆是一个安静的地方"
+		},
+		{
+			"location_name": "教室",
+			"location_short_description": "教室是一个安静的地方",
+			"location_description": "教室是一个安静的地方"
+		}
+	]
+}
