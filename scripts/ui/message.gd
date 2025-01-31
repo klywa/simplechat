@@ -1,6 +1,7 @@
 class_name Message
 extends MarginContainer
 
+var chat: Chat
 var message: String
 var sender: NPC
 var sender_type: NPC.NPCType
@@ -49,12 +50,18 @@ func on_button_pressed():
 
 
 func on_revise_button_pressed():
-	content_label.text = revise_content.text
+	message = revise_content.text
 	revise_content.text = ""
 	revise_panel.visible = false
-	GameManager.main_view.chat_view.save_chat()
-	print(GameManager.main_view.chat_view.chat.messages)
+
+	_show()
+
+	# print(self)
+	# print(GameManager.main_view.chat_view.chat.messages)
+	# GameManager.main_view.chat_view.save_chat()
+	# print(GameManager.main_view.chat_view.chat.messages)
 
 func on_delete_button_pressed():
+	chat.remove_message(self)
 	get_parent().remove_child(self)
-	GameManager.main_view.chat_view.save_chat()
+	# GameManager.main_view.chat_view.save_chat()

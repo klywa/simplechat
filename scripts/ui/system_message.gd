@@ -8,6 +8,7 @@ extends MarginContainer
 @onready var revise_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
 @onready var delete_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2/Delete
 
+var chat: Chat
 var message: String
 var sender: NPC
 var sender_type: NPC.NPCType
@@ -35,11 +36,16 @@ func on_button_pressed() -> void:
 	revise_content.set_caret_column(revise_content.text.length())
 
 func on_revise_button_pressed() -> void:
-	content_label.text = revise_content.text
+	# content_label.text = revise_content.text
+	message = revise_content.text
 	revise_content.text = ""
 	revise_panel.visible = false
-	GameManager.main_view.chat_view.save_chat()
+
+	_show()
+
+	# GameManager.main_view.chat_view.save_chat()
 
 func on_delete_button_pressed() -> void:
+	chat.remove_message(self)
 	get_parent().remove_child(self)
-	GameManager.main_view.chat_view.save_chat()
+	# GameManager.main_view.chat_view.save_chat()

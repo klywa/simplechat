@@ -107,7 +107,8 @@ func init(chat_in : Chat) -> void:
 			tmp_button.init(character)
 	
 	refresh()
-	chat.message_added.connect(refresh)
+	chat.message_added.connect(add_message)
+	# chat.message_added.connect(refresh)
 
 func on_send_button_pressed() -> void:
 	
@@ -128,26 +129,37 @@ func set_chat(chat_in : Chat) -> void:
 
 func refresh() -> void:
 	clear_message_list()
+	# for message in chat.messages:
+	# 	if message.get("sender_type", null) in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
+	# 		var tmp_message = MESSAGE_SCENE.instantiate()
+	# 		tmp_message.sender = message.get("sender", null)
+	# 		tmp_message.sender_type = message.get("sender_type", null)
+	# 		tmp_message.message = message.get("message", null)
+	# 		message_list.add_child(tmp_message)
+	# 		tmp_message._show()
+	# 	elif message.get("sender_type", null) in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
+	# 		var tmp_message = SYSTEM_MESSAGE_SCENE.instantiate()
+	# 		tmp_message.sender = message.get("sender", null)
+	# 		tmp_message.sender_type = message.get("sender_type", null)
+	# 		tmp_message.message = message.get("message", null)
+	# 		message_list.add_child(tmp_message)
+	# 		tmp_message._show()
+
 	for message in chat.messages:
-		if message.get("sender_type", null) in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
-			var tmp_message = MESSAGE_SCENE.instantiate()
-			tmp_message.sender = message.get("sender", null)
-			tmp_message.sender_type = message.get("sender_type", null)
-			tmp_message.message = message.get("message", null)
-			message_list.add_child(tmp_message)
-			tmp_message._show()
-		elif message.get("sender_type", null) in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
-			var tmp_message = SYSTEM_MESSAGE_SCENE.instantiate()
-			tmp_message.sender = message.get("sender", null)
-			tmp_message.sender_type = message.get("sender_type", null)
-			tmp_message.message = message.get("message", null)
-			message_list.add_child(tmp_message)
-			tmp_message._show()
+		message_list.add_child(message)
+		message._show()
 	
 	await scroll_container.get_v_scroll_bar().changed
 	scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
 
 	refreshed.emit()
+
+func add_message(message: Variant) -> void:
+	message_list.add_child(message)
+	message._show()
+
+	await scroll_container.get_v_scroll_bar().changed
+	scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
 
 func save_chat() -> void:
 	chat.messages = []
