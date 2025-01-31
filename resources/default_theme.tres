@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=11 format=3 uid="uid://exgmmsg3rnfw"]
+[gd_resource type="Theme" load_steps=15 format=3 uid="uid://exgmmsg3rnfw"]
 
 [ext_resource type="StyleBox" uid="uid://bfp1orjaxoe3r" path="res://resources/style_box_flat.tres" id="2_epxgk"]
 [ext_resource type="FontFile" uid="uid://bihf0pqhdmqjw" path="res://assets/fonts/zpix.ttf" id="2_vfcpo"]
@@ -35,6 +35,18 @@ corner_radius_top_left = 36
 corner_radius_top_right = 9
 corner_radius_bottom_right = 36
 corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cg3oj"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_us41o"]
+bg_color = Color(0.6, 0.6, 0.6, 0.235294)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aftpi"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ow7l0"]
+bg_color = Color(0.6, 0.6, 0.6, 0.196078)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_odlxy"]
 content_margin_left = 24.0
@@ -80,12 +92,25 @@ default_font_size = 24
 Bubble/base_type = &"RichTextLabel"
 Bubble/constants/line_separation = 4
 Bubble/fonts/bold_font = ExtResource("2_vfcpo")
+Bubble/styles/focus = ExtResource("2_epxgk")
 Bubble/styles/normal = ExtResource("2_epxgk")
 Button/colors/font_color = Color(0, 0, 0, 1)
+Button/colors/font_focus_color = Color(0, 0, 0, 1)
+Button/colors/font_hover_color = Color(0, 0, 0, 1)
+Button/colors/font_hover_pressed_color = Color(0, 0, 0, 1)
+Button/colors/font_pressed_color = Color(0, 0, 0, 1)
+Button/colors/icon_focus_color = Color(0, 0, 0, 1)
+Button/colors/icon_hover_pressed_color = Color(0, 0, 0, 1)
 Button/styles/disabled = SubResource("StyleBoxFlat_xcx0x")
 Button/styles/focus = SubResource("StyleBoxFlat_sgant")
 Button/styles/hover = SubResource("StyleBoxFlat_r41up")
 Button/styles/normal = ExtResource("2_epxgk")
+InvisibleButton/base_type = &"Button"
+InvisibleButton/styles/focus = SubResource("StyleBoxFlat_cg3oj")
+InvisibleButton/styles/hover = SubResource("StyleBoxFlat_us41o")
+InvisibleButton/styles/hover_pressed = null
+InvisibleButton/styles/normal = SubResource("StyleBoxFlat_aftpi")
+InvisibleButton/styles/pressed = SubResource("StyleBoxFlat_ow7l0")
 LineEdit/styles/focus = SubResource("StyleBoxFlat_odlxy")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_p7ohe")
 NewButton/base_type = &"Button"

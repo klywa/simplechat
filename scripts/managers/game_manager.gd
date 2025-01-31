@@ -10,6 +10,7 @@ var npc_dict: Dictionary
 var location_dict: Dictionary
 var player : NPC
 var env : NPC
+var system : NPC
 
 
 func init(main, config_path: String) -> void:
@@ -19,20 +20,22 @@ func init(main, config_path: String) -> void:
 		var json = JSON.new()
 		var parse_result = json.parse(file.get_as_text())
 		if parse_result == OK:
-			# print("parse_result: " + str(parse_result))
 			var data = json.get_data()
-			# print("data: " + str(data))
 			if data is Dictionary:
 
 				env = NPC_SCENE.instantiate()
 				env.npc_name = "环境"
 				env.npc_type = NPC.NPCType.ENV
 
+				system = NPC_SCENE.instantiate()
+				system.npc_name = "系统"
+				system.npc_type = NPC.NPCType.SYSTEM
+
 				# parse player
 				player = NPC_SCENE.instantiate()
-				print("player: " + str(data.get("player", {})))
 				player.load_from_dict(data.get("player", {}))
 				player.npc_type = NPC.NPCType.PLAYER
+				main_view.player_icon.init(player)
 
 				# parse npc
 				for n in data.get("npcs", []):
@@ -42,25 +45,33 @@ func init(main, config_path: String) -> void:
 					npc_dict[npc_name].load_from_dict(n)
 					npc_dict[npc_name].npc_type = NPC.NPCType.NPC
 
-					chat_dict[npc_name + "_private"] = Chat.new()
-					chat_dict[npc_name + "_private"].host = npc_name
-					chat_dict[npc_name + "_private"].chat_type = Chat.ChatType.PRIVATE
-					chat_dict[npc_name + "_private"].add_member(player)
-					chat_dict[npc_name + "_private"].add_member(npc_dict[npc_name])
+					chat_dict[npc_name] = Chat.new()
+					chat_dict[npc_name].host = npc_name
+					chat_dict[npc_name].chat_type = Chat.ChatType.PRIVATE
+					chat_dict[npc_name].add_member(player)
+					chat_dict[npc_name].add_member(npc_dict[npc_name])
 
-					# chat_dict[npc_name + "_private"].add_message(npc_dict[npc_name], "你好，我是"+npc_name)
+					# chat_dict[npc_name].add_message(npc_dict[npc_name], "你好，我是"+npc_name)
 
-					main_view.chat_list.add_chat_item(npc_name, chat_dict[npc_name + "_private"])
+					main_view.chat_list.add_chat_item(npc_name, chat_dict[npc_name])
 
 
 				# parse location
 				for l in data.get("locations", []):
-					location_dict[l.get("location_name", "")] = LOCATION_SCENE.instantiate()
-					location_dict[l.get("location_name", "")].load_from_dict(l)
+					var location_name = l.get("location_name", "")
+
+					location_dict[location_name] = LOCATION_SCENE.instantiate()
+					location_dict[location_name].load_from_dict(l)
+
+					chat_dict[location_name] = Chat.new()
+					chat_dict[location_name].host = location_name
+					chat_dict[location_name].chat_type = Chat.ChatType.GROUP
+					chat_dict[location_name].add_member(env)
+
+					main_view.chat_list.add_chat_item(location_name, chat_dict[location_name])
 
 		file.close()
 
-		print(player.npc_name + str(player.npc_type))
 
 func activate_chat(chat_in : Chat) -> void:
 

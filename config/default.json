@@ -6,7 +6,8 @@
 		"npc_example": "小明是一个普通的大学生",
 		"npc_status": "小明是一个普通的大学生",
 		"npc_inventory": {},
-		"npc_skill": {}
+		"npc_skill": {},
+		"avatar_path": "res://assets/avatars/sample_avatar_03.png"
 	},
 	"npcs": [
 		{
@@ -16,7 +17,8 @@
 			"npc_example": "小红是一个普通的大学生",
 			"npc_status": "小红是一个普通的大学生",
 			"npc_inventory": {},
-			"npc_skill": {}
+			"npc_skill": {},
+			"avatar_path": "res://assets/avatars/sample_avatar_01.png"
 		},
 		{
 			"npc_name": "小刚",
@@ -25,7 +27,8 @@
 			"npc_example": "小刚是一个普通的大学生",
 			"npc_status": "小刚是一个普通的大学生",
 			"npc_inventory": {},
-			"npc_skill": {}
+			"npc_skill": {},
+			"avatar_path": "res://assets/avatars/sample_avatar_02.png"
 		}
 	],
 	"locations": [

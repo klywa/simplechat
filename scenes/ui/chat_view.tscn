@@ -1,10 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://1hsdrtjegx44"]
+[gd_scene load_steps=6 format=3 uid="uid://1hsdrtjegx44"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_55lbm"]
 [ext_resource type="Script" path="res://scripts/ui/chat_view.gd" id="2_6qdrt"]
 [ext_resource type="PackedScene" uid="uid://cmmwsp3qeepka" path="res://scenes/ui/message.tscn" id="2_ik8f6"]
-[ext_resource type="Texture2D" uid="uid://c6bidroy5cjdw" path="res://assets/avatars/sample_avatar_01.png" id="3_l3sia"]
-[ext_resource type="Texture2D" uid="uid://bxxg1hfy3m70m" path="res://assets/avatars/sample_avatar_02.png" id="4_f6n05"]
+[ext_resource type="PackedScene" uid="uid://cd768pmken2pn" path="res://scenes/ui/character_button.tscn" id="3_jfl15"]
 [ext_resource type="PackedScene" uid="uid://dx0c2ccc7ixyx" path="res://scenes/ui/system_message.tscn" id="6_cpp14"]
 
 [node name="ChatView" type="MarginContainer"]
@@ -52,6 +51,10 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 480)
 layout_mode = 2
 size_flags_stretch_ratio = 0.8
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2"]
 clip_contents = true
@@ -71,62 +74,101 @@ size_flags_vertical = 8
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TextureRect" type="TextureRect" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(160, 160)
+[node name="NPCButtonSlots" type="HBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-texture = ExtResource("3_l3sia")
-flip_h = true
+
+[node name="CharacterButton" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer/NPCButtonSlots" instance=ExtResource("3_jfl15")]
+layout_mode = 2
+
+[node name="CharacterButton2" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer/NPCButtonSlots" instance=ExtResource("3_jfl15")]
+layout_mode = 2
+
+[node name="CharacterButton3" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer/NPCButtonSlots" instance=ExtResource("3_jfl15")]
+layout_mode = 2
 
 [node name="Control2" type="Control" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TextureRect2" type="TextureRect" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(160, 160)
+[node name="PlayerButtonSlots" type="HBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-texture = ExtResource("4_f6n05")
+
+[node name="CharacterButton" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer/PlayerButtonSlots" instance=ExtResource("3_jfl15")]
+layout_mode = 2
 
 [node name="Control3" type="Control" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="EnvButton" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "环境"
+
+[node name="LeftCornerButtonList" type="HBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="MemberButton" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "成员"
+
+[node name="JoinChat" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList"]
+layout_mode = 2
+text = "加入"
+
+[node name="LeaveChat" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList"]
+layout_mode = 2
+text = "退出"
+
 [node name="ChatWindow" type="PanelContainer" parent="ChatContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ChatContainer/ChatWindow"]
+[node name="MarginContainer" type="MarginContainer" parent="ChatContainer/ChatWindow"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ChatContainer/ChatWindow/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 follow_focus = true
 horizontal_scroll_mode = 0
 
-[node name="MessageList" type="VBoxContainer" parent="ChatContainer/ChatWindow/ScrollContainer"]
+[node name="MessageList" type="VBoxContainer" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Message12" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
+[node name="Message12" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
+[node name="Message" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="SystemMessage" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("6_cpp14")]
+[node name="SystemMessage" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("6_cpp14")]
 layout_mode = 2
 
-[node name="Message2" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
+[node name="Message2" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message6" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
+[node name="Message6" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message3" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
+[node name="Message3" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message4" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
+[node name="Message4" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
-[node name="Message5" parent="ChatContainer/ChatWindow/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
+[node name="Message5" parent="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList" instance=ExtResource("2_ik8f6")]
 layout_mode = 2
 
 [node name="MessagePanel" type="PanelContainer" parent="ChatContainer"]
@@ -149,13 +191,19 @@ layout_mode = 2
 [node name="ActionInput" type="LineEdit" parent="ChatContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "action"
+placeholder_text = "动作"
 
 [node name="DialogueTarget" type="OptionButton" parent="ChatContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer2"]
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+selected = 0
 item_count = 1
 popup/item_0/text = "自言自语"
 
@@ -167,7 +215,7 @@ theme_override_constants/separation = 29
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("1_55lbm")
-text = "aaaa"
+placeholder_text = "说话内容"
 
 [node name="MarginContainer" type="MarginContainer" parent="ChatContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -177,14 +225,14 @@ layout_mode = 2
 theme = ExtResource("1_55lbm")
 text = "发送"
 
-[node name="NotMemberPanel" type="PanelContainer" parent="ChatContainer/MessagePanel"]
+[node name="IllegalChatPanel" type="PanelContainer" parent="ChatContainer/MessagePanel"]
 visible = false
 layout_mode = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="ChatContainer/MessagePanel/NotMemberPanel"]
+[node name="CenterContainer" type="CenterContainer" parent="ChatContainer/MessagePanel/IllegalChatPanel"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ChatContainer/MessagePanel/NotMemberPanel/CenterContainer"]
+[node name="IllegalWarning" type="Label" parent="ChatContainer/MessagePanel/IllegalChatPanel/CenterContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "未加入对话"
@@ -202,5 +250,47 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 24
 text = "请选择聊天"
 
-[editable path="ChatContainer/ChatWindow/ScrollContainer/MessageList/Message"]
-[editable path="ChatContainer/ChatWindow/ScrollContainer/MessageList/Message6"]
+[node name="MemberPanel" type="PopupPanel" parent="."]
+title = "添加成员"
+initial_position = 2
+size = Vector2i(212, 148)
+
+[node name="PanelContainer" type="PanelContainer" parent="MemberPanel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -102.0
+offset_top = -70.0
+offset_right = 102.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MemberPanel/PanelContainer"]
+layout_mode = 2
+
+[node name="MemberList" type="ItemList" parent="MemberPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+select_mode = 1
+auto_height = true
+item_count = 2
+item_0/text = "小红"
+item_1/text = "小刚"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MemberPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="AcceptButton" type="Button" parent="MemberPanel/PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "添加"
+
+[node name="CancelButton" type="Button" parent="MemberPanel/PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "放弃"
+
+[editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message"]
+[editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message6"]

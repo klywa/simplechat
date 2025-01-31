@@ -12,5 +12,4 @@ func init() -> void:
 
 	
 func on_pressed() -> void:
-	print("chat_name: " + chat_name)
 	GameManager.activate_chat(chat)

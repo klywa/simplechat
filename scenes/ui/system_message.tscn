@@ -10,12 +10,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_abikn")
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_bottom = 24
 script = ExtResource("2_02rxg")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 
 [node name="Control" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -25,9 +28,13 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "—— "
 
 [node name="Content" type="Label" parent="HBoxContainer"]
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "系统消息"
+horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="RightSplit" type="Label" parent="HBoxContainer"]
 layout_mode = 2
@@ -35,5 +42,63 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "—— "
 
 [node name="Control2" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ReviseButton" type="Button" parent="."]
+layout_mode = 2
+theme_type_variation = &"InvisibleButton"
+
+[node name="PopupPanel" type="PopupPanel" parent="."]
+auto_translate_mode = 1
+initial_position = 1
+size = Vector2i(708, 204)
+
+[node name="PanelContainer" type="PanelContainer" parent="PopupPanel"]
+custom_minimum_size = Vector2(600, 0)
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 704.0
+offset_bottom = 200.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/PanelContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+
+[node name="ReviseContent" type="LineEdit" parent="PopupPanel/PanelContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PopupPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Revise" type="Button" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "修改"
+
+[node name="MarginContainer2" type="MarginContainer" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Delete" type="Button" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "删除"

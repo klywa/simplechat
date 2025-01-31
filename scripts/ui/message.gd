@@ -1,15 +1,10 @@
 class_name Message
 extends MarginContainer
 
-enum SenderType {
-	PLAYER,
-	NPC,
-	SYSTEM
-}
-
 var message: String
 var sender: NPC
-var sender_type: SenderType
+var sender_type: NPC.NPCType
+var save_message: bool = true
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var content_label : RichTextLabel = $MessageContainer/VBoxContainer/ContentContainer/Content
@@ -17,15 +12,25 @@ var sender_type: SenderType
 @onready var message_right_space : Control = $MessageContainer/RightSpace
 @onready var name_left_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/LeftSpace
 @onready var name_right_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace
+@onready var revise_panel := $PopupPanel
+@onready var revise_content := $PopupPanel/PanelContainer/VBoxContainer/MarginContainer/ReviseContent
+@onready var revise_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
+@onready var delete_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2/Delete
+@onready var button := $MessageContainer/VBoxContainer/ContentContainer/Button
+
 
 func _ready():
-	# print("Message ready")
-	pass
+	revise_panel.visible = false
+	button.pressed.connect(on_button_pressed)
+
+	revise_button.pressed.connect(on_revise_button_pressed)
+	delete_button.pressed.connect(on_delete_button_pressed)
+
 
 func _show():
 	name_label.text = sender.npc_name
 	content_label.text = message
-	if sender_type == SenderType.PLAYER:
+	if sender_type == NPC.NPCType.PLAYER:
 		message_left_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		message_right_space.size_flags_horizontal = SIZE_SHRINK_END
 		name_left_space.size_flags_horizontal = SIZE_EXPAND_FILL
@@ -35,3 +40,21 @@ func _show():
 		message_right_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		name_left_space.size_flags_horizontal = SIZE_SHRINK_END
 		name_right_space.size_flags_horizontal = SIZE_EXPAND_FILL
+
+func on_button_pressed():
+	revise_panel.visible = true
+	revise_content.text = content_label.text
+	revise_content.grab_focus()
+	revise_content.set_caret_column(revise_content.text.length())
+
+
+func on_revise_button_pressed():
+	content_label.text = revise_content.text
+	revise_content.text = ""
+	revise_panel.visible = false
+	GameManager.main_view.chat_view.save_chat()
+	print(GameManager.main_view.chat_view.chat.messages)
+
+func on_delete_button_pressed():
+	get_parent().remove_child(self)
+	GameManager.main_view.chat_view.save_chat()
