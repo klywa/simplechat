@@ -1,10 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://1hsdrtjegx44"]
+[gd_scene load_steps=8 format=3 uid="uid://1hsdrtjegx44"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_55lbm"]
 [ext_resource type="Script" path="res://scripts/ui/chat_view.gd" id="2_6qdrt"]
 [ext_resource type="PackedScene" uid="uid://cmmwsp3qeepka" path="res://scenes/ui/message.tscn" id="2_ik8f6"]
+[ext_resource type="Texture2D" uid="uid://by11bpcposyau" path="res://assets/avatars/sample_location_01.png" id="3_2onjx"]
 [ext_resource type="PackedScene" uid="uid://cd768pmken2pn" path="res://scenes/ui/character_button.tscn" id="3_jfl15"]
 [ext_resource type="PackedScene" uid="uid://dx0c2ccc7ixyx" path="res://scenes/ui/system_message.tscn" id="6_cpp14"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wvy83"]
+atlas = ExtResource("3_2onjx")
+region = Rect2(0, 248, 1024, 480)
 
 [node name="ChatView" type="MarginContainer"]
 clip_contents = true
@@ -44,8 +49,21 @@ layout_mode = 2
 size_flags_horizontal = 0
 text = "后退"
 
+[node name="SaveButton" type="Button" parent="ChatContainer/NamePanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "保存"
+
 [node name="ScenePanel" type="PanelContainer" parent="ChatContainer"]
 layout_mode = 2
+
+[node name="LocationImage" type="TextureRect" parent="ChatContainer/ScenePanel"]
+visible = false
+clip_contents = true
+layout_mode = 2
+texture = SubResource("AtlasTexture_wvy83")
+expand_mode = 2
+stretch_mode = 2
 
 [node name="MarginContainer2" type="MarginContainer" parent="ChatContainer/ScenePanel"]
 custom_minimum_size = Vector2(0, 480)
@@ -261,10 +279,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -102.0
-offset_top = -70.0
-offset_right = 102.0
-offset_bottom = 70.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 208.0
+offset_bottom = 144.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -290,6 +308,53 @@ text = "添加"
 
 [node name="CancelButton" type="Button" parent="MemberPanel/PanelContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+text = "放弃"
+
+[node name="SavePanel" type="PopupPanel" parent="."]
+initial_position = 2
+size = Vector2i(532, 188)
+
+[node name="PanelContainer" type="PanelContainer" parent="SavePanel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 528.0
+offset_bottom = 184.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="SavePanel/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SavePanel/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SaveFilePath" type="LineEdit" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+placeholder_text = "存储路径"
+max_length = 30
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ConfirmSaveButton" type="Button" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "保存"
+
+[node name="CancelSaveButton" type="Button" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "放弃"
 
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message"]

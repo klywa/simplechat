@@ -7,7 +7,7 @@
 		"npc_status": "小明是一个普通的大学生",
 		"npc_inventory": {},
 		"npc_skill": {},
-		"avatar_path": "res://assets/avatars/sample_avatar_03.png"
+		"avatar_path": "res://assets/avatars/sample_avatar_04.png"
 	},
 	"npcs": [
 		{
@@ -35,12 +35,14 @@
 		{
 			"location_name": "图书馆",
 			"location_short_description": "图书馆是一个安静的地方",
-			"location_description": "图书馆是一个安静的地方"
+			"location_description": "图书馆是一个安静的地方",
+			"avatar_path": "res://assets/avatars/sample_location_01.png"
 		},
 		{
 			"location_name": "教室",
 			"location_short_description": "教室是一个安静的地方",
-			"location_description": "教室是一个安静的地方"
+			"location_description": "教室是一个安静的地方",
+			"avatar_path": "res://assets/avatars/sample_location_02.png"
 		}
 	]
 }

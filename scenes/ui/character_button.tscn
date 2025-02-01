@@ -13,6 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_wwfwj")
 theme_type_variation = &"InvisibleButton"
+button_mask = 3
 script = ExtResource("2_tgjb7")
 
 [node name="Avatar" type="TextureRect" parent="."]

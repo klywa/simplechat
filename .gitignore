@@ -43,3 +43,6 @@ Thumbs.db
 *.tmp
 *.temp
 *.autosave
+
+data/*
+!data/.placeholder

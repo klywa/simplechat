@@ -46,7 +46,7 @@ func init(main, config_path: String) -> void:
 					npc_dict[npc_name].npc_type = NPC.NPCType.NPC
 
 					chat_dict[npc_name] = Chat.new()
-					chat_dict[npc_name].host = npc_name
+					chat_dict[npc_name].host = npc_dict[npc_name]
 					chat_dict[npc_name].chat_type = Chat.ChatType.PRIVATE
 					chat_dict[npc_name].add_member(player)
 					chat_dict[npc_name].add_member(npc_dict[npc_name])
@@ -64,7 +64,7 @@ func init(main, config_path: String) -> void:
 					location_dict[location_name].load_from_dict(l)
 
 					chat_dict[location_name] = Chat.new()
-					chat_dict[location_name].host = location_name
+					chat_dict[location_name].host = location_dict[location_name]
 					chat_dict[location_name].chat_type = Chat.ChatType.GROUP
 					chat_dict[location_name].add_member(env)
 

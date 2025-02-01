@@ -24,6 +24,12 @@ enum ChatType {
 @onready var member_list := $MemberPanel/PanelContainer/VBoxContainer/MemberList
 @onready var join_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/JoinChat
 @onready var leave_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/LeaveChat
+@onready var save_button := $ChatContainer/NamePanel/MarginContainer/SaveButton
+@onready var save_panel := $SavePanel
+@onready var save_path_input := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/SaveFilePath
+@onready var confirm_save_button := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ConfirmSaveButton
+@onready var cancel_save_button := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CancelSaveButton
+
 
 var chat : Chat
 
@@ -47,11 +53,21 @@ func _ready() -> void:
 	accept_member_button.pressed.connect(on_accept_member_button_pressed)
 	cancel_member_button.pressed.connect(on_cancel_member_button_pressed)
 
+	join_group_chat_button.pressed.connect(on_join_group_chat_button_pressed)
+	leave_group_chat_button.pressed.connect(on_leave_group_chat_button_pressed)
+
+	save_button.pressed.connect(on_save_button_pressed)
+	confirm_save_button.pressed.connect(on_confirm_save_button_pressed)
+	cancel_save_button.pressed.connect(on_cancel_save_button_pressed)
+
 
 func init(chat_in : Chat) -> void:
 	no_chat_panel.visible = false
 	chat = chat_in
-	name_label.text = chat.host
+	if chat.host is NPC:
+		name_label.text = chat.host.npc_name
+	elif chat.host is Location:
+		name_label.text = chat.host.location_name
 
 	for child in npc_slots.get_children():
 		npc_slots.remove_child(child)
@@ -83,9 +99,14 @@ func init(chat_in : Chat) -> void:
 		join_group_chat_button.visible = true
 		leave_group_chat_button.visible = true
 
-		name_label.text = chat.host
+		if chat.host is Location:
+			name_label.text = chat.host.location_name
+		elif chat.host is NPC:
+			name_label.text = chat.host.npc_name
+
 		for member in chat.members.values():
-			dialogue_target.add_item("对" + member.npc_name + "说")
+			if member.npc_type == NPC.NPCType.NPC:
+				dialogue_target.add_item("对" + member.npc_name + "说")
 		for i in range(dialogue_target.get_item_count()):
 			if dialogue_target.get_item_text(i) == "自言自语":
 				dialogue_target.select(i)
@@ -100,12 +121,13 @@ func init(chat_in : Chat) -> void:
 			var tmp_button = CHARACTER_BUTTON_SCENE.instantiate()
 			npc_slots.add_child(tmp_button)
 			tmp_button.init(character)
+			tmp_button.character_left_clicked.connect(on_character_left_clicked)
 			tmp_button.avatar.flip_h = true
 		elif character.npc_type == NPC.NPCType.PLAYER:
 			var tmp_button = CHARACTER_BUTTON_SCENE.instantiate()
 			player_slot.add_child(tmp_button)
 			tmp_button.init(character)
-	
+			tmp_button.character_left_clicked.connect(on_character_left_clicked)
 	refresh()
 	chat.message_added.connect(add_message)
 	# chat.message_added.connect(refresh)
@@ -203,7 +225,7 @@ func on_accept_member_button_pressed() -> void:
 		return
 	var add_list = []
 	var leave_list = []
-	var selected_list = [GameManager.env.npc_name]
+	var selected_list = []
 	for index in member_list.get_selected_items():
 		selected_list.append(member_list.get_item_text(index))
 	for npc_name in selected_list:
@@ -211,17 +233,76 @@ func on_accept_member_button_pressed() -> void:
 			chat.add_member(GameManager.npc_dict[npc_name])
 			add_list.append(npc_name)
 	for npc_name in chat.members:
+		if chat.members[npc_name] == GameManager.player or chat.members[npc_name] == GameManager.env:
+			continue
 		if npc_name not in selected_list:
 			chat.remove_member(npc_name)
 			leave_list.append(npc_name)
 	member_panel.visible = false
 
 	init(chat)
-	for npc_name in add_list:
-		chat.add_message(GameManager.system, npc_name + "来到了" + chat.host + "。")
-	for npc_name in leave_list:
-		chat.add_message(GameManager.system, npc_name + "离开了" + chat.host + "。")
+	# for npc_name in add_list:
+	# 	chat.add_message(GameManager.system, npc_name + "来到了" + chat.host + "。")
+	# for npc_name in leave_list:
+	# 	chat.add_message(GameManager.system, npc_name + "离开了" + chat.host + "。")
 
 
 func on_cancel_member_button_pressed() -> void:
 	member_panel.visible = false
+
+func on_join_group_chat_button_pressed() -> void:
+	if GameManager.player.npc_name in chat.members:
+		return 
+	chat.add_member(GameManager.player)
+	init(chat)
+	# chat.add_message(GameManager.system, GameManager.player.npc_name + "来到了" + chat.host + "。")
+
+func on_leave_group_chat_button_pressed() -> void:
+	if GameManager.player.npc_name not in chat.members:
+		return
+	chat.remove_member(GameManager.player.npc_name)
+	init(chat)
+	# chat.add_message(GameManager.system, GameManager.player.npc_name + "离开了" + chat.host + "。")
+
+func on_character_left_clicked(character: NPC) -> void:
+	if character.npc_type == NPC.NPCType.NPC:
+		var response = await character.generate_response(chat)
+		chat.add_message(character, response)
+
+func replay_from_message(message: Variant) -> void:
+	if not (message is Message or message is SystemMessage):
+		return 
+	# remove message below the given message (include the given message) and then show the removed messages
+	# one by one, with time delay of 1 second between each message
+	var removed_messages = []
+	for child in message_list.get_children():
+		if child.get_index() >= message.get_index():
+			removed_messages.append(child)
+	for child in removed_messages:
+		message_list.remove_child(child)
+	
+	await get_tree().create_timer(1.0).timeout
+	
+	for child in removed_messages:
+		message_list.add_child(child)
+		child._show()
+
+		await scroll_container.get_v_scroll_bar().changed
+		scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
+
+		await get_tree().create_timer(1.0).timeout
+
+func on_save_button_pressed() -> void:
+	save_panel.visible = true
+	var current_time_string = Time.get_datetime_string_from_system(false, true)
+	if chat.host is NPC:
+		save_path_input.text = "res://data/" + chat.host.npc_name + "_" + current_time_string + ".json"
+	elif chat.host is Location:
+		save_path_input.text = "res://data/" + chat.host.location_name + "_" + current_time_string + ".json"
+
+func on_confirm_save_button_pressed() -> void:
+	save_panel.visible = false
+	chat.save_to_json(save_path_input.text)
+
+func on_cancel_save_button_pressed() -> void:
+	save_panel.visible = false
