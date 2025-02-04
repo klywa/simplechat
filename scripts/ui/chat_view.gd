@@ -120,13 +120,13 @@ func init(chat_in : Chat) -> void:
 		if character.npc_type == NPC.NPCType.NPC:
 			var tmp_button = CHARACTER_BUTTON_SCENE.instantiate()
 			npc_slots.add_child(tmp_button)
-			tmp_button.init(character)
+			tmp_button.init(character, chat)
 			tmp_button.character_left_clicked.connect(on_character_left_clicked)
 			tmp_button.avatar.flip_h = true
 		elif character.npc_type == NPC.NPCType.PLAYER:
 			var tmp_button = CHARACTER_BUTTON_SCENE.instantiate()
 			player_slot.add_child(tmp_button)
-			tmp_button.init(character)
+			tmp_button.init(character, chat)
 			tmp_button.character_left_clicked.connect(on_character_left_clicked)
 	refresh()
 	chat.message_added.connect(add_message)

@@ -84,7 +84,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2/VBoxContainer"]
-custom_minimum_size = Vector2(0, 128)
+custom_minimum_size = Vector2(0, 185)
 layout_mode = 2
 size_flags_vertical = 8
 

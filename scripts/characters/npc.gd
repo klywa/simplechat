@@ -19,6 +19,8 @@ var is_player: bool
 var avatar_path: String
 var chat_list: Array = [] 
 var npc_type: NPCType
+var hero_name: String
+var hero_lane: String
 
 var current_chat : Chat = null
 
@@ -44,6 +46,8 @@ func load_from_dict(data: Dictionary):
 		npc_inventory = data.get("npc_inventory", {})
 		npc_skill = data.get("npc_skill", {})
 		avatar_path = data.get("avatar_path", "")
+		hero_name = data.get("hero_name", "")
+		hero_lane = data.get("hero_lane", "")
 
 		avatar_path = data.get("avatar_path", "")
 	else:
