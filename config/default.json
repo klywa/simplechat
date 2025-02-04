@@ -21,8 +21,8 @@
 			"npc_inventory": {},
 			"npc_skill": {},
 			"avatar_path": "res://assets/avatars/sample_avatar_01.png",
-			"hero_name": "蔡文姬",
-			"hero_lane": "辅助"
+			"hero_name": "王昭君",
+			"hero_lane": "法师"
 		},
 		{
 			"npc_name": "蜡笔小新",
@@ -90,8 +90,9 @@
 			"location_name": "王者峡谷",
 			"location_short_description": "",
 			"location_description": "",
-			"avatar_path": "res://assets/avatars/sample_location_01.png"
-		},
+			"avatar_path": "res://assets/avatars/sample_location_01.png",
+			"members": ["玩家", "CC", "蜡笔小新", "贝吉塔", "小樱"]
+		}
 	],
 	"instructions": {
 		"normal": "在不导致安全与舆情风险的前提下，应该尽可能体现角色的设定和风格。务必使得聊天变得有趣。你只能使用中文回复。",

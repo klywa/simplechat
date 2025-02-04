@@ -11,6 +11,7 @@ var location_dict: Dictionary
 var player : NPC
 var env : NPC
 var system : NPC
+var ai_instructions : String
 
 
 func init(main, config_path: String) -> void:
@@ -50,6 +51,7 @@ func init(main, config_path: String) -> void:
 					chat_dict[npc_name].chat_type = Chat.ChatType.PRIVATE
 					chat_dict[npc_name].add_member(player)
 					chat_dict[npc_name].add_member(npc_dict[npc_name])
+					chat_dict[npc_name].init()
 
 					# chat_dict[npc_name].add_message(npc_dict[npc_name], "你好，我是"+npc_name)
 
@@ -67,8 +69,18 @@ func init(main, config_path: String) -> void:
 					chat_dict[location_name].host = location_dict[location_name]
 					chat_dict[location_name].chat_type = Chat.ChatType.GROUP
 					chat_dict[location_name].add_member(env)
+					chat_dict[location_name].init()
 
 					main_view.chat_list.add_chat_item(location_name, chat_dict[location_name])
+
+					var location_members = l.get("members", [])
+					for member in location_members:
+						if member == player.npc_name:
+							chat_dict[location_name].add_member(player)
+						else:
+							chat_dict[location_name].add_member(npc_dict[member])
+
+				ai_instructions = data.get("instructions", {}).get("normal", "")
 
 		file.close()
 

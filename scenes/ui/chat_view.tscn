@@ -118,12 +118,6 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="EnvButton" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2"]
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 0
-text = "环境"
-
 [node name="LeftCornerButtonList" type="HBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2"]
 layout_mode = 2
 size_flags_horizontal = 0
@@ -142,6 +136,21 @@ text = "加入"
 [node name="LeaveChat" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList"]
 layout_mode = 2
 text = "退出"
+
+[node name="RightCornerButtonList" type="HBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+
+[node name="UseAIToggle" type="CheckButton" parent="ChatContainer/ScenePanel/MarginContainer2/RightCornerButtonList"]
+layout_mode = 2
+text = "AI回复"
+
+[node name="EnvButton" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2/RightCornerButtonList"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "环境"
 
 [node name="ChatWindow" type="PanelContainer" parent="ChatContainer"]
 layout_mode = 2
@@ -342,7 +351,6 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 placeholder_text = "存储路径"
-max_length = 30
 
 [node name="HBoxContainer" type="HBoxContainer" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

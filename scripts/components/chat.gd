@@ -12,6 +12,8 @@ var members: Dictionary
 var host: Variant
 var host_name : String
 var speaker_index : int
+var last_speaker : NPC
+var is_koh : bool = false
 
 const MESSAGE_SCENE := preload("res://scenes/ui/message.tscn") as PackedScene
 const SYSTEM_MESSAGE_SCENE := preload("res://scenes/ui/system_message.tscn") as PackedScene
@@ -20,6 +22,10 @@ signal message_added(message: Dictionary)
 
 func _init():
 	message_added.connect(on_message_added)
+
+func init():
+	if host is Location and host.location_name == "王者峡谷":
+		is_koh = true
 
 func add_member(npc: NPC):
 	if npc.npc_name not in members:
@@ -30,6 +36,10 @@ func add_member(npc: NPC):
 			elif host is Location:
 				add_message(GameManager.system, npc.npc_name + "来到了" + host.location_name + "。")
 	
+	if is_koh and chat_type == ChatType.GROUP and members.size() >= 1:
+		# random choose a speaker
+		speaker_index = randi() % members.size()
+		last_speaker = members.values()[speaker_index]
 
 func remove_member(npc_name: String):
 	if chat_type == ChatType.GROUP and GameManager.npc_dict[npc_name].npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
@@ -65,22 +75,43 @@ func remove_message(message : Variant):
 
 func on_message_added(message: Message):
 	if chat_type == ChatType.PRIVATE:
+		await GameManager.get_tree().process_frame
 		if message.sender_type == NPC.NPCType.PLAYER:
-			var response = await host.generate_response(self)
+			var response : String = ""
+			if GameManager.main_view.chat_view.use_ai_toggle.button_pressed:
+				response = await host.generate_response(self, true)
+			else:
+				response = await host.generate_response(self, false)
 			add_message(host, response)
-	elif chat_type == ChatType.GROUP:
+	elif chat_type == ChatType.GROUP and is_koh:
+		if message.sender_type != NPC.NPCType.PLAYER:
+			return
+		await GameManager.get_tree().process_frame
+		
+		for npc in members.values():
+			if npc.npc_type == NPC.NPCType.PLAYER:
+				continue
+			if npc.npc_name in message.message or npc.hero_name in message.message or npc.hero_lane in message.message:
+				last_speaker = npc
+				break
+		if last_speaker != null:
+			speaker_index = members.values().find(last_speaker)
+			var response = await last_speaker.generate_response(self, GameManager.main_view.chat_view.use_ai_toggle.button_pressed)
+			add_message(last_speaker, response)
+				
+	else:
 		pass
 
 
 func get_chat_history() -> String:
 	var history = ""
 	for message in messages:
-		history += message.get("sender", "") + "：" + message.get("message", "") + "\n"
+		history += message.sender.npc_name + "：" + message.message+ "\n"
 	return history.strip_edges()
 
 
 func get_last_message() -> String:
-	if messages.is_empty():
+	if messages.size() == 0:
 		return ""
 	return messages[-1].message
 
@@ -123,7 +154,12 @@ func save_to_json(json_file_path: String):
 			"npc_status": message.sender.npc_status,
 			"npc_inventory": message.sender.npc_inventory,
 			"npc_skill": message.sender.npc_skill,
-			"message": message.message
+			"message": message.message,
+			"npc_hero_name": message.sender.hero_name,
+			"npc_hero_lane": message.sender.hero_lane,
+			"player_hero_name": GameManager.player.hero_name,
+			"player_hero_lane": GameManager.player.hero_lane,
+			"instructions": GameManager.ai_instructions
 		}
 		match message.sender.npc_type:
 			NPC.NPCType.NPC:
@@ -134,6 +170,7 @@ func save_to_json(json_file_path: String):
 				tmp_message["npc_type"] = "ENV"
 			NPC.NPCType.SYSTEM:
 				tmp_message["npc_type"] = "SYSTEM"
-		json_dict["messages"].append(tmp_message)
+		if tmp_message["npc_type"] != "SYSTEM":
+			json_dict["messages"].append(tmp_message)
 	json_file.store_string(JSON.stringify(json_dict, "\t", false))
 	json_file.close()

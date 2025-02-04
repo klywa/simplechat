@@ -14,7 +14,8 @@ enum ChatType {
 @onready var send_button : Button = $ChatContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer/MarginContainer/SendButton
 @onready var no_chat_panel : PanelContainer = $NoChatPanel
 @onready var scroll_container : ScrollContainer = $ChatContainer/ChatWindow/MarginContainer/ScrollContainer
-@onready var env_button : Button = $ChatContainer/ScenePanel/MarginContainer2/EnvButton
+@onready var env_button : Button = $ChatContainer/ScenePanel/MarginContainer2/RightCornerButtonList/EnvButton
+@onready var use_ai_toggle := $ChatContainer/ScenePanel/MarginContainer2/RightCornerButtonList/UseAIToggle
 @onready var member_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/MemberButton
 @onready var npc_slots := $ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer/NPCButtonSlots
 @onready var player_slot := $ChatContainer/ScenePanel/MarginContainer2/VBoxContainer/HBoxContainer/PlayerButtonSlots
@@ -82,6 +83,9 @@ func init(chat_in : Chat) -> void:
 	
 	while dialogue_target.get_item_count() > 0:
 		dialogue_target.remove_item(0)
+	
+	if chat.chat_type == Chat.ChatType.GROUP:
+		dialogue_target.add_item("对大家说")
 	dialogue_target.add_item("自言自语")
 
 	if chat.chat_type == Chat.ChatType.PRIVATE:
@@ -108,7 +112,7 @@ func init(chat_in : Chat) -> void:
 			if member.npc_type == NPC.NPCType.NPC:
 				dialogue_target.add_item("对" + member.npc_name + "说")
 		for i in range(dialogue_target.get_item_count()):
-			if dialogue_target.get_item_text(i) == "自言自语":
+			if dialogue_target.get_item_text(i) == "对大家说":
 				dialogue_target.select(i)
 				break
 		for npc in GameManager.npc_dict.values():
@@ -139,7 +143,10 @@ func on_send_button_pressed() -> void:
 		if action_input.text.length() > 0:
 			action += "（" + action_input.text + "）"
 		if dialogue_input.text.length() > 0:
-			action += "[" + dialogue_target.text +  "]" + dialogue_input.text
+			if dialogue_target.text == "对大家说":
+				action += dialogue_input.text
+			else:
+				action += "[" + dialogue_target.text + "]" + dialogue_input.text
 	
 		chat.add_message(GameManager.player, action)
 
@@ -206,7 +213,7 @@ func _on_dialogue_submitted(text: String):
 	on_send_button_pressed()
 
 func on_env_button_pressed():
-	var response = await GameManager.env.generate_response(chat)
+	var response = await GameManager.env.generate_response(chat, false)
 	chat.add_message(GameManager.env, response)
 
 # func add_system_message(message: String) -> void:
@@ -219,6 +226,15 @@ func on_env_button_pressed():
 
 func on_member_button_pressed() -> void:
 	member_panel.visible = true
+	# # 对已经处于chat.member中的NPC，在member_list中设置已经选中
+	# var selected_list = []
+	# for npc in chat.members.values():
+	# 	if npc.npc_type == NPC.NPCType.NPC:
+	# 		selected_list.append(npc.npc_name)
+	# for index in range(member_list.get_item_count()):
+	# 	if member_list.get_item_text(index) in selected_list:
+	# 		member_list.select(index)
+	# 		print("selected: ", member_list.get_item_text(index))
 
 func on_accept_member_button_pressed() -> void:
 	if chat.chat_type != Chat.ChatType.GROUP:
@@ -266,7 +282,13 @@ func on_leave_group_chat_button_pressed() -> void:
 
 func on_character_left_clicked(character: NPC) -> void:
 	if character.npc_type == NPC.NPCType.NPC:
-		var response = await character.generate_response(chat)
+		var response : String = ""
+		if use_ai_toggle.button_pressed:
+			print("use ai")
+			response = await character.generate_response(chat, true)
+		else:
+			print("not use ai")
+			response = await character.generate_response(chat, false)
 		chat.add_message(character, response)
 
 func replay_from_message(message: Variant) -> void:

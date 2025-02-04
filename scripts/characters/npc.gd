@@ -53,12 +53,34 @@ func load_from_dict(data: Dictionary):
 	else:
 		pass
 
-func generate_response(chat : Chat) -> String:
-	await GameManager.main_view.get_tree().create_timer(1).timeout
+func generate_response(chat : Chat, use_ai: bool=false) -> String:
 	if npc_type == NPCType.ENV:
-		return "系统消息" + chat.get_last_message()
+		await GameManager.main_view.get_tree().create_timer(1).timeout
+		return "系统消息"
 	elif npc_type == NPCType.NPC:
-		return "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message()
+		if not use_ai:
+			return "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message()
+		npc_status = npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。"
+		var request = {
+			"request_type": "npc",
+			"messages": chat.get_chat_history(),
+			"npc_name": npc_name,
+			"npc_setting": npc_setting,
+			"npc_style": npc_style,
+			"npc_example": npc_example,
+			"npc_status": npc_status,
+			"npc_hero_name": hero_name,
+			"npc_hero_lane": hero_lane,
+			"player_hero_name": GameManager.player.hero_name,
+			"player_hero_lane": GameManager.player.hero_lane,
+			"instructions": GameManager.ai_instructions
+		}
+		var response = await AIManager.get_ai_response(request)
+		
+		if response.get("status") == "success":
+			return response.get("response", "")
+		else:
+			return "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message()
 	else:
 		return ""
 

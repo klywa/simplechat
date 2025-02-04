@@ -20,6 +20,7 @@ func _ready() -> void:
 	button.pressed.connect(on_button_pressed)
 	
 	revise_button.pressed.connect(on_revise_button_pressed)
+	revise_content.text_submitted.connect(on_revise_content_submitted)
 	delete_button.pressed.connect(on_delete_button_pressed)
 	replay_button.pressed.connect(on_replay_button_pressed)
 
@@ -56,3 +57,6 @@ func on_delete_button_pressed() -> void:
 func on_replay_button_pressed() -> void:
 	revise_panel.visible = false
 	GameManager.main_view.chat_view.replay_from_message(self)
+
+func on_revise_content_submitted(text: String) -> void:
+	on_revise_button_pressed()
