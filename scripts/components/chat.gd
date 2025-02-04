@@ -147,6 +147,8 @@ func save_to_json(json_file_path: String):
 	for message in messages:
 		var tmp_message = {
 			"npc_name": message.sender.npc_name,
+			"message": message.message,
+			"negative_message": message.negative_message,
 			"npc_type": "",
 			"npc_setting": message.sender.npc_setting,
 			"npc_style": message.sender.npc_style,
@@ -154,7 +156,6 @@ func save_to_json(json_file_path: String):
 			"npc_status": message.sender.npc_status,
 			"npc_inventory": message.sender.npc_inventory,
 			"npc_skill": message.sender.npc_skill,
-			"message": message.message,
 			"npc_hero_name": message.sender.hero_name,
 			"npc_hero_lane": message.sender.hero_lane,
 			"player_hero_name": GameManager.player.hero_name,

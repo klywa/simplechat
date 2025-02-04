@@ -14,6 +14,7 @@ var message: String
 var sender: NPC
 var sender_type: NPC.NPCType
 var save_message: bool = true
+var negative_message: String
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -39,8 +40,9 @@ func on_button_pressed() -> void:
 	revise_content.set_caret_column(revise_content.text.length())
 
 func on_revise_button_pressed() -> void:
-	# content_label.text = revise_content.text
-	message = revise_content.text
+	if message != revise_content.text:
+		negative_message = message
+		message = revise_content.text
 	revise_content.text = ""
 	revise_panel.visible = false
 

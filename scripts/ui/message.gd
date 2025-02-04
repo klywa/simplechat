@@ -6,6 +6,7 @@ var message: String
 var sender: NPC
 var sender_type: NPC.NPCType
 var save_message: bool = true
+var negative_message: String
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var content_label : RichTextLabel = $MessageContainer/VBoxContainer/ContentContainer/Content
@@ -53,7 +54,9 @@ func on_button_pressed():
 
 
 func on_revise_button_pressed():
-	message = revise_content.text
+	if message != revise_content.text:
+		negative_message = message
+		message = revise_content.text
 	revise_content.text = ""
 	revise_panel.visible = false
 
