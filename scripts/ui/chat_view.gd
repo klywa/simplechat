@@ -282,6 +282,8 @@ func on_character_left_clicked(character: NPC) -> void:
 			print("not use ai")
 			response = await character.generate_response(chat, false)
 		chat.add_message(character, response.get("response", ""), response)
+		chat.last_speaker = character
+		chat.speaker_index = chat.members.values().find(character)
 
 func replay_from_message(message: Variant) -> void:
 	if not (message is Message or message is SystemMessage):
