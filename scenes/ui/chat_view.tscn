@@ -144,6 +144,7 @@ size_flags_vertical = 0
 
 [node name="UseAIToggle" type="CheckButton" parent="ChatContainer/ScenePanel/MarginContainer2/RightCornerButtonList"]
 layout_mode = 2
+button_pressed = true
 text = "AI回复"
 
 [node name="EnvButton" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2/RightCornerButtonList"]
@@ -288,10 +289,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 208.0
-offset_bottom = 144.0
+offset_left = -102.0
+offset_top = -70.0
+offset_right = 102.0
+offset_bottom = 70.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -329,10 +330,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 528.0
-offset_bottom = 184.0
+offset_left = -262.0
+offset_top = -90.0
+offset_right = 262.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 
