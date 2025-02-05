@@ -20,8 +20,8 @@ chat_template = """
 * 不要重复历史对话中的内容。
 {instructions}
 
-【你的人物当前状态】
-{npc_status}
+【当前对话情境】
+{scenario}
 
 【历史对话】
 {chat_history}

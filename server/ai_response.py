@@ -19,7 +19,7 @@ def get_ai_response(request, api_key):
         npc_example = request.get("npc_example", ""),
         chat_history = request.get("messages", ""),
         instructions = request.get("instructions", ""),
-        npc_status = request.get("npc_status", ""),
+        scenario = request.get("scenario", ""),
     )
     print(prompt)
     
