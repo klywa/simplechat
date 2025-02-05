@@ -226,15 +226,6 @@ func on_env_button_pressed():
 
 func on_member_button_pressed() -> void:
 	member_panel.visible = true
-	# # 对已经处于chat.member中的NPC，在member_list中设置已经选中
-	# var selected_list = []
-	# for npc in chat.members.values():
-	# 	if npc.npc_type == NPC.NPCType.NPC:
-	# 		selected_list.append(npc.npc_name)
-	# for index in range(member_list.get_item_count()):
-	# 	if member_list.get_item_text(index) in selected_list:
-	# 		member_list.select(index)
-	# 		print("selected: ", member_list.get_item_text(index))
 
 func on_accept_member_button_pressed() -> void:
 	if chat.chat_type != Chat.ChatType.GROUP:
@@ -252,8 +243,9 @@ func on_accept_member_button_pressed() -> void:
 		if chat.members[npc_name] == GameManager.player or chat.members[npc_name] == GameManager.env:
 			continue
 		if npc_name not in selected_list:
-			chat.remove_member(npc_name)
 			leave_list.append(npc_name)
+	for npc_name in leave_list:
+		chat.remove_member(npc_name)
 	member_panel.visible = false
 
 	init(chat)

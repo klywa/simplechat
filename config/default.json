@@ -92,6 +92,13 @@
 			"location_description": "",
 			"avatar_path": "res://assets/avatars/sample_location_01.png",
 			"members": ["玩家", "CC", "蜡笔小新", "贝吉塔", "小樱"]
+		},
+		{
+			"location_name": "聊天室",
+			"location_short_description": "",
+			"location_description": "",
+			"avatar_path": "res://assets/avatars/sample_location_02.png",
+			"members": ["玩家", "CC", "蜡笔小新", "贝吉塔", "小樱"]
 		}
 	],
 	"instructions": {
