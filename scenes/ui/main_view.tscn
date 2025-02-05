@@ -15,7 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_yy0rm")
 script = ExtResource("2_h3wjv")
-config_path = "/Users/klywa/GameProjects/simplechat/config/default.json"
+config_path = "res://config/default.json"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1

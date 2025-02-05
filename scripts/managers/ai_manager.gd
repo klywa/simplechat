@@ -5,6 +5,7 @@ var server_url : String = "http://127.0.0.1:8000"
 
 func init(server_url_in: String) -> void:
 	server_url = server_url_in
+	print("ai_manager init: ", server_url)
 
 func get_ai_response(request_in: Dictionary) -> Dictionary:
 	var http_request = HTTPRequest.new()
