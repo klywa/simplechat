@@ -18,6 +18,7 @@ var negative_message: String
 var prompt : String = ""
 var query : String = ""
 var model_version : String = ""
+var problem_tags : String = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

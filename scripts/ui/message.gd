@@ -10,7 +10,7 @@ var negative_message: String
 var prompt : String = ""
 var query : String = ""
 var model_version : String = ""
-
+var problem_tags : String = ""
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var content_label : RichTextLabel = $MessageContainer/VBoxContainer/ContentContainer/Content
 @onready var message_left_space : Control = $MessageContainer/LeftSpace

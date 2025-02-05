@@ -56,6 +56,18 @@ func remove_member(npc_name: String):
 			elif host is Location:
 				add_message(GameManager.system, npc_name + "离开了" + host.location_name + "。")
 
+	if is_koh and chat_type == ChatType.GROUP:
+		# random choose a speaker, avoid player and env
+		var speaker_list = []
+		for nn in members.values():
+			if nn.npc_type != NPC.NPCType.PLAYER and nn.npc_type != NPC.NPCType.ENV:
+				speaker_list.append(nn)
+		if speaker_list.size() > 0:
+			var random_index = randi() % speaker_list.size()
+			last_speaker = speaker_list[random_index]
+			speaker_index = members.values().find(last_speaker)	
+			
+
 func get_member(npc_name: String):
 	return members.get(npc_name, null)
 
@@ -160,11 +172,14 @@ func save_to_json(json_file_path: String):
 		json_dict["members"].append(tmp_member)
 
 	for message in messages:
-		print("scenario", message.sender.scenario)
+		# print("scenario", message.sender.scenario)
 		var tmp_message = {
 			"npc_name": message.sender.npc_name,
 			"message": message.message,
 			"negative_message": message.negative_message,
+			"problem_tags": message.problem_tags,
+			"query": message.query,
+			"model_version": message.model_version,
 			"npc_type": "",
 			"npc_setting": message.sender.npc_setting,
 			"npc_style": message.sender.npc_style,
@@ -177,7 +192,7 @@ func save_to_json(json_file_path: String):
 			"npc_hero_lane": message.sender.hero_lane,
 			"player_hero_name": GameManager.player.hero_name,
 			"player_hero_lane": GameManager.player.hero_lane,
-			"instructions": GameManager.ai_instructions
+			"instructions": GameManager.ai_instructions,
 		}
 		match message.sender.npc_type:
 			NPC.NPCType.NPC:

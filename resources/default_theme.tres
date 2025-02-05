@@ -123,5 +123,7 @@ NewButton/styles/disabled = SubResource("StyleBoxFlat_stkhi")
 NewButton/styles/focus = ExtResource("2_epxgk")
 NewButton/styles/hover = ExtResource("2_epxgk")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_4mtot")
+RichTextLabel/colors/default_color = Color(0, 0, 0, 1)
+RichTextLabel/fonts/normal_font = ExtResource("2_vfcpo")
 TitleLabel/base_type = &"Label"
 TitleLabel/styles/normal = SubResource("StyleBoxTexture_ahid4")

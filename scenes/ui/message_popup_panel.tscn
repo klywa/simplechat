@@ -6,16 +6,15 @@
 [node name="MessagePopupPanel" type="PopupPanel"]
 auto_translate_mode = 1
 initial_position = 1
-size = Vector2i(608, 192)
+size = Vector2i(490, 192)
 visible = true
 theme = ExtResource("1_0uvfs")
 script = ExtResource("2_xhaq2")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(600, 0)
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 604.0
+offset_right = 486.0
 offset_bottom = 188.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
@@ -70,3 +69,86 @@ theme_override_constants/margin_bottom = 12
 [node name="ReplayButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3"]
 layout_mode = 2
 text = "播放"
+
+[node name="MarginContainer4" type="MarginContainer" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="MoreButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/MarginContainer4"]
+layout_mode = 2
+text = "↓"
+
+[node name="MorePanel" type="Window" parent="."]
+title = "更多信息"
+initial_position = 2
+size = Vector2i(632, 792)
+visible = false
+borderless = true
+popup_window = true
+theme = ExtResource("1_0uvfs")
+
+[node name="PanelContainer" type="PanelContainer" parent="MorePanel"]
+custom_minimum_size = Vector2(600, 0)
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 628.0
+offset_bottom = 788.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MorePanel/PanelContainer"]
+layout_mode = 2
+
+[node name="MarginContainer3" type="MarginContainer" parent="MorePanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="OriginResponse" type="Label" parent="MorePanel/PanelContainer/VBoxContainer/MarginContainer3"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "示例示例示例示例示例示例示例示例"
+autowrap_mode = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MorePanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MorePanel/PanelContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ProblemTags" type="LineEdit" parent="MorePanel/PanelContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SaveProblem" type="Button" parent="MorePanel/PanelContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "保存"
+
+[node name="Close" type="Button" parent="MorePanel/PanelContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "关闭"
+
+[node name="MarginContainer2" type="MarginContainer" parent="MorePanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Prompt" type="TextEdit" parent="MorePanel/PanelContainer/VBoxContainer/MarginContainer2"]
+clip_contents = false
+custom_minimum_size = Vector2(600, 600)
+layout_mode = 2
+theme = ExtResource("1_0uvfs")
+text = "示例示例"
+editable = false
+wrap_mode = 1
