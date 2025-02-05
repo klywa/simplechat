@@ -36,10 +36,16 @@ func add_member(npc: NPC):
 			elif host is Location:
 				add_message(GameManager.system, npc.npc_name + "来到了" + host.location_name + "。")
 	
-	if is_koh and chat_type == ChatType.GROUP and members.size() >= 1:
-		# random choose a speaker
-		speaker_index = randi() % members.size()
-		last_speaker = members.values()[speaker_index]
+	if is_koh and chat_type == ChatType.GROUP:
+		# random choose a speaker, avoid player and env
+		var speaker_list = []
+		for nn in members.values():
+			if nn.npc_type != NPC.NPCType.PLAYER and nn.npc_type != NPC.NPCType.ENV:
+				speaker_list.append(nn)
+		if speaker_list.size() > 0:
+			var random_index = randi() % speaker_list.size()
+			last_speaker = speaker_list[random_index]
+			speaker_index = members.values().find(last_speaker)
 
 func remove_member(npc_name: String):
 	if chat_type == ChatType.GROUP and GameManager.npc_dict[npc_name].npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
