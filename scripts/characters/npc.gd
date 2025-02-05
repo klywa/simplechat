@@ -54,14 +54,14 @@ func load_from_dict(data: Dictionary):
 	else:
 		pass
 
-func generate_response(chat : Chat, use_ai: bool=false) -> String:
+func generate_response(chat : Chat, use_ai: bool=false) -> Dictionary:
 	if npc_type == NPCType.ENV:
 		await GameManager.main_view.get_tree().create_timer(1).timeout
-		return "系统消息"
+		return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
 	elif npc_type == NPCType.NPC:
-		if not use_ai:
-			return "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message()
 		scenario = npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。"
+		if not use_ai:
+			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
 		var request = {
 			"request_type": "npc",
 			"messages": chat.get_chat_history(),
@@ -80,11 +80,18 @@ func generate_response(chat : Chat, use_ai: bool=false) -> String:
 		var response = await AIManager.get_ai_response(request)
 		
 		if response.get("status") == "success":
-			return response.get("response", "")
+			if response.has("prompt") and response.has("query"):
+				print(response["prompt"] + "\n" + response["query"])
+			return {
+				"response": response.get("response", ""), 
+				"prompt": response.get("prompt", ""), 
+				"query": response.get("query", ""), 
+				"model_version": response.get("model_version", "")
+			}
 		else:
-			return "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message()
+			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
 	else:
-		return ""
+		return {"response": "", "prompt": "", "query": "", "model_version": ""}
 
 func quit_group_chat() -> void:
 	if current_chat.chat_type == Chat.ChatType.GROUP:

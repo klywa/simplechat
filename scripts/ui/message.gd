@@ -7,6 +7,9 @@ var sender: NPC
 var sender_type: NPC.NPCType
 var save_message: bool = true
 var negative_message: String
+var prompt : String = ""
+var query : String = ""
+var model_version : String = ""
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var content_label : RichTextLabel = $MessageContainer/VBoxContainer/ContentContainer/Content
@@ -14,22 +17,22 @@ var negative_message: String
 @onready var message_right_space : Control = $MessageContainer/RightSpace
 @onready var name_left_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/LeftSpace
 @onready var name_right_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace
-@onready var revise_panel := $PopupPanel
-@onready var revise_content := $PopupPanel/PanelContainer/VBoxContainer/MarginContainer/ReviseContent
-@onready var revise_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
-@onready var delete_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2/Delete
+@onready var revise_panel := $MessagePopupPanel
+# @onready var revise_content := $PopupPanel/PanelContainer/VBoxContainer/MarginContainer/ReviseContent
+# @onready var revise_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
+# @onready var delete_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2/Delete
 @onready var button := $MessageContainer/VBoxContainer/ContentContainer/Button
-@onready var replay_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3/ReplayButton
+# @onready var replay_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3/ReplayButton
 
 
 func _ready():
 	revise_panel.visible = false
 	button.pressed.connect(on_button_pressed)
 
-	revise_button.pressed.connect(on_revise_button_pressed)
-	revise_content.text_submitted.connect(on_revise_content_submitted)
-	delete_button.pressed.connect(on_delete_button_pressed)
-	replay_button.pressed.connect(on_replay_button_pressed)
+	revise_panel.revise_button.pressed.connect(on_revise_button_pressed)
+	revise_panel.revise_content.text_submitted.connect(on_revise_content_submitted)
+	revise_panel.delete_button.pressed.connect(on_delete_button_pressed)
+	revise_panel.replay_button.pressed.connect(on_replay_button_pressed)
 
 
 func _show():
@@ -48,16 +51,16 @@ func _show():
 
 func on_button_pressed():
 	revise_panel.visible = true
-	revise_content.text = content_label.text
-	revise_content.grab_focus()
-	revise_content.set_caret_column(revise_content.text.length())
+	revise_panel.revise_content.text = content_label.text
+	revise_panel.revise_content.grab_focus()
+	revise_panel.revise_content.set_caret_column(revise_panel.revise_content.text.length())
 
 
 func on_revise_button_pressed():
-	if message != revise_content.text:
+	if message != revise_panel.revise_content.text:
 		negative_message = message
-		message = revise_content.text
-	revise_content.text = ""
+		message = revise_panel.revise_content.text
+	revise_panel.revise_content.text = ""
 	revise_panel.visible = false
 
 	_show()

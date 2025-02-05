@@ -50,7 +50,7 @@ def get_ai_response(request, api_key):
 
     print(result)
 
-    return result
+    return result, prompt
 
     # print("done")
     # return "收到：" + prompt.strip().split("\n")[-1]

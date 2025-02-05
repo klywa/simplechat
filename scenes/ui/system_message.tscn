@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dx0c2ccc7ixyx"]
+[gd_scene load_steps=4 format=3 uid="uid://dx0c2ccc7ixyx"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_abikn"]
 [ext_resource type="Script" path="res://scripts/ui/system_message.gd" id="2_02rxg"]
+[ext_resource type="PackedScene" uid="uid://djprjmnww17r1" path="res://scenes/ui/message_popup_panel.tscn" id="3_rbv78"]
 
 [node name="SystemMessage" type="MarginContainer"]
 anchors_preset = 15
@@ -51,67 +52,5 @@ size_flags_horizontal = 3
 layout_mode = 2
 theme_type_variation = &"InvisibleButton"
 
-[node name="PopupPanel" type="PopupPanel" parent="."]
-auto_translate_mode = 1
-initial_position = 1
-size = Vector2i(708, 204)
-
-[node name="PanelContainer" type="PanelContainer" parent="PopupPanel"]
-custom_minimum_size = Vector2(600, 0)
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 704.0
-offset_bottom = 200.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/PanelContainer"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-
-[node name="ReviseContent" type="LineEdit" parent="PopupPanel/PanelContainer/VBoxContainer/MarginContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="PopupPanel/PanelContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="Revise" type="Button" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "修改"
-
-[node name="MarginContainer2" type="MarginContainer" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="Delete" type="Button" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "删除"
-
-[node name="MarginContainer3" type="MarginContainer" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="ReplayButton" type="Button" parent="PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3"]
-layout_mode = 2
-text = "播放"
+[node name="MessagePopupPanel" parent="." instance=ExtResource("3_rbv78")]
+visible = false

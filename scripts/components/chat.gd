@@ -48,7 +48,7 @@ func add_member(npc: NPC):
 			speaker_index = members.values().find(last_speaker)
 
 func remove_member(npc_name: String):
-	if chat_type == ChatType.GROUP and GameManager.npc_dict[npc_name].npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
+	if chat_type == ChatType.GROUP and ((npc_name in GameManager.npc_dict and GameManager.npc_dict[npc_name].npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]) or (npc_name == GameManager.player.npc_name and GameManager.player.npc_type == NPC.NPCType.PLAYER)):
 		if npc_name in members:
 			members.erase(npc_name)
 			if host is NPC:
@@ -59,7 +59,7 @@ func remove_member(npc_name: String):
 func get_member(npc_name: String):
 	return members.get(npc_name, null)
 
-func add_message(sender: NPC, content: String):
+func add_message(sender: NPC, content: String, auxiliary: Dictionary={}):
 	var tmp_message
 	if sender.npc_type in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
 		tmp_message = SYSTEM_MESSAGE_SCENE.instantiate()
@@ -69,6 +69,9 @@ func add_message(sender: NPC, content: String):
 	tmp_message.sender = sender
 	tmp_message.sender_type = sender.npc_type
 	tmp_message.message = content
+	tmp_message.prompt = auxiliary.get("prompt", "")
+	tmp_message.query = auxiliary.get("query", "")
+	tmp_message.model_version = auxiliary.get("model_version", "")
 	messages.append(tmp_message)
 	message_added.emit(tmp_message)
 
@@ -83,12 +86,12 @@ func on_message_added(message: Message):
 	if chat_type == ChatType.PRIVATE:
 		await GameManager.get_tree().process_frame
 		if message.sender_type == NPC.NPCType.PLAYER:
-			var response : String = ""
+			var response : Dictionary = {}
 			if GameManager.main_view.chat_view.use_ai_toggle.button_pressed:
 				response = await host.generate_response(self, true)
 			else:
 				response = await host.generate_response(self, false)
-			add_message(host, response)
+			add_message(host, response.get("response", ""), response)
 	elif chat_type == ChatType.GROUP and is_koh:
 		if message.sender_type != NPC.NPCType.PLAYER:
 			return
@@ -103,7 +106,7 @@ func on_message_added(message: Message):
 		if last_speaker != null:
 			speaker_index = members.values().find(last_speaker)
 			var response = await last_speaker.generate_response(self, GameManager.main_view.chat_view.use_ai_toggle.button_pressed)
-			add_message(last_speaker, response)
+			add_message(last_speaker, response.get("response", ""), response)
 				
 	else:
 		pass
@@ -123,7 +126,13 @@ func get_last_message() -> String:
 
 func save_to_json(json_file_path: String):
 	var json_file = FileAccess.open(json_file_path, FileAccess.WRITE)
+	var chat_name = ""
+	if host is NPC:
+		chat_name = host.npc_name
+	elif host is Location:
+		chat_name = host.location_name
 	var json_dict = {
+		"chat_name": chat_name,
 		"chat_type": "PRIVATE" if chat_type == ChatType.PRIVATE else "GROUP",
 		"members": [],
 		"messages": []
@@ -151,6 +160,7 @@ func save_to_json(json_file_path: String):
 		json_dict["members"].append(tmp_member)
 
 	for message in messages:
+		print("scenario", message.sender.scenario)
 		var tmp_message = {
 			"npc_name": message.sender.npc_name,
 			"message": message.message,

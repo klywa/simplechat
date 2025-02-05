@@ -24,17 +24,23 @@ def handle_request():
         data = request.get_json()
         
         # 提取AI响应
-        response = ai_response.get_ai_response(data, api_key)
+        response, prompt = ai_response.get_ai_response(data, api_key)
         
         return jsonify({
             "status": "success",
-            "response": response
+            "response": response,
+            "prompt": prompt,
+            "query": "",
+            "model_version": "kimi"
         })
     
     except Exception as e:
         return jsonify({
             "status": "error",
-            "message": str(e)
+            "message": str(e),
+            "prompt": "",
+            "query": "",
+            "model_version": ""
         }), 500
 
 if __name__ == '__main__':

@@ -214,7 +214,7 @@ func _on_dialogue_submitted(text: String):
 
 func on_env_button_pressed():
 	var response = await GameManager.env.generate_response(chat, false)
-	chat.add_message(GameManager.env, response)
+	chat.add_message(GameManager.env, response.get("response", ""), response)
 
 # func add_system_message(message: String) -> void:
 # 	var tmp_message = SYSTEM_MESSAGE_SCENE.instantiate()
@@ -274,14 +274,14 @@ func on_leave_group_chat_button_pressed() -> void:
 
 func on_character_left_clicked(character: NPC) -> void:
 	if character.npc_type == NPC.NPCType.NPC:
-		var response : String = ""
+		var response : Dictionary = {}
 		if use_ai_toggle.button_pressed:
 			print("use ai")
 			response = await character.generate_response(chat, true)
 		else:
 			print("not use ai")
 			response = await character.generate_response(chat, false)
-		chat.add_message(character, response)
+		chat.add_message(character, response.get("response", ""), response)
 
 func replay_from_message(message: Variant) -> void:
 	if not (message is Message or message is SystemMessage):
