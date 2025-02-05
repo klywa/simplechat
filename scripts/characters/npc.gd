@@ -21,6 +21,7 @@ var chat_list: Array = []
 var npc_type: NPCType
 var hero_name: String
 var hero_lane: String
+var scenario: String
 
 var current_chat : Chat = null
 
@@ -60,7 +61,7 @@ func generate_response(chat : Chat, use_ai: bool=false) -> String:
 	elif npc_type == NPCType.NPC:
 		if not use_ai:
 			return "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message()
-		var scenario = npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。"
+		scenario = npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。"
 		var request = {
 			"request_type": "npc",
 			"messages": chat.get_chat_history(),

@@ -160,6 +160,7 @@ func save_to_json(json_file_path: String):
 			"npc_style": message.sender.npc_style,
 			"npc_example": message.sender.npc_example,
 			"npc_status": message.sender.npc_status,
+			"scenario": message.sender.scenario,
 			"npc_inventory": message.sender.npc_inventory,
 			"npc_skill": message.sender.npc_skill,
 			"npc_hero_name": message.sender.hero_name,
