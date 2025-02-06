@@ -11,7 +11,10 @@ var prompt : String = ""
 var query : String = ""
 var model_version : String = ""
 var problem_tags : String = ""
+var right_side_label_text : String = ""
+
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
+@onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel
 @onready var content_label : RichTextLabel = $MessageContainer/VBoxContainer/ContentContainer/Content
 @onready var message_left_space : Control = $MessageContainer/LeftSpace
 @onready var message_right_space : Control = $MessageContainer/RightSpace
@@ -38,6 +41,8 @@ func _ready():
 func _show():
 	name_label.text = sender.npc_name
 	content_label.text = message
+	if right_side_label_text.length() > 0:
+		right_side_label.text = right_side_label_text
 	if sender_type == NPC.NPCType.PLAYER:
 		message_left_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		message_right_space.size_flags_horizontal = SIZE_SHRINK_END

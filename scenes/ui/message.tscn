@@ -54,7 +54,7 @@ text = "名字"
 [node name="RightSideLabel" type="Label" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 8
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.239347, 0.239347, 0.239347, 1)
 vertical_alignment = 2
 
 [node name="RightSpace" type="Control" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer"]

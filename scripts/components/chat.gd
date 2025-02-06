@@ -66,7 +66,7 @@ func remove_member(npc_name: String):
 			var random_index = randi() % speaker_list.size()
 			last_speaker = speaker_list[random_index]
 			speaker_index = members.values().find(last_speaker)	
-			
+
 
 func get_member(npc_name: String):
 	return members.get(npc_name, null)
@@ -84,6 +84,12 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}):
 	tmp_message.prompt = auxiliary.get("prompt", "")
 	tmp_message.query = auxiliary.get("query", "")
 	tmp_message.model_version = auxiliary.get("model_version", "")
+
+	if is_koh and chat_type == ChatType.GROUP:
+		if sender.npc_type == NPC.NPCType.NPC:
+			if sender.hero_name != "" and tmp_message is Message:
+				tmp_message.right_side_label_text = "（" + sender.hero_name + "）"
+
 	messages.append(tmp_message)
 	message_added.emit(tmp_message)
 

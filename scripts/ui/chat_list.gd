@@ -21,3 +21,7 @@ func add_chat_item(chat_name : String, chat : Chat) -> void:
 	chat_item.chat = chat
 	chat_item.chat_name = chat_name
 	chat_item.init()
+
+	# 如果chat_item对应的chat_name为“王者峡谷”，将chat_item置于chat_list的第一个位置
+	if chat_name == "王者峡谷":
+		chat_list.move_child(chat_item, 0)
