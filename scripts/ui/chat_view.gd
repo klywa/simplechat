@@ -37,6 +37,7 @@ var chat : Chat
 const MESSAGE_SCENE := preload("res://scenes/ui/message.tscn") as PackedScene
 const SYSTEM_MESSAGE_SCENE := preload("res://scenes/ui/system_message.tscn") as PackedScene
 const CHARACTER_BUTTON_SCENE := preload("res://scenes/ui/character_button.tscn") as PackedScene
+const MESSAGE_SPACE_HOLDER := preload("res://scenes/ui/message_space_holder.tscn") as PackedScene
 
 signal refreshed
 
@@ -184,8 +185,17 @@ func refresh() -> void:
 	refreshed.emit()
 
 func add_message(message: Variant) -> void:
+
+	# check the last message of message_list, if it's message_space_holder, remove it
+	for child in message_list.get_children():
+		if child is MessageSpaceHolder:
+			message_list.remove_child(child)
+			break
+
 	message_list.add_child(message)
 	message._show()
+
+	message_list.add_child(MESSAGE_SPACE_HOLDER.instantiate())
 
 	await scroll_container.get_v_scroll_bar().changed
 	scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
