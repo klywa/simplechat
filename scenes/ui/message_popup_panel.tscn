@@ -6,7 +6,7 @@
 [node name="MessagePopupPanel" type="PopupPanel"]
 auto_translate_mode = 1
 initial_position = 1
-size = Vector2i(490, 192)
+size = Vector2i(636, 225)
 visible = true
 theme = ExtResource("1_0uvfs")
 script = ExtResource("2_xhaq2")
@@ -14,8 +14,8 @@ script = ExtResource("2_xhaq2")
 [node name="PanelContainer" type="PanelContainer" parent="."]
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 486.0
-offset_bottom = 188.0
+offset_right = 632.0
+offset_bottom = 221.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 layout_mode = 2
@@ -70,6 +70,19 @@ theme_override_constants/margin_bottom = 12
 layout_mode = 2
 text = "播放"
 
+[node name="MarginContainer5" type="MarginContainer" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="RegenerateButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/MarginContainer5"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "↻"
+
 [node name="MarginContainer4" type="MarginContainer" parent="PanelContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
@@ -78,6 +91,7 @@ theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
 [node name="MoreButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/MarginContainer4"]
+custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 text = "↓"
 

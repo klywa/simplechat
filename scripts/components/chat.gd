@@ -71,7 +71,7 @@ func remove_member(npc_name: String):
 func get_member(npc_name: String):
 	return members.get(npc_name, null)
 
-func add_message(sender: NPC, content: String, auxiliary: Dictionary={}):
+func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_up: bool = true):
 	var tmp_message
 	if sender.npc_type in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
 		tmp_message = SYSTEM_MESSAGE_SCENE.instantiate()
@@ -91,7 +91,8 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}):
 				tmp_message.right_side_label_text = "（" + sender.hero_name + "）"
 
 	messages.append(tmp_message)
-	message_added.emit(tmp_message)
+	if follow_up:
+		message_added.emit(tmp_message)	
 
 	# if GameManager.main_view.chat_view.chat == self:
 	# 	GameManager.main_view.chat_view.add_message(tmp_message)
@@ -130,9 +131,11 @@ func on_message_added(message: Message):
 		pass
 
 
-func get_chat_history() -> String:
+func get_chat_history(until_message: Variant=null) -> String:
 	var history = ""
 	for message in messages:
+		if message == until_message:
+			break
 		history += message.sender.npc_name + "：" + message.message+ "\n"
 	return history.strip_edges()
 
@@ -212,4 +215,57 @@ func save_to_json(json_file_path: String):
 		if tmp_message["npc_type"] != "SYSTEM":
 			json_dict["messages"].append(tmp_message)
 	json_file.store_string(JSON.stringify(json_dict, "\t", false))
+	json_file.close()
+
+
+func load_from_json(json_file_path: String):
+	var json_file = FileAccess.open(json_file_path, FileAccess.READ)
+	if json_file == null:
+		return
+		
+	var json_text = json_file.get_as_text()
+	var json_dict = JSON.parse_string(json_text)
+	if json_dict == null:
+		print("json解析失败")
+		return
+		
+	# 检查所有成员是否都在
+	for member in json_dict["members"]:
+		var npc_name = member["npc_name"]
+		if npc_name not in members:
+			print("成员不存在", npc_name)
+			return
+			
+	# 清空当前消息
+	messages.clear()
+	
+	# 添加新消息
+	for message in json_dict["messages"]:
+		var sender : NPC
+		match message.get("npc_type", ""):
+			"NPC":
+				sender = GameManager.npc_dict[message["npc_name"]]
+			"PLAYER":
+				sender = GameManager.player
+			"ENV":
+				sender = GameManager.env
+			"SYSTEM":
+				sender = GameManager.system
+		sender.npc_setting = message["npc_setting"]
+		sender.npc_style = message["npc_style"] 
+		sender.npc_example = message["npc_example"]
+		sender.npc_status = message["npc_status"]
+		sender.scenario = message["scenario"]
+		sender.npc_inventory = message["npc_inventory"]
+		sender.npc_skill = message["npc_skill"]
+		sender.hero_name = message["npc_hero_name"]
+		sender.hero_lane = message["npc_hero_lane"]
+		
+		add_message(sender, message["message"], {
+			"negative_message": message["negative_message"],
+			"problem_tags": message["problem_tags"],
+			"query": message["query"],
+			"model_version": message["model_version"]
+		}, false)
+		
 	json_file.close()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://1hsdrtjegx44"]
+[gd_scene load_steps=9 format=3 uid="uid://1hsdrtjegx44"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_55lbm"]
 [ext_resource type="Script" path="res://scripts/ui/chat_view.gd" id="2_6qdrt"]
@@ -10,6 +10,8 @@
 [sub_resource type="AtlasTexture" id="AtlasTexture_wvy83"]
 atlas = ExtResource("3_2onjx")
 region = Rect2(0, 248, 1024, 480)
+
+[sub_resource type="Theme" id="Theme_midc0"]
 
 [node name="ChatView" type="MarginContainer"]
 clip_contents = true
@@ -49,7 +51,16 @@ layout_mode = 2
 size_flags_horizontal = 0
 text = "后退"
 
-[node name="SaveButton" type="Button" parent="ChatContainer/NamePanel/MarginContainer"]
+[node name="VBoxContainer" type="HBoxContainer" parent="ChatContainer/NamePanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 12
+
+[node name="LoadButton" type="Button" parent="ChatContainer/NamePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "载入"
+
+[node name="SaveButton" type="Button" parent="ChatContainer/NamePanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "保存"
@@ -289,10 +300,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 208.0
-offset_bottom = 144.0
+offset_left = -102.0
+offset_top = -70.0
+offset_right = 102.0
+offset_bottom = 70.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -330,10 +341,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 528.0
-offset_bottom = 184.0
+offset_left = -262.0
+offset_top = -90.0
+offset_right = 262.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -365,6 +376,14 @@ text = "保存"
 layout_mode = 2
 size_flags_horizontal = 3
 text = "放弃"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+size = Vector2i(800, 600)
+theme = SubResource("Theme_midc0")
+ok_button_text = "Open"
+file_mode = 0
 
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message"]
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message6"]

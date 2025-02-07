@@ -54,7 +54,7 @@ func load_from_dict(data: Dictionary):
 	else:
 		pass
 
-func generate_response(chat : Chat, use_ai: bool=false) -> Dictionary:
+func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null) -> Dictionary:
 	if npc_type == NPCType.ENV:
 		await GameManager.main_view.get_tree().create_timer(1).timeout
 		return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
@@ -64,7 +64,7 @@ func generate_response(chat : Chat, use_ai: bool=false) -> Dictionary:
 			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
 		var request = {
 			"request_type": "npc",
-			"messages": chat.get_chat_history(),
+			"messages": chat.get_chat_history(until_message),
 			"npc_name": npc_name,
 			"npc_setting": npc_setting,
 			"npc_style": npc_style,

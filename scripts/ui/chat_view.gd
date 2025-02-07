@@ -25,11 +25,14 @@ enum ChatType {
 @onready var member_list := $MemberPanel/PanelContainer/VBoxContainer/MemberList
 @onready var join_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/JoinChat
 @onready var leave_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/LeaveChat
-@onready var save_button := $ChatContainer/NamePanel/MarginContainer/SaveButton
+@onready var save_button := $ChatContainer/NamePanel/MarginContainer/VBoxContainer/SaveButton
+@onready var load_button := $ChatContainer/NamePanel/MarginContainer/VBoxContainer/LoadButton
 @onready var save_panel := $SavePanel
 @onready var save_path_input := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/SaveFilePath
 @onready var confirm_save_button := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ConfirmSaveButton
 @onready var cancel_save_button := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CancelSaveButton
+
+@onready var load_panel := $FileDialog
 
 
 var chat : Chat
@@ -59,8 +62,12 @@ func _ready() -> void:
 	leave_group_chat_button.pressed.connect(on_leave_group_chat_button_pressed)
 
 	save_button.pressed.connect(on_save_button_pressed)
+	load_button.pressed.connect(on_load_button_pressed)
 	confirm_save_button.pressed.connect(on_confirm_save_button_pressed)
 	cancel_save_button.pressed.connect(on_cancel_save_button_pressed)
+
+	load_panel.canceled.connect(on_cancel_load_button_pressed)
+	load_panel.file_selected.connect(on_load_file_selected)
 
 
 func init(chat_in : Chat) -> void:
@@ -311,7 +318,8 @@ func replay_from_message(message: Variant) -> void:
 	
 	for child in removed_messages:
 		message_list.add_child(child)
-		child._show()
+		if child is Message or child is SystemMessage:
+			child._show()
 
 		await scroll_container.get_v_scroll_bar().changed
 		scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
@@ -332,3 +340,14 @@ func on_confirm_save_button_pressed() -> void:
 
 func on_cancel_save_button_pressed() -> void:
 	save_panel.visible = false
+
+func on_load_button_pressed() -> void:
+	load_panel.visible = true
+
+func on_cancel_load_button_pressed() -> void:
+	load_panel.visible = false
+
+func on_load_file_selected(file_path: String) -> void:
+	load_panel.visible = false
+	chat.load_from_json(file_path)
+	init(chat)
