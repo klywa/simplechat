@@ -25,6 +25,7 @@ enum ChatType {
 @onready var member_list := $MemberPanel/PanelContainer/VBoxContainer/MemberList
 @onready var join_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/JoinChat
 @onready var leave_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/LeaveChat
+@onready var clear_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/ClearChat
 @onready var save_button := $ChatContainer/NamePanel/MarginContainer/VBoxContainer/SaveButton
 @onready var load_button := $ChatContainer/NamePanel/MarginContainer/VBoxContainer/LoadButton
 @onready var save_panel := $SavePanel
@@ -68,6 +69,8 @@ func _ready() -> void:
 
 	load_panel.canceled.connect(on_cancel_load_button_pressed)
 	load_panel.file_selected.connect(on_load_file_selected)
+
+	clear_chat_button.pressed.connect(on_clear_chat_button_pressed)
 
 
 func init(chat_in : Chat) -> void:
@@ -350,4 +353,8 @@ func on_cancel_load_button_pressed() -> void:
 func on_load_file_selected(file_path: String) -> void:
 	load_panel.visible = false
 	chat.load_from_json(file_path)
+	init(chat)
+
+func on_clear_chat_button_pressed() -> void:
+	chat.clear()
 	init(chat)

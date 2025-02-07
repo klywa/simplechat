@@ -148,6 +148,10 @@ text = "加入"
 layout_mode = 2
 text = "退出"
 
+[node name="ClearChat" type="Button" parent="ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList"]
+layout_mode = 2
+text = "清空"
+
 [node name="RightCornerButtonList" type="HBoxContainer" parent="ChatContainer/ScenePanel/MarginContainer2"]
 layout_mode = 2
 size_flags_horizontal = 8
@@ -367,15 +371,15 @@ placeholder_text = "存储路径"
 [node name="HBoxContainer" type="HBoxContainer" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="ConfirmSaveButton" type="Button" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "保存"
-
 [node name="CancelSaveButton" type="Button" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "放弃"
+
+[node name="ConfirmSaveButton" type="Button" parent="SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "保存"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 title = "Open a File"

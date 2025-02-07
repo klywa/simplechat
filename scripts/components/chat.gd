@@ -31,10 +31,11 @@ func add_member(npc: NPC):
 	if npc.npc_name not in members:
 		members[npc.npc_name] = npc
 		if chat_type == ChatType.GROUP and npc.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
-			if host is NPC:
-				add_message(GameManager.system, npc.npc_name + "来到了" + host.npc_name + "。")
-			elif host is Location:
-				add_message(GameManager.system, npc.npc_name + "来到了" + host.location_name + "。")
+			if not is_koh:	
+				if host is NPC:
+					add_message(GameManager.system, npc.npc_name + "来到了" + host.npc_name + "。")
+				elif host is Location:
+					add_message(GameManager.system, npc.npc_name + "来到了" + host.location_name + "。")
 	
 	if is_koh and chat_type == ChatType.GROUP:
 		# random choose a speaker, avoid player and env
@@ -51,10 +52,11 @@ func remove_member(npc_name: String):
 	if chat_type == ChatType.GROUP and ((npc_name in GameManager.npc_dict and GameManager.npc_dict[npc_name].npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]) or (npc_name == GameManager.player.npc_name and GameManager.player.npc_type == NPC.NPCType.PLAYER)):
 		if npc_name in members:
 			members.erase(npc_name)
-			if host is NPC:
-				add_message(GameManager.system, npc_name + "离开了" + host.npc_name + "。")
-			elif host is Location:
-				add_message(GameManager.system, npc_name + "离开了" + host.location_name + "。")
+			if not is_koh:
+				if host is NPC:
+					add_message(GameManager.system, npc_name + "离开了" + host.npc_name + "。")
+				elif host is Location:
+					add_message(GameManager.system, npc_name + "离开了" + host.location_name + "。")
 
 	if is_koh and chat_type == ChatType.GROUP:
 		# random choose a speaker, avoid player and env
@@ -269,3 +271,7 @@ func load_from_json(json_file_path: String):
 		}, false)
 		
 	json_file.close()
+
+
+func clear():
+	messages.clear()
