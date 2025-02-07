@@ -12,6 +12,7 @@ var query : String = ""
 var model_version : String = ""
 var problem_tags : String = ""
 var right_side_label_text : String = ""
+var abandon : bool = false
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel
@@ -21,6 +22,7 @@ var right_side_label_text : String = ""
 @onready var name_left_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/LeftSpace
 @onready var name_right_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace
 @onready var revise_panel := $MessagePopupPanel
+@onready var abandon_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/AbandonToggle
 # @onready var revise_content := $PopupPanel/PanelContainer/VBoxContainer/MarginContainer/ReviseContent
 # @onready var revise_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
 # @onready var delete_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2/Delete
@@ -30,6 +32,7 @@ var right_side_label_text : String = ""
 
 func _ready():
 	revise_panel.visible = false
+	abandon_toggle.visible = false
 	button.pressed.connect(on_button_pressed)
 
 	revise_panel.revise_button.pressed.connect(on_revise_button_pressed)
@@ -37,6 +40,10 @@ func _ready():
 	revise_panel.delete_button.pressed.connect(on_delete_button_pressed)
 	revise_panel.replay_button.pressed.connect(on_replay_button_pressed)
 
+	abandon_toggle.toggled.connect(on_abandon_toggled)
+
+func on_abandon_toggled(button_pressed: bool):
+	abandon = button_pressed
 
 func _show():
 	name_label.text = sender.npc_name
@@ -49,10 +56,13 @@ func _show():
 		name_left_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		name_right_space.size_flags_horizontal = SIZE_SHRINK_END
 	else:
+		abandon_toggle.visible = true
 		message_left_space.size_flags_horizontal = SIZE_SHRINK_END
 		message_right_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		name_left_space.size_flags_horizontal = SIZE_SHRINK_END
 		name_right_space.size_flags_horizontal = SIZE_EXPAND_FILL
+		if abandon:
+			abandon_toggle.button_pressed = true
 
 func on_button_pressed():
 	revise_panel.visible = true

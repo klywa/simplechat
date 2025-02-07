@@ -49,10 +49,5 @@ func on_regenerate_button_pressed() -> void:
 	var npc = message.sender
 	var chat = message.chat
 	var response : Dictionary = await npc.generate_response(chat, true, message)
-	message.negative_message = message.message
-	message.message = response.get("response", "")
-	message.prompt = response.get("prompt", "")
-	message._show()
-
-	self.visible = false
+	revise_content.text = response.get("response", "")
 

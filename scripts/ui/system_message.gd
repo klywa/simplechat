@@ -19,6 +19,7 @@ var prompt : String = ""
 var query : String = ""
 var model_version : String = ""
 var problem_tags : String = ""
+var abandon : bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

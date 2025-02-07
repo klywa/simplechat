@@ -33,6 +33,10 @@ enum ChatType {
 @onready var confirm_save_button := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ConfirmSaveButton
 @onready var cancel_save_button := $SavePanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CancelSaveButton
 
+@onready var scene_panel := $ChatContainer/ScenePanel/MarginContainer2
+@onready var left_corner_button_list := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList
+@onready var expand_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/ExpandButton
+
 @onready var load_panel := $FileDialog
 
 
@@ -72,6 +76,14 @@ func _ready() -> void:
 
 	clear_chat_button.pressed.connect(on_clear_chat_button_pressed)
 
+	expand_button.pressed.connect(on_expand_button_pressed)
+
+	member_button.visible = false
+	join_group_chat_button.visible = false
+	leave_group_chat_button.visible = false
+	clear_chat_button.visible = false
+	expand_button.text = ">"
+
 
 func init(chat_in : Chat) -> void:
 	no_chat_panel.visible = false
@@ -103,6 +115,8 @@ func init(chat_in : Chat) -> void:
 		member_button.visible = false
 		join_group_chat_button.visible = false
 		leave_group_chat_button.visible = false
+		expand_button.visible =false
+		clear_chat_button.visible = true
 
 		for member in chat.members.values():
 			if member.npc_type == NPC.NPCType.NPC:
@@ -110,9 +124,12 @@ func init(chat_in : Chat) -> void:
 				dialogue_target.select(dialogue_target.get_item_count() - 1)
 				break
 	else:
-		member_button.visible = true
-		join_group_chat_button.visible = true
-		leave_group_chat_button.visible = true
+		expand_button.visible = true
+		clear_chat_button.visible = false
+		member_button.visible = false
+		join_group_chat_button.visible = false
+		leave_group_chat_button.visible = false
+		expand_button.text = ">"
 
 		if chat.host is Location:
 			name_label.text = chat.host.location_name
@@ -358,3 +375,17 @@ func on_load_file_selected(file_path: String) -> void:
 func on_clear_chat_button_pressed() -> void:
 	chat.clear()
 	init(chat)
+
+func on_expand_button_pressed() -> void:
+	if member_button.visible:
+		member_button.visible = false
+		join_group_chat_button.visible = false
+		leave_group_chat_button.visible = false
+		clear_chat_button.visible = false
+		expand_button.text = ">"
+	else:
+		member_button.visible = true
+		join_group_chat_button.visible = true
+		leave_group_chat_button.visible = true
+		clear_chat_button.visible = true
+		expand_button.text = "<"

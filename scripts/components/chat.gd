@@ -86,7 +86,7 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	tmp_message.prompt = auxiliary.get("prompt", "")
 	tmp_message.query = auxiliary.get("query", "")
 	tmp_message.model_version = auxiliary.get("model_version", "")
-
+	tmp_message.abandon = auxiliary.get("abandon", false)
 	if is_koh and chat_type == ChatType.GROUP:
 		if sender.npc_type == NPC.NPCType.NPC:
 			if sender.hero_name != "" and tmp_message is Message:
@@ -189,6 +189,7 @@ func save_to_json(json_file_path: String):
 			"message": message.message,
 			"negative_message": message.negative_message,
 			"problem_tags": message.problem_tags,
+			"abandon": message.abandon,
 			"query": message.query,
 			"model_version": message.model_version,
 			"npc_type": "",
@@ -267,7 +268,8 @@ func load_from_json(json_file_path: String):
 			"negative_message": message["negative_message"],
 			"problem_tags": message["problem_tags"],
 			"query": message["query"],
-			"model_version": message["model_version"]
+			"model_version": message["model_version"],
+			"abandon": message.get("abandon", false),
 		}, false)
 		
 	json_file.close()

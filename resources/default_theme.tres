@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=16 format=3 uid="uid://exgmmsg3rnfw"]
+[gd_resource type="Theme" load_steps=22 format=3 uid="uid://exgmmsg3rnfw"]
 
 [ext_resource type="StyleBox" uid="uid://bfp1orjaxoe3r" path="res://resources/style_box_flat.tres" id="2_epxgk"]
 [ext_resource type="FontFile" uid="uid://bihf0pqhdmqjw" path="res://assets/fonts/zpix.ttf" id="2_vfcpo"]
@@ -35,6 +35,24 @@ corner_radius_top_left = 36
 corner_radius_top_right = 9
 corner_radius_bottom_right = 36
 corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rped3"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i22t5"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1whbh"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k6rnc"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kf15y"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_exk37"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dmuvs"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -108,6 +126,12 @@ Button/styles/disabled = SubResource("StyleBoxFlat_xcx0x")
 Button/styles/focus = SubResource("StyleBoxFlat_sgant")
 Button/styles/hover = SubResource("StyleBoxFlat_r41up")
 Button/styles/normal = ExtResource("2_epxgk")
+CheckBox/styles/disabled = SubResource("StyleBoxFlat_rped3")
+CheckBox/styles/focus = SubResource("StyleBoxFlat_i22t5")
+CheckBox/styles/hover_pressed = SubResource("StyleBoxFlat_1whbh")
+CheckBox/styles/normal = SubResource("StyleBoxFlat_k6rnc")
+CheckBox/styles/pressed = SubResource("StyleBoxFlat_kf15y")
+CheckBox/styles/pressed_mirrored = SubResource("StyleBoxFlat_exk37")
 CheckButton/styles/normal = ExtResource("2_epxgk")
 CheckButton/styles/pressed = ExtResource("2_epxgk")
 InvisibleButton/base_type = &"Button"
