@@ -9,10 +9,10 @@ extends PopupPanel
 @onready var more_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer4/MoreButton
 
 @onready var more_panel := $MorePanel
-@onready var origin_response := $MorePanel/PanelContainer/VBoxContainer/MarginContainer3/OriginResponse
-@onready var problem_tags := $MorePanel/PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/ProblemTags
-@onready var save_problem_button := $MorePanel/PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/SaveProblem
-@onready var close_more_button := $MorePanel/PanelContainer/VBoxContainer/MarginContainer/HBoxContainer/Close
+@onready var origin_response := $PanelContainer/VBoxContainer/MarginContainer3/OriginResponse
+@onready var problem_tags := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/ProblemTags
+@onready var save_problem_button := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/SaveProblem
+@onready var close_more_button := $MorePanel/PanelContainer/VBoxContainer/MarginContainer/Close
 @onready var prompt := $MorePanel/PanelContainer/VBoxContainer/MarginContainer2/Prompt
 
 
@@ -23,14 +23,23 @@ func _ready() -> void:
 	close_more_button.pressed.connect(on_close_more_button_pressed)
 	regenerate_button.pressed.connect(on_regenerate_button_pressed)
 
-func on_more_button_pressed() -> void:
-	more_panel.visible = true
+func _show() -> void:
+	revise_content.text = get_parent().content_label.text
+	revise_content.grab_focus()
+	revise_content.set_caret_column(revise_content.text.length())
+	problem_tags.text = get_parent().problem_tags
 	if get_parent().negative_message != "":
 		origin_response.text = get_parent().sender.npc_name + "：" + get_parent().negative_message
 	else:
 		origin_response.text = get_parent().sender.npc_name + "：" + get_parent().message
-	prompt.text = get_parent().prompt
-	problem_tags.text = get_parent().problem_tags
+
+func on_more_button_pressed() -> void:
+	more_panel.visible = true
+	# if get_parent().negative_message != "":
+	# 	origin_response.text = get_parent().sender.npc_name + "：" + get_parent().negative_message
+	# else:
+	# 	origin_response.text = get_parent().sender.npc_name + "：" + get_parent().message
+	prompt.text = get_parent().prompt + "\n" + get_parent().query
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -42,7 +51,7 @@ func on_close_more_button_pressed() -> void:
 func on_save_problem_button_pressed() -> void:
 	var message = get_parent()
 	message.problem_tags = problem_tags.text
-	on_close_more_button_pressed()
+	# on_close_more_button_pressed()
 
 func on_regenerate_button_pressed() -> void:
 	var message = get_parent()

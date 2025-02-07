@@ -40,9 +40,7 @@ func _show() -> void:
 
 func on_button_pressed() -> void:
 	revise_panel.visible = true
-	revise_panel.revise_content.text = content_label.text
-	revise_panel.revise_content.grab_focus()
-	revise_panel.revise_content.set_caret_column(revise_panel.revise_content.text.length())
+	revise_panel._show()
 
 func on_revise_button_pressed() -> void:
 	if message != revise_panel.revise_content.text:
