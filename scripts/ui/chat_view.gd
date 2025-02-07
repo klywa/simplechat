@@ -350,13 +350,14 @@ func on_save_button_pressed() -> void:
 	save_panel.visible = true
 	var current_time_string = Time.get_datetime_string_from_system(false, true)
 	if chat.host is NPC:
-		save_path_input.text = "res://data/" + chat.host.npc_name + "_" + current_time_string + ".json"
+		save_path_input.text = chat.host.npc_name + "_" + current_time_string.replace(" ", "_")
 	elif chat.host is Location:
-		save_path_input.text = "res://data/" + chat.host.location_name + "_" + current_time_string + ".json"
+		save_path_input.text = chat.host.location_name + "_" + current_time_string.replace(" ", "_")
 
 func on_confirm_save_button_pressed() -> void:
 	save_panel.visible = false
-	chat.save_to_json(save_path_input.text)
+	var file_path = "res://data/" + save_path_input.text + ".json"
+	chat.save_to_json(file_path)
 
 func on_cancel_save_button_pressed() -> void:
 	save_panel.visible = false
