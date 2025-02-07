@@ -4,16 +4,26 @@ extends Control
 var character: NPC
 var chat : Chat
 
-@onready var button = $"."
+@onready var button = $VBoxContainer/CenterContainer/Button
 @onready var avatar = $VBoxContainer/CenterContainer/Avatar
 @onready var name_label = $VBoxContainer/Name
 @onready var lane_label = $VBoxContainer/Lane
+@onready var name_button = $VBoxContainer/Name/NameButton
+
+@onready var character_info_panel := $CharacterInfoPanel
+@onready var setting_info := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Setting
+@onready var style_info := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Style
+@onready var example_info := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Example
+
 
 signal character_left_clicked(character: NPC)
+
+const CHARACTER_INFO_PANEL_SCENE = preload("res://scenes/ui/character_info_panel.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	button.pressed.connect(on_pressed)
+	name_button.pressed.connect(on_name_button_pressed)
 
 func init(character_in: NPC, chat_in: Chat) -> void:
 	character = character_in
@@ -29,3 +39,9 @@ func init(character_in: NPC, chat_in: Chat) -> void:
 
 func on_pressed() -> void:
 	character_left_clicked.emit(character)
+
+func on_name_button_pressed() -> void:
+	setting_info.text = character.npc_setting
+	style_info.text = character.npc_style
+	example_info.text = character.npc_example
+	character_info_panel.visible = true

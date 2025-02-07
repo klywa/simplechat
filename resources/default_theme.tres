@@ -140,6 +140,7 @@ InvisibleButton/styles/hover = SubResource("StyleBoxFlat_eajdh")
 InvisibleButton/styles/hover_pressed = SubResource("StyleBoxFlat_m48y4")
 InvisibleButton/styles/normal = SubResource("StyleBoxFlat_30h63")
 InvisibleButton/styles/pressed = SubResource("StyleBoxFlat_ow7l0")
+Label/colors/font_color = Color(0, 0, 0, 1)
 LineEdit/styles/focus = SubResource("StyleBoxFlat_odlxy")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_p7ohe")
 NewButton/base_type = &"Button"

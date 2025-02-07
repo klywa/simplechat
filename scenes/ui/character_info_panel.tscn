@@ -1,0 +1,68 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8ym1ynx1y37m"]
+
+[sub_resource type="GDScript" id="GDScript_ypvis"]
+script/source = "class_name CharacterInfoPanel
+extends Control
+
+@onready var setting_label := $Panel/VBoxContainer/Setting
+@onready var style_label := $Panel/VBoxContainer/Style
+@onready var example_label := $Panel/VBoxContainer/Example
+@onready var panel := $Panel
+
+func _ready() -> void:
+	panel.mouse_exited.connect(on_mouse_exited)
+
+func init(character: NPC) -> void:
+	setting_label.text = character.npc_setting
+	style_label.text = character.npc_style
+	example_label.text = character.npc_example
+
+	# 出现在鼠标位置
+	var mouse_pos = get_viewport().get_mouse_position()
+	position = mouse_pos
+	
+func on_mouse_exited() -> void:
+	var timer = get_tree().create_timer(2.0)
+	await timer.timeout
+	
+	if not get_rect().has_point(get_viewport().get_mouse_position() - position):
+		queue_free()"
+
+[node name="CharacterInfoPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_ypvis")
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(600, 800)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 87.0
+
+[node name="SettingLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "人设"
+
+[node name="Setting" type="RichTextLabel" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StyleLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="Style" type="RichTextLabel" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ExampleLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="Example" type="RichTextLabel" parent="Panel/VBoxContainer"]
+layout_mode = 2

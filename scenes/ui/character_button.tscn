@@ -4,25 +4,21 @@
 [ext_resource type="Texture2D" uid="uid://c6bidroy5cjdw" path="res://assets/avatars/sample_avatar_01.png" id="2_o1fq8"]
 [ext_resource type="Script" path="res://scripts/ui/character_button.gd" id="2_tgjb7"]
 
-[node name="CharacterButton" type="Button"]
+[node name="CharacterButton" type="MarginContainer"]
 custom_minimum_size = Vector2(120, 120)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 4.0
+offset_right = 4.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_wwfwj")
 theme_type_variation = &"InvisibleButton"
-button_mask = 3
 script = ExtResource("2_tgjb7")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="Lane" type="Label" parent="VBoxContainer"]
@@ -43,6 +39,16 @@ vertical_alignment = 1
 autowrap_mode = 3
 text_overrun_behavior = 3
 
+[node name="NameButton" type="Button" parent="VBoxContainer/Name"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_wwfwj")
+theme_type_variation = &"InvisibleButton"
+
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -52,3 +58,70 @@ layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("2_o1fq8")
 stretch_mode = 4
+
+[node name="Button" type="Button" parent="VBoxContainer/CenterContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme = ExtResource("1_wwfwj")
+theme_type_variation = &"InvisibleButton"
+
+[node name="CharacterInfoPanel" type="PopupPanel" parent="."]
+initial_position = 2
+size = Vector2i(632, 832)
+theme = ExtResource("1_wwfwj")
+
+[node name="PanelContainer" type="PanelContainer" parent="CharacterInfoPanel"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 628.0
+offset_bottom = 828.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("1_wwfwj")
+
+[node name="MarginContainer" type="MarginContainer" parent="CharacterInfoPanel/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CharacterInfoPanel/PanelContainer/MarginContainer"]
+custom_minimum_size = Vector2(600, 800)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="SettingLabel" type="Label" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "人设"
+
+[node name="Setting" type="RichTextLabel" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+clip_contents = false
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+text = "啊啊啊啊啊啊"
+fit_content = true
+
+[node name="StyleLabel" type="Label" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "设定"
+
+[node name="Style" type="RichTextLabel" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+fit_content = true
+
+[node name="ExampleLabel" type="Label" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "示例"
+
+[node name="Example" type="RichTextLabel" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+fit_content = true

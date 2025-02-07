@@ -59,7 +59,16 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 		await GameManager.main_view.get_tree().create_timer(1).timeout
 		return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
 	elif npc_type == NPCType.NPC:
-		scenario = npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。"
+		scenario = "这是一段发生在队友之间的对话。" + npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。其他队友包括："
+
+		var other_list = []
+		for other in chat.members.values():
+			if other.npc_name != npc_name and other.npc_name != GameManager.player.npc_name and other.npc_name != GameManager.system.npc_name and other.npc_name != GameManager.env.npc_name:
+				other_list.append(other.npc_name + "（" + other.hero_name + "）")
+		scenario += ", ".join(other_list)
+		if other_list.size() > 0:
+			scenario += "。"
+
 		if not use_ai:
 			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
 		var request = {
