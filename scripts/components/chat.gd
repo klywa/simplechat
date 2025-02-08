@@ -171,6 +171,9 @@ func save_to_json(json_file_path: String):
 			"npc_status": member.npc_status,
 			"npc_inventory": member.npc_inventory,
 			"npc_skill": member.npc_skill,
+			"hero_name": member.hero_name,
+			"hero_lane": member.hero_lane,
+			"alias": member.alias,
 		}
 		match member.npc_type:
 			NPC.NPCType.NPC:
@@ -233,12 +236,32 @@ func load_from_json(json_file_path: String):
 		print("json解析失败")
 		return
 		
-	# 检查所有成员是否都在
+	# 替换成员
+	members.clear()
 	for member in json_dict["members"]:
-		var npc_name = member["npc_name"]
-		if npc_name not in members:
-			print("成员不存在", npc_name)
-			return
+		if member["npc_type"] == "NPC":
+			if member["npc_name"] not in GameManager.npc_dict:
+				print("成员不存在", member["npc_name"])
+				return
+			members[member["npc_name"]] = GameManager.npc_dict[member["npc_name"]]
+			if "hero_name" in member:
+				members[member["npc_name"]].hero_name = member["hero_name"]
+			if "hero_lane" in member:
+				members[member["npc_name"]].hero_lane = member["hero_lane"]
+			if "alias" in member:
+				members[member["npc_name"]].alias = member["alias"]
+		elif member["npc_type"] == "PLAYER":
+			members[member["npc_name"]] = GameManager.player
+			if "hero_name" in member:
+				members[member["npc_name"]].hero_name = member["hero_name"]
+			if "hero_lane" in member:
+				members[member["npc_name"]].hero_lane = member["hero_lane"]
+			if "alias" in member:
+				members[member["npc_name"]].alias = member["alias"]
+		elif member["npc_type"] == "ENV":
+			members[member["npc_name"]] = GameManager.env
+		elif member["npc_type"] == "SYSTEM":
+			members[member["npc_name"]] = GameManager.system
 			
 	# 清空当前消息
 	messages.clear()
