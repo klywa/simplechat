@@ -121,9 +121,10 @@ func on_message_added(message: Message):
 		for npc in members.values():
 			if npc.npc_type == NPC.NPCType.PLAYER:
 				continue
-			if npc.npc_name in message.message or npc.hero_name in message.message or npc.hero_lane in message.message:
-				last_speaker = npc
-				break
+			for alias in npc.alias:
+				if alias in message.message:
+					last_speaker = npc
+					break
 		if last_speaker != null:
 			speaker_index = members.values().find(last_speaker)
 			var response = await last_speaker.generate_response(self, GameManager.main_view.chat_view.use_ai_toggle.button_pressed)

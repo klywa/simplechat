@@ -13,9 +13,28 @@ var env : NPC
 var system : NPC
 var ai_instructions : String
 
+var hero_alias_dict: Dictionary
+var lane_alias_dict
 
 func init(main, config_path: String) -> void:
 	main_view = main
+
+	var hero_conf_file = FileAccess.open("res://config/hero_conf.json", FileAccess.READ)
+	if hero_conf_file:
+		var json = JSON.new()
+		var parse_result = json.parse(hero_conf_file.get_as_text())
+		if parse_result == OK:
+			var data = json.get_data()
+			hero_alias_dict = data
+	
+	var lane_conf_file = FileAccess.open("res://config/lane_conf.json", FileAccess.READ)
+	if lane_conf_file:
+		var json = JSON.new()
+		var parse_result = json.parse(lane_conf_file.get_as_text())
+		if parse_result == OK:
+			var data = json.get_data()
+			lane_alias_dict = data
+
 	var file = FileAccess.open(config_path, FileAccess.READ)
 	if file:
 		var json = JSON.new()
@@ -84,6 +103,7 @@ func init(main, config_path: String) -> void:
 
 		file.close()
 
+	
 
 func activate_chat(chat_in : Chat) -> void:
 

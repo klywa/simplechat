@@ -65,6 +65,7 @@ func on_hero_button_pressed() -> void:
 func on_confirm_hero_change_button_pressed() -> void:
 	character.hero_name = new_hero_label.text
 	character.hero_lane = new_lane_label.text
+	character.update_alias()
 	hero_panel.visible = false
 	init(character, chat)
 

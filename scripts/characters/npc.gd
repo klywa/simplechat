@@ -22,6 +22,7 @@ var npc_type: NPCType
 var hero_name: String
 var hero_lane: String
 var scenario: String
+var alias : Array = []
 
 var current_chat : Chat = null
 
@@ -51,8 +52,22 @@ func load_from_dict(data: Dictionary):
 		hero_lane = data.get("hero_lane", "")
 
 		avatar_path = data.get("avatar_path", "")
+
+		update_alias()
 	else:
 		pass
+
+func update_alias():
+	alias = [hero_name, hero_lane]
+	for a in GameManager.hero_alias_dict.get(hero_name, []):
+		if a not in alias:
+			alias.append(a)
+	for a_list in GameManager.lane_alias_dict:
+		if hero_lane in a_list:
+			for a in a_list:
+				if a not in alias:
+					alias.append(a)
+			break
 
 func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null) -> Dictionary:
 	if npc_type == NPCType.ENV:
