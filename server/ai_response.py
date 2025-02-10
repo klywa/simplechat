@@ -17,6 +17,7 @@ def get_ai_response(request, api_key):
         npc_setting = request.get("npc_setting", ""),
         npc_style = request.get("npc_style", ""),
         npc_example = request.get("npc_example", ""),
+        npc_story = request.get("npc_story", ""),
         chat_history = request.get("messages", ""),
         instructions = request.get("instructions", ""),
         scenario = request.get("scenario", ""),

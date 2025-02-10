@@ -15,6 +15,7 @@ var npc_example : String
 var npc_status : String
 var npc_inventory : Dictionary
 var npc_skill : Dictionary
+var npc_story : String
 var is_player: bool
 var avatar_path: String
 var chat_list: Array = [] 
@@ -74,7 +75,22 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 		await GameManager.main_view.get_tree().create_timer(1).timeout
 		return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
 	elif npc_type == NPCType.NPC:
-		scenario = "这是一段发生在队友之间的对话。" + npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。其他队友包括："
+		# 获取日期和时间（早上、中午、晚上等）
+		var current_time = Time.get_time_dict_from_system()
+		var hour = current_time["hour"] 
+		var time_period = ""
+		if hour >= 5 and hour < 12:
+			time_period = "早上"
+		elif hour >= 12 and hour < 14:
+			time_period = "中午" 
+		elif hour >= 14 and hour < 18:
+			time_period = "下午"
+		elif hour >= 18 and hour < 23:
+			time_period = "晚上"
+		else:
+			time_period = "深夜"
+		scenario = "现在是" + time_period + "。\n"
+		scenario += "这是一段发生在队友之间的语音聊天。" + npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。其他队友包括："
 
 		var other_list = []
 		for other in chat.members.values():
@@ -94,6 +110,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			"npc_style": npc_style,
 			"npc_example": npc_example,
 			"npc_status": npc_status,
+			"npc_story": npc_story,
 			"npc_hero_name": hero_name,
 			"npc_hero_lane": hero_lane,
 			"scenario": scenario,

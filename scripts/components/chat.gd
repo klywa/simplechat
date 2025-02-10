@@ -171,6 +171,7 @@ func save_to_json(json_file_path: String):
 			"npc_status": member.npc_status,
 			"npc_inventory": member.npc_inventory,
 			"npc_skill": member.npc_skill,
+			"npc_story": member.npc_story,
 			"hero_name": member.hero_name,
 			"hero_lane": member.hero_lane,
 			"alias": member.alias,
@@ -201,6 +202,7 @@ func save_to_json(json_file_path: String):
 			"npc_style": message.sender.npc_style,
 			"npc_example": message.sender.npc_example,
 			"npc_status": message.sender.npc_status,
+			"npc_story": message.sender.npc_story,
 			"scenario": message.sender.scenario,
 			"npc_inventory": message.sender.npc_inventory,
 			"npc_skill": message.sender.npc_skill,
@@ -282,6 +284,7 @@ func load_from_json(json_file_path: String):
 		sender.npc_style = message["npc_style"] 
 		sender.npc_example = message["npc_example"]
 		sender.npc_status = message["npc_status"]
+		sender.npc_story = message["npc_story"]
 		sender.scenario = message["scenario"]
 		sender.npc_inventory = message["npc_inventory"]
 		sender.npc_skill = message["npc_skill"]
