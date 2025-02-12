@@ -76,7 +76,12 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 		return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
 	elif npc_type == NPCType.NPC:
 		# 获取日期和时间（早上、中午、晚上等）
-		var current_time = Time.get_time_dict_from_system()
+		var current_time = GameManager.main_view.chat_view.current_time
+		var current_date = GameManager.main_view.chat_view.current_date
+		if current_time == null:
+			current_time = Time.get_time_dict_from_system()
+		if current_date == null:
+			current_date = Time.get_date_dict_from_system()
 		var hour = current_time["hour"] 
 		var time_period = ""
 		if hour >= 5 and hour < 12:
@@ -89,13 +94,25 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			time_period = "晚上"
 		else:
 			time_period = "深夜"
-		scenario = "现在是" + time_period + "。\n"
+		# 获取时间，格式参考"2025年02月12日 14:56:41，星期三"
+		var weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"][current_date["weekday"]]
+		var datetime_str = "%d年%02d月%02d日 %02d:%02d:%02d，%s" % [
+			current_date["year"],
+			current_date["month"], 
+			current_date["day"],
+			current_time["hour"],
+			current_time["minute"], 
+			current_time["second"],
+			weekday
+		]
+		scenario = "当前时间：" + datetime_str + "\n"
+		scenario += "现在是" + time_period + "。\n"
 		scenario += "这是一段发生在队友之间的语音聊天。" + npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。其他队友包括："
 
 		var other_list = []
 		for other in chat.members.values():
 			if other.npc_name != npc_name and other.npc_name != GameManager.player.npc_name and other.npc_name != GameManager.system.npc_name and other.npc_name != GameManager.env.npc_name:
-				other_list.append(other.npc_name + "（" + other.hero_name + "）")
+				other_list.append(other.npc_name + "（" + other.hero_name + "-" + other.hero_lane + "）")
 		scenario += ", ".join(other_list)
 		if other_list.size() > 0:
 			scenario += "。"

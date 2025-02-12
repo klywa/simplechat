@@ -47,6 +47,9 @@ const SYSTEM_MESSAGE_SCENE := preload("res://scenes/ui/system_message.tscn") as 
 const CHARACTER_BUTTON_SCENE := preload("res://scenes/ui/character_button.tscn") as PackedScene
 const MESSAGE_SPACE_HOLDER := preload("res://scenes/ui/message_space_holder.tscn") as PackedScene
 
+var current_time = null
+var current_date = null
+
 signal refreshed
 
 # Called when the node enters the scene tree for the first time.
@@ -86,6 +89,10 @@ func _ready() -> void:
 
 
 func init(chat_in : Chat) -> void:
+
+	current_time = Time.get_time_dict_from_system()
+	current_date = Time.get_date_dict_from_system()
+
 	no_chat_panel.visible = false
 	chat = chat_in
 	if chat.host is NPC:

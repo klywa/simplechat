@@ -284,7 +284,7 @@ func load_from_json(json_file_path: String):
 		sender.npc_style = message["npc_style"] 
 		sender.npc_example = message["npc_example"]
 		sender.npc_status = message["npc_status"]
-		sender.npc_story = message["npc_story"]
+		sender.npc_story = message.get("npc_story", "")
 		sender.scenario = message["scenario"]
 		sender.npc_inventory = message["npc_inventory"]
 		sender.npc_skill = message["npc_skill"]

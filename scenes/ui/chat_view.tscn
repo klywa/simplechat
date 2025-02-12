@@ -300,7 +300,7 @@ text = "请选择聊天"
 [node name="MemberPanel" type="PopupPanel" parent="."]
 title = "添加成员"
 initial_position = 2
-size = Vector2i(212, 148)
+size = Vector2i(212, 384)
 
 [node name="PanelContainer" type="PanelContainer" parent="MemberPanel"]
 anchors_preset = 8
@@ -308,10 +308,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 208.0
-offset_bottom = 144.0
+offset_left = -102.0
+offset_top = -188.0
+offset_right = 102.0
+offset_bottom = 188.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -319,11 +319,11 @@ grow_vertical = 2
 layout_mode = 2
 
 [node name="MemberList" type="ItemList" parent="MemberPanel/PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 select_mode = 1
-auto_height = true
 item_count = 2
 item_0/text = "小红"
 item_1/text = "小刚"
@@ -349,10 +349,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 528.0
-offset_bottom = 184.0
+offset_left = -262.0
+offset_top = -90.0
+offset_right = 262.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 

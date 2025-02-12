@@ -102,3 +102,59 @@ theme_override_constants/margin_bottom = 12
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
 text = "其他"
+
+[node name="Setting" type="PopupPanel" parent="."]
+initial_position = 2
+size = Vector2i(600, 600)
+visible = true
+
+[node name="MarginContainer" type="MarginContainer" parent="Setting"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 596.0
+offset_bottom = 596.0
+
+[node name="PanelContainer" type="PanelContainer" parent="Setting/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Setting/MarginContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Setting/MarginContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Time" type="LineEdit" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "时间时间"
+
+[node name="SetTimeButton" type="Button" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "修改"
+
+[node name="MarginContainer" type="MarginContainer" parent="Setting/MarginContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="CloseButton" type="Button" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "关闭"
