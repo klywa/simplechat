@@ -146,6 +146,8 @@ func on_message_added(message: Message):
 				if speaker_name in GameManager.npc_dict:
 					var speaker = GameManager.npc_dict[speaker_name]
 					add_message(speaker, content)
+				if speaker_name == "系统":
+					add_message(GameManager.system, content)
 				
 	else:
 		pass
@@ -332,11 +334,10 @@ func get_pipeline_messages() -> Array:
 		pipeline_messages.append(
 			{
 				"message_id": message.message_id,
-				"speaker_id": sender.uid,
-				"object_id": sender.uid,
-				"speaker_name": sender.npc_name,
+				"speaker_id": str(sender.uid),
+				"object_id": str(sender.uid),
 				"speaker_type": "human" if sender.npc_type == NPC.NPCType.PLAYER else "ai",
-				"hero_id": sender.hero_id,
+				"hero_id": str(sender.hero_id),
 				"content": message.message,
 				"time": message.time,
 			}

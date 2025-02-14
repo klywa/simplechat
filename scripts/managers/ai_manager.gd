@@ -1,11 +1,13 @@
 extends Node
 
 var server_url : String = "http://127.0.0.1:8000"
+var unique_id : int 
 
 
 func init(server_url_in: String) -> void:
 	server_url = server_url_in
 	print("ai_manager init: ", server_url)
+	unique_id = int(UUIDGenerator.generate_uuid())
 
 func get_response(request_in: Dictionary) -> Variant:
 	var http_request = HTTPRequest.new()
@@ -16,6 +18,7 @@ func get_response(request_in: Dictionary) -> Variant:
 	var request_data = JSON.stringify(request_in)
 	
 	print(request_data)
+	print(type_string(typeof(request_data)))
 
 	# 发送POST请求
 	var error = http_request.request(server_url, headers, HTTPClient.METHOD_POST, request_data)
@@ -74,25 +77,31 @@ func _process_response(response: Array) -> Dictionary:
 
 func init_chat(chat: Chat) -> void:
 	var request = {
+		"game_type" : 0,
+		"gameid1":111,
+		"gameid2": unique_id,
+		"gameid3":333,
+		"gameid4":444,
+		"seq_id": 1,
 		"aiserver_content": {
 			"request_id": UUIDGenerator.generate_uuid(),
-			"version": "1.0",
+			"version": 1.0,
 			"player_info": [],
 			"seg_id": UUIDGenerator.generate_uuid(),
 			"camp": 1,
 			"request_dialogue": {
 				"req_type" : 1,
 				"query": "-new-",
-				"extra_info": {
-					"tts_config": {
-						"enable_streaming": false,
-						'prompt_wav_name': "lingbaoC_8",
-						'ar_version': "trt_ar_infer_call_has_phone_ar_350M_lingbaoSFT_eavan_20241210",
-						'ar_seed': 10,
-						'opt_ddim_steps_set': "15",
-						'vocoder_type': "voc_type_bigvgan_48k",
-					}
-				}
+				# "extra_info": {
+				# 	"tts_config": {
+				# 		"enable_streaming": false,
+				# 		'prompt_wav_name': "lingbaoC_8",
+				# 		'ar_version': "trt_ar_infer_call_has_phone_ar_350M_lingbaoSFT_eavan_20241210",
+				# 		'ar_seed': 10,
+				# 		'opt_ddim_steps_set': "15",
+				# 		'vocoder_type': "voc_type_bigvgan_48k",
+				# 	}
+				# }
 			}
 
 		}
@@ -114,7 +123,8 @@ func init_chat(chat: Chat) -> void:
 		)
 
 	var response = await get_response(request)
-	print(response)
+	print(_process_response(response))
+	# print(response)
 
 
 func get_pipeline_response(chat : Chat) -> Dictionary:
@@ -123,16 +133,16 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 
 	var pan_data = {
 		"req_type": 100, 
-        "game_type": 104550, 
-        "req_id": 123, 
-        "req_id2": 456,
-        "req_id3": 789,
-        "seq_id": UUIDGenerator.generate_uuid(),
-        "version": 1,
-        "msg_type": 2,
-        "camp": "1", 
-        "query_id": "",
-        "messages": chat.get_pipeline_messages()
+		"game_type": 104550, 
+		"req_id": 123, 
+		"req_id2": 456,
+		"req_id3": 789,
+		"seq_id": UUIDGenerator.generate_uuid(),
+		"version": 1,
+		"msg_type": 2,
+		"camp": "1", 
+		"query_id": "",
+		"messages": chat.get_pipeline_messages()
 	}
 
 	pan_data["query_id"] = pan_data["messages"][-1]["message_id"]
@@ -141,26 +151,23 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 	var pan_base64_str = Marshalls.utf8_to_base64(pan_json_str)
 
 	var request = {
+		"game_type" : 0,
+		"gameid1":111,
+		"gameid2": unique_id,
+		"gameid3":333,
+		"gameid4":444,
+		"seq_id": 1,
 		"aiserver_content": {
 			"request_id": UUIDGenerator.generate_uuid(),
-            "version": "1.0",
-            "player_info": [],
-            "camp": 1,       
-            "request_dialogue": {
-                "query": pan_data["messages"][-1]["content"],
-                "req_type":1,
-                "context": pan_base64_str,
-                "extra_info": {
-                    "tts_config":{
-                        'enable_streaming': false,
-                        'prompt_wav_name': "lingbaoC_8",
-                        'ar_version': "trt_ar_infer_call_has_phone_ar_350M_lingbaoSFT_eavan_20241210",
-                        'ar_seed': 10,
-                        'opt_ddim_steps_set': "15",
-                        'vocoder_type': "voc_type_bigvgan_48k",
-                    }
-                }
-            },
+			"version": 1,
+			"player_info": [],
+			"camp": 1,       
+			"request_dialogue": {
+				"query": pan_data["messages"][-1]["content"],
+				"req_type":1,
+				"context": pan_base64_str,
+				
+			},
 		}
 	}
 
@@ -172,18 +179,46 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 			{
 				"uid": member.uid,
 				"name": member.npc_name,
+				"is_ai": true if member.npc_type == NPC.NPCType.NPC else false,
+				"hero_Id": member.hero_id,
+				"lane": member.lane_id,
+				"object_id": member.uid,
 			}
 		)
 
 	var response = await get_response(request)
 
+	if (not response is Dictionary) or response.get("status", "error") == "error":
+		return {
+			"speaker": "系统",
+			"content": "服务器错误！",
+		}
 	# TODO: 解析response
+	var response_data = _process_response(response)
+	var speaker_uid = response_data["response_dialogue"]["extra_info"]['bot_uid']
+	var content = response_data["response_dialogue"]["asset"]["sentence_text"]
 
-	print(response)
+	print("=========")
+	print(response_data)
+	print("SPEAKER: ", speaker_uid)
+	print("CONTENT: ", content)
+	
+	# print(response)
+	var speaker : NPC
+	for member in GameManager.npc_dict.values():
+		if member.uid == int(speaker_uid):
+			speaker = member
+			break
+
+	if speaker == null:
+		return {
+			"speaker": "系统",
+			"content": "说话人错误！",
+		}
 	
 	result = {
-		"speaker": "那鹧鸪怎么说",
-		"content": "哈哈哈",
+		"speaker": speaker.npc_name,
+		"content": content,
 	}
 
 	return result

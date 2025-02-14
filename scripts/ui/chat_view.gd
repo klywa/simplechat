@@ -90,6 +90,10 @@ func _ready() -> void:
 
 func init(chat_in : Chat) -> void:
 
+	if GameManager.mode == "pipeline":
+		save_button.visible = false
+		load_button.visible = false
+
 	current_time = Time.get_time_dict_from_system()
 	current_date = Time.get_date_dict_from_system()
 

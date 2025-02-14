@@ -67,6 +67,8 @@ func _show():
 			abandon_toggle.button_pressed = true
 
 func on_button_pressed():
+	if GameManager.mode == "pipeline":
+		return
 	revise_panel.visible = true
 	revise_panel._show()
 

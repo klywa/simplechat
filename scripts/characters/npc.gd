@@ -8,7 +8,7 @@ enum NPCType {
 	SYSTEM
 }
 
-var uid: String
+var uid: int
 var npc_name: String
 var npc_setting: String
 var npc_style : String

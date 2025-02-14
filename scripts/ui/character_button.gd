@@ -37,6 +37,10 @@ func _ready() -> void:
 	cancel_hero_change_button.pressed.connect(on_cancel_hero_change_button_pressed)
 
 func init(character_in: NPC, chat_in: Chat) -> void:
+
+	if GameManager.mode == "pipeline":
+		button.disabled = true
+
 	character = character_in
 	chat = chat_in
 	avatar.texture = load(character.avatar_path)
