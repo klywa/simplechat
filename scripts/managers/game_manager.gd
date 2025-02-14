@@ -4,6 +4,7 @@ const NPC_SCENE = preload("res://scenes/characters/npc.tscn") as PackedScene
 const CHAT_SCENE = preload("res://scenes/ui/chat_view.tscn") as PackedScene
 const LOCATION_SCENE = preload("res://scenes/components/location.tscn") as PackedScene
 
+var mode : String = "single"	# pipeline, single
 var main_view
 var chat_dict: Dictionary
 var npc_dict: Dictionary
@@ -15,9 +16,30 @@ var ai_instructions : String
 
 var hero_alias_dict: Dictionary
 var lane_alias_dict
+var hero_id_dict : Dictionary
+var id_hero_dict : Dictionary
+
+var id_lane_dict := {
+	 "1":"上路", 
+	 "2":"打野", 
+	 "3":"中路", 
+	 "4":"辅助", 
+	 "5":"下路", 
+	 "0":"分路未知"
+}
+
+var lane_id_dict := {
+	"上路": 1,
+	"打野": 2,
+	"中路": 3,
+	"辅助": 4,
+	"下路": 5,
+	"分路未知": 0
+}
 
 func init(main, config_path: String) -> void:
 	main_view = main
+	mode = main.mode
 
 	var hero_conf_file = FileAccess.open("res://config/hero_conf.json", FileAccess.READ)
 	if hero_conf_file:
@@ -34,6 +56,16 @@ func init(main, config_path: String) -> void:
 		if parse_result == OK:
 			var data = json.get_data()
 			lane_alias_dict = data
+
+	var hero_id_file = FileAccess.open("res://config/hero_id.json", FileAccess.READ)
+	if hero_id_file:
+		var json = JSON.new()
+		var parse_result = json.parse(hero_id_file.get_as_text())
+		if parse_result == OK:
+			var data = json.get_data()
+			for d in data:
+				hero_id_dict[d[1]] = d[0]
+				id_hero_dict[d[0]] = d[1]
 
 	var file = FileAccess.open(config_path, FileAccess.READ)
 	if file:

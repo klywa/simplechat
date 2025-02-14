@@ -171,6 +171,9 @@ func init(chat_in : Chat) -> void:
 	chat.message_added.connect(add_message)
 	# chat.message_added.connect(refresh)
 
+	if GameManager.mode == "pipeline":
+		AIManager.init_chat(chat)
+
 func on_send_button_pressed() -> void:
 	
 	var action = ""

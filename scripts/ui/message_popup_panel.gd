@@ -57,6 +57,10 @@ func on_regenerate_button_pressed() -> void:
 	var message = get_parent()
 	var npc = message.sender
 	var chat = message.chat
-	var response : Dictionary = await npc.generate_response(chat, true, message)
-	revise_content.text = response.get("response", "")
+
+	if GameManager.mode == "single":
+		var response : Dictionary = await npc.generate_response(chat, true, message)
+		revise_content.text = response.get("response", "")
+	else:
+		return
 

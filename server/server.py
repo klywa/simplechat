@@ -23,6 +23,17 @@ def handle_request():
     try:
         data = request.get_json()
         
+        print(data)
+        print(data.keys)
+
+        if "aiserver_content" in data:
+            return jsonify({
+            "status": "error",
+            "message": str(e),
+            "prompt": "",
+            "query": "",
+            "model_version": ""
+        }), 500
         # 提取AI响应
         response, prompt = ai_response.get_ai_response(data, api_key)
         

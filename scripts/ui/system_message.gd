@@ -10,6 +10,7 @@ extends MarginContainer
 # @onready var replay_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3/ReplayButton
 
 var chat: Chat
+var message_id : int
 var message: String
 var sender: NPC
 var sender_type: NPC.NPCType
@@ -20,6 +21,7 @@ var query : String = ""
 var model_version : String = ""
 var problem_tags : String = ""
 var abandon : bool = false
+var time : String = ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

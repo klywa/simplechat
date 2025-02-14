@@ -1,7 +1,8 @@
 extends Control
 
-@export var config_path : String
-@export var ai_server_url : String = "http://127.0.0.1:8000"
+@export_enum("single", "pipeline") var mode : String = "single"
+@export var config_path : String = "res://config/default.json"
+@export var ai_server_url : String = "http://9.208.245.48:8000/model_chat"
 
 @onready var player_icon := $VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
 @onready var chat_view : ChatView = $VBoxContainer/ChatPanel/ChatWindow/ChatView

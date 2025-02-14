@@ -2,6 +2,7 @@ class_name Message
 extends MarginContainer
 
 var chat: Chat
+var message_id : int
 var message: String
 var sender: NPC
 var sender_type: NPC.NPCType
@@ -13,6 +14,7 @@ var model_version : String = ""
 var problem_tags : String = ""
 var right_side_label_text : String = ""
 var abandon : bool = false
+var time : String = ""
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel

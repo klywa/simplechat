@@ -47,6 +47,7 @@ func add_member(npc: NPC):
 			var random_index = randi() % speaker_list.size()
 			last_speaker = speaker_list[random_index]
 			speaker_index = members.values().find(last_speaker)
+		
 
 func remove_member(npc_name: String):
 	if chat_type == ChatType.GROUP and ((npc_name in GameManager.npc_dict and GameManager.npc_dict[npc_name].npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]) or (npc_name == GameManager.player.npc_name and GameManager.player.npc_type == NPC.NPCType.PLAYER)):
@@ -80,6 +81,7 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	elif sender.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
 		tmp_message = MESSAGE_SCENE.instantiate()
 	tmp_message.chat = self
+	tmp_message.message_id = UUIDGenerator.generate_uuid()
 	tmp_message.sender = sender
 	tmp_message.sender_type = sender.npc_type
 	tmp_message.message = content
@@ -87,6 +89,11 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	tmp_message.query = auxiliary.get("query", "")
 	tmp_message.model_version = auxiliary.get("model_version", "")
 	tmp_message.abandon = auxiliary.get("abandon", false)
+
+	var current_time = Time.get_datetime_string_from_system(false, true)
+	current_time = current_time.replace(" ", "-").replace(":", "-")
+	tmp_message.time = current_time
+
 	if is_koh and chat_type == ChatType.GROUP:
 		if sender.npc_type == NPC.NPCType.NPC:
 			if sender.hero_name != "" and tmp_message is Message:
@@ -118,17 +125,27 @@ func on_message_added(message: Message):
 			return
 		await GameManager.get_tree().process_frame
 		
-		for npc in members.values():
-			if npc.npc_type == NPC.NPCType.PLAYER:
-				continue
-			for alias in npc.alias:
-				if alias in message.message:
-					last_speaker = npc
-					break
-		if last_speaker != null:
-			speaker_index = members.values().find(last_speaker)
-			var response = await last_speaker.generate_response(self, GameManager.main_view.chat_view.use_ai_toggle.button_pressed)
-			add_message(last_speaker, response.get("response", ""), response)
+		match GameManager.mode:
+			"single":
+				for npc in members.values():
+					if npc.npc_type == NPC.NPCType.PLAYER:
+						continue
+					for alias in npc.alias:
+						if alias in message.message:
+							last_speaker = npc
+							break
+				if last_speaker != null:
+					speaker_index = members.values().find(last_speaker)
+					var response = await last_speaker.generate_response(self, GameManager.main_view.chat_view.use_ai_toggle.button_pressed)
+					add_message(last_speaker, response.get("response", ""), response)
+			"pipeline":
+				var result = await AIManager.get_pipeline_response(self)
+				var speaker_name = result.get("speaker", "")
+				var content = result.get("content", "")
+
+				if speaker_name in GameManager.npc_dict:
+					var speaker = GameManager.npc_dict[speaker_name]
+					add_message(speaker, content)
 				
 	else:
 		pass
@@ -304,3 +321,26 @@ func load_from_json(json_file_path: String):
 
 func clear():
 	messages.clear()
+
+
+func get_pipeline_messages() -> Array:
+	var pipeline_messages = []
+	for message in self.messages:
+		var sender = message.sender
+		if sender.npc_type in [NPC.NPCType.SYSTEM, NPC.NPCType.ENV]:
+			continue
+		pipeline_messages.append(
+			{
+				"message_id": message.message_id,
+				"speaker_id": sender.uid,
+				"object_id": sender.uid,
+				"speaker_name": sender.npc_name,
+				"speaker_type": "human" if sender.npc_type == NPC.NPCType.PLAYER else "ai",
+				"hero_id": sender.hero_id,
+				"content": message.message,
+				"time": message.time,
+			}
+		)
+	return pipeline_messages
+
+

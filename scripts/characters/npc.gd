@@ -8,6 +8,7 @@ enum NPCType {
 	SYSTEM
 }
 
+var uid: String
 var npc_name: String
 var npc_setting: String
 var npc_style : String
@@ -25,6 +26,9 @@ var hero_lane: String
 var scenario: String
 var alias : Array = []
 
+var hero_id: int
+var lane_id: int
+
 var current_chat : Chat = null
 
 func _ready():
@@ -40,6 +44,7 @@ func load_from_dict(data: Dictionary):
 			npc_type = NPCType.ENV
 	
 	if npc_type in [NPCType.NPC, NPCType.PLAYER]:
+		uid = data.get("uid", UUIDGenerator.generate_uuid())
 		npc_name = data.get("npc_name", "")
 		is_player = data.get("is_player", false)
 		npc_setting = data.get("npc_setting", "")
@@ -51,6 +56,10 @@ func load_from_dict(data: Dictionary):
 		avatar_path = data.get("avatar_path", "")
 		hero_name = data.get("hero_name", "")
 		hero_lane = data.get("hero_lane", "")
+
+		hero_id = GameManager.hero_id_dict.get(hero_name, 0)
+		lane_id = GameManager.lane_id_dict.get(hero_lane, 0)
+		print(npc_name, hero_id, lane_id)
 
 		avatar_path = data.get("avatar_path", "")
 
@@ -105,7 +114,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			current_time["second"],
 			weekday
 		]
-		scenario = "当前时间：" + datetime_str + "\n"
+		scenario = "当前时间：" + datetime_str + "。\n"
 		scenario += "现在是" + time_period + "。\n"
 		scenario += "这是一段发生在队友之间的语音聊天。" + npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。其他队友包括："
 

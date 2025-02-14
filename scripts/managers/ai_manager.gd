@@ -7,6 +7,31 @@ func init(server_url_in: String) -> void:
 	server_url = server_url_in
 	print("ai_manager init: ", server_url)
 
+func get_response(request_in: Dictionary) -> Variant:
+	var http_request = HTTPRequest.new()
+	add_child(http_request)
+	
+	# 准备请求头和数据
+	var headers = ["Content-Type: application/json"]
+	var request_data = JSON.stringify(request_in)
+	
+	print(request_data)
+
+	# 发送POST请求
+	var error = http_request.request(server_url, headers, HTTPClient.METHOD_POST, request_data)
+	if error != OK:
+		printerr("发送HTTP请求时出错")
+		return {"status": "error", "message": "请求发送失败"}
+	
+	# 等待响应
+	var response = await http_request.request_completed
+	
+	# 清理HTTP请求节点
+	http_request.queue_free()
+	
+	# 处理响应
+	return response
+
 func get_ai_response(request_in: Dictionary) -> Dictionary:
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -45,3 +70,120 @@ func _process_response(response: Array) -> Dictionary:
 	
 	var response_data = json.get_data()
 	return response_data
+
+
+func init_chat(chat: Chat) -> void:
+	var request = {
+		"aiserver_content": {
+			"request_id": UUIDGenerator.generate_uuid(),
+			"version": "1.0",
+			"player_info": [],
+			"seg_id": UUIDGenerator.generate_uuid(),
+			"camp": 1,
+			"request_dialogue": {
+				"req_type" : 1,
+				"query": "-new-",
+				"extra_info": {
+					"tts_config": {
+						"enable_streaming": false,
+						'prompt_wav_name': "lingbaoC_8",
+						'ar_version': "trt_ar_infer_call_has_phone_ar_350M_lingbaoSFT_eavan_20241210",
+						'ar_seed': 10,
+						'opt_ddim_steps_set': "15",
+						'vocoder_type': "voc_type_bigvgan_48k",
+					}
+				}
+			}
+
+		}
+	}
+
+	for member in chat.members.values():
+		if member.npc_type in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
+			continue
+
+		request["aiserver_content"]["player_info"].append(
+			{
+				"uid": member.uid,
+				"name": member.npc_name,
+				"is_ai": true if member.npc_type == NPC.NPCType.NPC else false,
+				"hero_Id": member.hero_id,
+				"lane": member.lane_id,
+				"object_id": member.uid,
+			}
+		)
+
+	var response = await get_response(request)
+	print(response)
+
+
+func get_pipeline_response(chat : Chat) -> Dictionary:
+
+	var result = {}
+
+	var pan_data = {
+		"req_type": 100, 
+        "game_type": 104550, 
+        "req_id": 123, 
+        "req_id2": 456,
+        "req_id3": 789,
+        "seq_id": UUIDGenerator.generate_uuid(),
+        "version": 1,
+        "msg_type": 2,
+        "camp": "1", 
+        "query_id": "",
+        "messages": chat.get_pipeline_messages()
+	}
+
+	pan_data["query_id"] = pan_data["messages"][-1]["message_id"]
+
+	var pan_json_str = JSON.stringify(pan_data)
+	var pan_base64_str = Marshalls.utf8_to_base64(pan_json_str)
+
+	var request = {
+		"aiserver_content": {
+			"request_id": UUIDGenerator.generate_uuid(),
+            "version": "1.0",
+            "player_info": [],
+            "camp": 1,       
+            "request_dialogue": {
+                "query": pan_data["messages"][-1]["content"],
+                "req_type":1,
+                "context": pan_base64_str,
+                "extra_info": {
+                    "tts_config":{
+                        'enable_streaming': false,
+                        'prompt_wav_name': "lingbaoC_8",
+                        'ar_version': "trt_ar_infer_call_has_phone_ar_350M_lingbaoSFT_eavan_20241210",
+                        'ar_seed': 10,
+                        'opt_ddim_steps_set': "15",
+                        'vocoder_type': "voc_type_bigvgan_48k",
+                    }
+                }
+            },
+		}
+	}
+
+	for member in chat.members.values():
+		if member.npc_type in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
+			continue
+
+		request["aiserver_content"]["player_info"].append(
+			{
+				"uid": member.uid,
+				"name": member.npc_name,
+			}
+		)
+
+	var response = await get_response(request)
+
+	# TODO: 解析response
+
+	print(response)
+	
+	result = {
+		"speaker": "那鹧鸪怎么说",
+		"content": "哈哈哈",
+	}
+
+	return result

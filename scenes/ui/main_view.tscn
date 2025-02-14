@@ -15,7 +15,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_yy0rm")
 script = ExtResource("2_h3wjv")
-config_path = "res://config/default.json"
+mode = "pipeline"
+ai_server_url = "http://127.0.0.1:8000"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -106,7 +107,6 @@ text = "其他"
 [node name="Setting" type="PopupPanel" parent="."]
 initial_position = 2
 size = Vector2i(600, 600)
-visible = true
 
 [node name="MarginContainer" type="MarginContainer" parent="Setting"]
 offset_left = 4.0
