@@ -37,7 +37,8 @@ enum ChatType {
 @onready var left_corner_button_list := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList
 @onready var expand_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/ExpandButton
 
-@onready var load_panel := $FileDialog
+@onready var load_file_panel := $LoadFilePanel
+@onready var save_file_panel := $SaveFilePanel
 
 
 var chat : Chat
@@ -71,11 +72,13 @@ func _ready() -> void:
 
 	save_button.pressed.connect(on_save_button_pressed)
 	load_button.pressed.connect(on_load_button_pressed)
-	confirm_save_button.pressed.connect(on_confirm_save_button_pressed)
-	cancel_save_button.pressed.connect(on_cancel_save_button_pressed)
+	# confirm_save_button.pressed.connect(on_confirm_save_button_pressed)
+	# cancel_save_button.pressed.connect(on_cancel_save_button_pressed)
 
-	load_panel.canceled.connect(on_cancel_load_button_pressed)
-	load_panel.file_selected.connect(on_load_file_selected)
+	load_file_panel.canceled.connect(on_cancel_load_button_pressed)
+	load_file_panel.file_selected.connect(on_load_file_selected)
+	save_file_panel.canceled.connect(on_cancel_save_button_pressed)
+	save_file_panel.file_selected.connect(on_confirm_save_button_pressed)
 
 	clear_chat_button.pressed.connect(on_clear_chat_button_pressed)
 
@@ -361,29 +364,35 @@ func replay_from_message(message: Variant) -> void:
 		await get_tree().create_timer(1.0).timeout
 
 func on_save_button_pressed() -> void:
-	save_panel.visible = true
+	# save_panel.visible = true
+	save_file_panel.visible = true
 	var current_time_string = Time.get_datetime_string_from_system(false, true)
-	if chat.host is NPC:
-		save_path_input.text = chat.host.npc_name + "_" + current_time_string.replace(" ", "_")
-	elif chat.host is Location:
-		save_path_input.text = chat.host.location_name + "_" + current_time_string.replace(" ", "_")
 
-func on_confirm_save_button_pressed() -> void:
-	save_panel.visible = false
-	var file_path = "res://data/" + save_path_input.text + ".json"
+	save_file_panel.current_path = "res://data/"
+
+	if chat.host is NPC:
+		save_file_panel.current_file = chat.host.npc_name + "_" + current_time_string.replace(" ", "_") + ".json"
+	elif chat.host is Location:
+		save_file_panel.current_file = chat.host.location_name + "_" + current_time_string.replace(" ", "_") + ".json"
+
+func on_confirm_save_button_pressed(file_path: String) -> void:
+	# save_panel.visible = false
+	# var file_path = "res://data/" + save_path_input.text + ".json"
+	# chat.save_to_json(file_path)
+	save_file_panel.visible = false
 	chat.save_to_json(file_path)
 
 func on_cancel_save_button_pressed() -> void:
-	save_panel.visible = false
+	save_file_panel.visible = false
 
 func on_load_button_pressed() -> void:
-	load_panel.visible = true
+	load_file_panel.visible = true
 
 func on_cancel_load_button_pressed() -> void:
-	load_panel.visible = false
+	load_file_panel.visible = false
 
 func on_load_file_selected(file_path: String) -> void:
-	load_panel.visible = false
+	load_file_panel.visible = false
 	chat.load_from_json(file_path)
 	init(chat)
 
@@ -404,3 +413,5 @@ func on_expand_button_pressed() -> void:
 		leave_group_chat_button.visible = true
 		clear_chat_button.visible = true
 		expand_button.text = "<"
+
+

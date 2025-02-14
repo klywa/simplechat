@@ -188,7 +188,7 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 
 	var response = await get_response(request)
 
-	if (not response is Dictionary) or response.get("status", "error") == "error":
+	if response is Dictionary and response.get("status", "error") == "error":
 		return {
 			"speaker": "系统",
 			"content": "服务器错误！",
