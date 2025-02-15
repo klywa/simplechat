@@ -424,14 +424,10 @@ func on_confirm_save_button_pressed(file_path: String) -> void:
 
 	if file_path != load_file_path + "/" + load_file_name:
 		load_file_name = ""
-	if save_file_panel.current_path != load_file_path:
-		load_file_path = ""
+	load_file_path = save_file_panel.current_dir
 
 func on_cancel_save_button_pressed() -> void:
 	save_file_panel.visible = false
-	if save_file_panel.current_path != load_file_path:
-		load_file_path = ""
-	load_file_name = ""
 
 func on_load_button_pressed() -> void:
 	load_file_panel.visible = true
