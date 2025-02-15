@@ -302,6 +302,36 @@ func on_accept_member_button_pressed() -> void:
 		chat.remove_member(npc_name)
 	member_panel.visible = false
 
+	# 为selected_list中的每个NPC指定一个英雄，根据NPC的lane，从GameManager.lane_hero_dict中随机选择一个英雄
+	for npc_name in selected_list:
+		var npc = chat.members[npc_name]
+		var lane = npc.hero_lane
+		var hero_list = GameManager.lane_hero_dict[lane]
+		var hero = hero_list[randi() % hero_list.size()]
+		npc.hero_name = hero
+		npc.hero_id = GameManager.hero_id_dict[hero]
+
+	# 在上路、打野、中路、辅助、下路中，选择一个上述NPC没有选择的lane，为GameManager.player指定一个这个lane的英雄
+	var used_lanes = []
+	for npc_name in selected_list:
+		var npc = chat.members[npc_name]
+		used_lanes.append(npc.hero_lane)
+	
+	var available_lanes = []
+	for lane in ["上路", "打野", "中路", "辅助", "下路"]:
+		if lane not in used_lanes:
+			available_lanes.append(lane)
+	
+	if available_lanes.size() > 0:
+		var random_lane = available_lanes[randi() % available_lanes.size()]
+		var hero_list = GameManager.lane_hero_dict[random_lane]
+		var hero = hero_list[randi() % hero_list.size()]
+		GameManager.player.hero_name = hero
+		GameManager.player.hero_id = GameManager.hero_id_dict[hero]
+		GameManager.player.hero_lane = random_lane
+		GameManager.player.lane_id = GameManager.lane_id_dict[random_lane]
+
+
 	init(chat)
 	# for npc_name in add_list:
 	# 	chat.add_message(GameManager.system, npc_name + "来到了" + chat.host + "。")

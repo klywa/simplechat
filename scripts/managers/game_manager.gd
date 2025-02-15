@@ -18,6 +18,8 @@ var hero_alias_dict: Dictionary
 var lane_alias_dict
 var hero_id_dict : Dictionary
 var id_hero_dict : Dictionary
+var hero_lane_dict : Dictionary
+var lane_hero_dict : Dictionary
 
 var id_lane_dict := {
 	 "1":"上路", 
@@ -35,9 +37,19 @@ var lane_id_dict := {
 	"辅助": 4,
 	"下路": 5,
 	"分路未知": 0
-}
+	}
+
 
 func init(main, config_path: String) -> void:
+
+	lane_hero_dict = {
+		"上路": [],
+		"打野": [],
+		"中路": [],
+		"辅助": [],
+		"下路": []
+	}
+
 	main_view = main
 	mode = main.mode
 
@@ -66,6 +78,8 @@ func init(main, config_path: String) -> void:
 			for d in data:
 				hero_id_dict[d[1]] = d[0]
 				id_hero_dict[d[0]] = d[1]
+				hero_lane_dict[d[1]] = d[2]
+				lane_hero_dict[d[2]].append(d[1])
 
 	var file = FileAccess.open(config_path, FileAccess.READ)
 	if file:
