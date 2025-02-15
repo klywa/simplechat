@@ -51,6 +51,9 @@ const MESSAGE_SPACE_HOLDER := preload("res://scenes/ui/message_space_holder.tscn
 var current_time = null
 var current_date = null
 
+var load_file_path : String = ""
+var load_file_name : String = ""
+
 signal refreshed
 
 # Called when the node enters the scene tree for the first time.
@@ -310,6 +313,7 @@ func on_accept_member_button_pressed() -> void:
 		var hero = hero_list[randi() % hero_list.size()]
 		npc.hero_name = hero
 		npc.hero_id = GameManager.hero_id_dict[hero]
+		npc.update_alias()
 
 	# 在上路、打野、中路、辅助、下路中，选择一个上述NPC没有选择的lane，为GameManager.player指定一个这个lane的英雄
 	var used_lanes = []
@@ -398,12 +402,18 @@ func on_save_button_pressed() -> void:
 	save_file_panel.visible = true
 	var current_time_string = Time.get_datetime_string_from_system(false, true)
 
-	save_file_panel.current_path = "res://data/"
+	if load_file_path != "":
+		save_file_panel.set_current_dir(load_file_path)
+	else:
+		save_file_panel.set_current_dir("./data/")
 
-	if chat.host is NPC:
-		save_file_panel.current_file = chat.host.npc_name + "_" + current_time_string.replace(" ", "_") + ".json"
-	elif chat.host is Location:
-		save_file_panel.current_file = chat.host.location_name + "_" + current_time_string.replace(" ", "_") + ".json"
+	if load_file_name != "":
+		save_file_panel.current_file = load_file_name
+	else:
+		if chat.host is NPC:
+			save_file_panel.current_file = chat.host.npc_name + "_" + current_time_string.replace(" ", "_") + ".json"
+		elif chat.host is Location:
+			save_file_panel.current_file = chat.host.location_name + "_" + current_time_string.replace(" ", "_") + ".json"
 
 func on_confirm_save_button_pressed(file_path: String) -> void:
 	# save_panel.visible = false
@@ -412,8 +422,16 @@ func on_confirm_save_button_pressed(file_path: String) -> void:
 	save_file_panel.visible = false
 	chat.save_to_json(file_path)
 
+	if file_path != load_file_path + "/" + load_file_name:
+		load_file_name = ""
+	if save_file_panel.current_path != load_file_path:
+		load_file_path = ""
+
 func on_cancel_save_button_pressed() -> void:
 	save_file_panel.visible = false
+	if save_file_panel.current_path != load_file_path:
+		load_file_path = ""
+	load_file_name = ""
 
 func on_load_button_pressed() -> void:
 	load_file_panel.visible = true
@@ -425,6 +443,10 @@ func on_load_file_selected(file_path: String) -> void:
 	load_file_panel.visible = false
 	chat.load_from_json(file_path)
 	init(chat)
+	
+	load_file_path = load_file_panel.current_dir
+	load_file_name = load_file_panel.current_file
+	# print(load_file_path, load_file_name)
 
 func on_clear_chat_button_pressed() -> void:
 	chat.clear()

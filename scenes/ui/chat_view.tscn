@@ -397,8 +397,8 @@ access = 2
 [node name="SaveFilePanel" type="FileDialog" parent="."]
 initial_position = 1
 size = Vector2i(800, 600)
+dialog_autowrap = true
 access = 2
-root_subfolder = "res://data"
 
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message"]
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message6"]
