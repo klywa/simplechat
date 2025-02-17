@@ -18,7 +18,7 @@ var is_koh : bool = false
 const MESSAGE_SCENE := preload("res://scenes/ui/message.tscn") as PackedScene
 const SYSTEM_MESSAGE_SCENE := preload("res://scenes/ui/system_message.tscn") as PackedScene
 
-signal message_added(message: Dictionary)
+signal message_added(message: Variant)
 
 func _init():
 	message_added.connect(on_message_added)
@@ -103,6 +103,7 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 
 	messages.append(tmp_message)
 	if follow_up:
+		print("message_added.emit(tmp_message)", tmp_message.message)
 		message_added.emit(tmp_message)	
 
 	# if GameManager.main_view.chat_view.chat == self:
@@ -112,7 +113,8 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 func remove_message(message : Variant):
 	messages.erase(message)
 
-func on_message_added(message: Message):
+func on_message_added(message: Variant):
+	print("on_message_added: ", message.message)
 	if chat_type == ChatType.PRIVATE:
 		await GameManager.get_tree().process_frame
 		if message.sender_type == NPC.NPCType.PLAYER:
@@ -123,9 +125,11 @@ func on_message_added(message: Message):
 				response = await host.generate_response(self, false)
 			add_message(host, response.get("response", ""), response)
 	elif chat_type == ChatType.GROUP and is_koh:
-		if message.sender_type != NPC.NPCType.PLAYER:
+		if message.sender_type in [NPC.NPCType.NPC]:
 			return
 		await GameManager.get_tree().process_frame
+
+		print("message.message: ", message.message)
 		
 		match GameManager.mode:
 			"single":
@@ -155,6 +159,7 @@ func on_message_added(message: Message):
 
 					add_message(last_speaker, response.get("response", ""), response)
 			"pipeline":
+
 				var start_time = Time.get_ticks_msec()
 				var result = await AIManager.get_pipeline_response(self)
 				var speaker_name = result.get("speaker", "")
@@ -355,18 +360,32 @@ func get_pipeline_messages() -> Array:
 	for message in self.messages:
 		var sender = message.sender
 		if sender.npc_type in [NPC.NPCType.SYSTEM, NPC.NPCType.ENV]:
-			continue
-		pipeline_messages.append(
-			{
-				"message_id": message.message_id,
-				"speaker_id": str(sender.uid),
-				"object_id": str(sender.uid),
-				"speaker_type": "human" if sender.npc_type == NPC.NPCType.PLAYER else "ai",
-				"hero_id": str(sender.hero_id),
-				"content": message.message,
-				"time": message.time,
-			}
-		)
+			var s_type = "system"
+			if message.message == "【交换英雄】":
+				s_type += "-heroexchange"
+			pipeline_messages.append(
+				{
+					"message_id" : + message.message_id,
+					"speaker_id": "",
+					"object_id": "",
+					"speaker_type": s_type,
+					"hero_id": "",
+					"content": message.message,
+					"time": message.time,
+				}
+			)
+		else:
+			pipeline_messages.append(
+				{
+					"message_id": message.message_id,
+					"speaker_id": str(sender.uid),
+					"object_id": str(sender.uid),
+					"speaker_type": "human" if sender.npc_type == NPC.NPCType.PLAYER else "ai",
+					"hero_id": str(sender.hero_id),
+					"content": message.message,
+					"time": message.time,
+				}
+			)
 	return pipeline_messages
 
 

@@ -62,9 +62,33 @@ func on_name_button_pressed() -> void:
 	character_info_panel.visible = true
 
 func on_hero_button_pressed() -> void:
-	hero_panel.visible = true
-	new_hero_label.text = character.hero_name
-	new_lane_label.text = character.hero_lane
+	# hero_panel.visible = true
+	# new_hero_label.text = character.hero_name
+	# new_lane_label.text = character.hero_lane
+
+	var player = GameManager.player
+	var tmp_hero_name = player.hero_name
+	var tmp_hero_lane = player.hero_lane
+	var tmp_hero_id = player.hero_id
+	var tmp_lane_id = player.lane_id
+
+	player.hero_name = character.hero_name
+	player.hero_lane = character.hero_lane
+	player.hero_id = character.hero_id
+	player.lane_id = character.lane_id
+
+	character.hero_name = tmp_hero_name
+	character.hero_lane = tmp_hero_lane
+	character.hero_id = tmp_hero_id
+	character.lane_id = tmp_lane_id
+
+	for panel in get_parent().get_parent().get_children():
+		for child in panel.get_children():
+			if child is CharacterButton:
+				child.init(child.character, child.chat)
+	
+
+	chat.add_message(GameManager.env, "【交换英雄】")
 
 func on_confirm_hero_change_button_pressed() -> void:
 	character.hero_name = new_hero_label.text

@@ -142,10 +142,28 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 		"msg_type": 2,
 		"camp": "1", 
 		"query_id": "",
+		"players": [],
 		"messages": chat.get_pipeline_messages()
 	}
 
 	pan_data["query_id"] = pan_data["messages"][-1]["message_id"]
+
+	for member in chat.members.values():
+		if member.npc_type in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
+			continue
+
+		pan_data["players"].append(
+			{
+				"player_id": member.uid,
+				"object_id": member.uid,
+				"camp": 1,
+				"type": "ai" if member.npc_type == NPC.NPCType.NPC else "human",
+				"hero_id": member.hero_id,
+				"lane": member.lane_id,
+				"is_alive": true,
+				"position": [randf_range(0, 1000), 0, randf_range(0, 1000)],
+			}
+		)
 
 	var pan_json_str = JSON.stringify(pan_data)
 	var pan_base64_str = Marshalls.utf8_to_base64(pan_json_str)
@@ -190,7 +208,7 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 
 	var response_data = _process_response(response)
 
-	if response_data is Dictionary and response_data.get("status", "error") == "error":
+	if response_data is Dictionary and response_data.get("status", "ok") == "error":
 		return {
 			"speaker": "系统",
 			"content": "服务器错误！",
