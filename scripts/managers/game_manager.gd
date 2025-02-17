@@ -5,6 +5,7 @@ const CHAT_SCENE = preload("res://scenes/ui/chat_view.tscn") as PackedScene
 const LOCATION_SCENE = preload("res://scenes/components/location.tscn") as PackedScene
 
 var mode : String = "single"	# pipeline, single
+var safe_export : bool = false
 var main_view
 var chat_dict: Dictionary
 var npc_dict: Dictionary
@@ -52,7 +53,7 @@ func init(main, config_path: String) -> void:
 
 	main_view = main
 	mode = main.mode
-
+	safe_export = main.safe_export
 	var hero_conf_file = FileAccess.open("res://config/hero_conf.json", FileAccess.READ)
 	if hero_conf_file:
 		var json = JSON.new()

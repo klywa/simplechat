@@ -89,6 +89,8 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	tmp_message.query = auxiliary.get("query", "")
 	tmp_message.model_version = auxiliary.get("model_version", "")
 	tmp_message.abandon = auxiliary.get("abandon", false)
+	tmp_message.elapsed_time = auxiliary.get("elapsed_time", "")
+	tmp_message.char_count = auxiliary.get("char_count", 0)
 
 	var current_time = Time.get_datetime_string_from_system(false, true)
 	current_time = current_time.replace(" ", "-").replace(":", "-")
@@ -136,18 +138,41 @@ func on_message_added(message: Message):
 							break
 				if last_speaker != null:
 					speaker_index = members.values().find(last_speaker)
+					var start_time = Time.get_ticks_msec()
 					var response = await last_speaker.generate_response(self, GameManager.main_view.chat_view.use_ai_toggle.button_pressed)
+					var end_time = Time.get_ticks_msec()
+					var elapsed_time = str(end_time - start_time) + "ms"
+					print("耗时: ", elapsed_time)
+					response["elapsed_time"] = elapsed_time
+
+					var content = response.get("response", "")
+					var char_count = 0
+					for c in content:
+						if c.unicode_at(0) >= 0x4E00 and c.unicode_at(0) <= 0x9FFF or c.unicode_at(0) >= 0x3000 and c.unicode_at(0) <= 0x303F:
+							char_count += 1
+					print("字数统计: ", char_count)
+					response["char_count"] = char_count
+
 					add_message(last_speaker, response.get("response", ""), response)
 			"pipeline":
+				var start_time = Time.get_ticks_msec()
 				var result = await AIManager.get_pipeline_response(self)
 				var speaker_name = result.get("speaker", "")
 				var content = result.get("content", "")
+				var end_time = Time.get_ticks_msec()
+				var elapsed_time = str(end_time - start_time) + "ms"
 
+				var char_count = 0
+				for c in content:
+					if c.unicode_at(0) >= 0x4E00 and c.unicode_at(0) <= 0x9FFF or c.unicode_at(0) >= 0x3000 and c.unicode_at(0) <= 0x303F:
+						char_count += 1
+				print("字数统计: ", char_count)
+				
 				if speaker_name in GameManager.npc_dict:
 					var speaker = GameManager.npc_dict[speaker_name]
-					add_message(speaker, content)
+					add_message(speaker, content, {"elapsed_time": elapsed_time, "char_count": char_count})
 				if speaker_name == "系统":
-					add_message(GameManager.system, content)
+					add_message(GameManager.system, content, {"elapsed_time": elapsed_time, "char_count": char_count})
 				
 	else:
 		pass

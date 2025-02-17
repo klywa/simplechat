@@ -96,7 +96,7 @@ func _ready() -> void:
 
 func init(chat_in : Chat) -> void:
 
-	if GameManager.mode == "pipeline":
+	if GameManager.mode == "pipeline" and GameManager.safe_export:
 		save_button.visible = false
 		load_button.visible = false
 

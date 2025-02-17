@@ -15,6 +15,8 @@ var problem_tags : String = ""
 var right_side_label_text : String = ""
 var abandon : bool = false
 var time : String = ""
+var elapsed_time : String = ""
+var char_count : int = 0
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel
@@ -52,6 +54,11 @@ func _show():
 	content_label.text = message
 	if right_side_label_text.length() > 0:
 		right_side_label.text = right_side_label_text
+		# if elapsed_time.length() > 0:
+		# 	if char_count > 0:
+		# 		right_side_label.text += "[" + str(char_count) + "字/" + elapsed_time + "]"
+		# 	else:
+		# 		right_side_label.text += "[" + elapsed_time + "]"
 	if sender_type == NPC.NPCType.PLAYER:
 		message_left_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		message_right_space.size_flags_horizontal = SIZE_SHRINK_END
@@ -67,7 +74,7 @@ func _show():
 			abandon_toggle.button_pressed = true
 
 func on_button_pressed():
-	if GameManager.mode == "pipeline":
+	if GameManager.mode == "pipeline" and GameManager.safe_export:
 		return
 	revise_panel.visible = true
 	revise_panel._show()

@@ -22,6 +22,8 @@ var model_version : String = ""
 var problem_tags : String = ""
 var abandon : bool = false
 var time : String = ""
+var elapsed_time : String = ""
+var char_count : int = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

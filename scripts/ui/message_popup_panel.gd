@@ -14,7 +14,7 @@ extends PopupPanel
 @onready var save_problem_button := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/SaveProblem
 @onready var close_more_button := $MorePanel/PanelContainer/VBoxContainer/MarginContainer/Close
 @onready var prompt := $MorePanel/PanelContainer/VBoxContainer/MarginContainer2/Prompt
-
+@onready var time_message := $PanelContainer/VBoxContainer/MarginContainer4/TimeMessage
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -24,6 +24,7 @@ func _ready() -> void:
 	regenerate_button.pressed.connect(on_regenerate_button_pressed)
 
 func _show() -> void:
+	time_message.text = str(get_parent().char_count) + "字/" + get_parent().elapsed_time
 	revise_content.text = get_parent().content_label.text
 	revise_content.grab_focus()
 	revise_content.set_caret_column(revise_content.text.length())

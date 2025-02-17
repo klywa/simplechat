@@ -188,15 +188,28 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 
 	var response = await get_response(request)
 
-	if response is Dictionary and response.get("status", "error") == "error":
+	var response_data = _process_response(response)
+
+	if response_data is Dictionary and response_data.get("status", "error") == "error":
 		return {
 			"speaker": "系统",
 			"content": "服务器错误！",
 		}
-	# TODO: 解析response
-	var response_data = _process_response(response)
-	var speaker_uid = response_data["response_dialogue"]["extra_info"]['bot_uid']
-	var content = response_data["response_dialogue"]["asset"]["sentence_text"]
+
+	var speaker_uid = response_data.get("response_dialogue", {}).get("extra_info", {}).get("bot_uid", "")
+	var content = response_data.get("response_dialogue", {}).get("asset", {}).get("sentence_text", "")
+
+	if speaker_uid == "":
+		return {
+			"speaker": "系统",
+			"content": "说话人错误！",
+		}
+	
+	if content == "":
+		return {
+			"speaker": "系统",
+			"content": "内容错误！",
+		}
 
 	print("=========")
 	print(response_data)

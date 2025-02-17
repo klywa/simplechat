@@ -4,6 +4,7 @@ extends Control
 @export var config_path : String = "res://config/default.json"
 @export var ai_server_url : String = "http://9.208.245.48:8000/model_chat"
 @export var ai_pipeline_url : String = "http://30.50.188.179:8080/api/smartnpc"
+@export var safe_export : bool = false
 
 @onready var player_icon := $VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
 @onready var chat_view : ChatView = $VBoxContainer/ChatPanel/ChatWindow/ChatView
