@@ -125,7 +125,7 @@ func on_message_added(message: Variant):
 				response = await host.generate_response(self, false)
 			add_message(host, response.get("response", ""), response)
 	elif chat_type == ChatType.GROUP and is_koh:
-		if message.sender_type in [NPC.NPCType.NPC]:
+		if message.sender_type in [NPC.NPCType.NPC, NPC.NPCType.SYSTEM]:
 			return
 		await GameManager.get_tree().process_frame
 
@@ -164,6 +164,7 @@ func on_message_added(message: Variant):
 				var result = await AIManager.get_pipeline_response(self)
 				var speaker_name = result.get("speaker", "")
 				var content = result.get("content", "")
+				var time_info = result.get("time_info", "")
 				var end_time = Time.get_ticks_msec()
 				var elapsed_time = str(end_time - start_time) + "ms"
 
@@ -177,7 +178,7 @@ func on_message_added(message: Variant):
 					var speaker = GameManager.npc_dict[speaker_name]
 					add_message(speaker, content, {"elapsed_time": elapsed_time, "char_count": char_count})
 				if speaker_name == "系统":
-					add_message(GameManager.system, content, {"elapsed_time": elapsed_time, "char_count": char_count})
+					add_message(GameManager.system, content, {"elapsed_time": time_info, "char_count": char_count})
 				
 	else:
 		pass

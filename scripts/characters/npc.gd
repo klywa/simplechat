@@ -29,6 +29,11 @@ var alias : Array = []
 var hero_id: int
 var lane_id: int
 
+var origin_hero_name: String
+var origin_hero_lane: String
+var origin_hero_id: int
+var origin_lane_id: int
+
 var current_chat : Chat = null
 
 func _ready():
@@ -62,6 +67,11 @@ func load_from_dict(data: Dictionary):
 		print(npc_name, hero_id, lane_id)
 
 		avatar_path = data.get("avatar_path", "")
+
+		origin_hero_name = hero_name
+		origin_hero_lane = hero_lane
+		origin_hero_id = hero_id
+		origin_lane_id = lane_id
 
 		update_alias()
 	else:

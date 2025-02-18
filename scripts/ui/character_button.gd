@@ -66,6 +66,12 @@ func on_hero_button_pressed() -> void:
 	# new_hero_label.text = character.hero_name
 	# new_lane_label.text = character.hero_lane
 
+	for n in chat.members.values():
+		n.hero_name = n.origin_hero_name
+		n.hero_lane = n.origin_hero_lane
+		n.hero_id = n.origin_hero_id
+		n.lane_id = n.origin_lane_id
+
 	var player = GameManager.player
 	var tmp_hero_name = player.hero_name
 	var tmp_hero_lane = player.hero_lane
@@ -86,9 +92,16 @@ func on_hero_button_pressed() -> void:
 		for child in panel.get_children():
 			if child is CharacterButton:
 				child.init(child.character, child.chat)
-	
 
-	chat.add_message(GameManager.env, "【交换英雄】")
+	if GameManager.mode == "pipeline":
+		chat.add_message(GameManager.env, "【交换英雄】")
+	elif GameManager.mode == "single":
+		var message = "玩家与" + character.npc_name + "交换了英雄。当前英雄使用情况："
+		for n in chat.members.values():
+			if n.npc_type in [NPC.NPCType.PLAYER, NPC.NPCType.NPC]:
+				message += n.npc_name + "使用" + n.hero_name + "（" + n.hero_lane + "），"
+		message = message.substr(0, message.length()-1) + "。"
+		chat.add_message(GameManager.system, message)
 
 func on_confirm_hero_change_button_pressed() -> void:
 	character.hero_name = new_hero_label.text
