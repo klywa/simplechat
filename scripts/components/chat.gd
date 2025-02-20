@@ -94,6 +94,8 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	
 	if auxiliary.get("scenario", "") != "":
 		tmp_message.scenario = auxiliary.get("scenario", "")
+	else:
+		tmp_message.scenario = sender.scenario
 
 	var current_time = Time.get_datetime_string_from_system(false, true)
 	current_time = current_time.replace(" ", "-").replace(":", "-")
@@ -257,7 +259,7 @@ func save_to_json(json_file_path: String):
 			"npc_example": message.sender.npc_example,
 			"npc_status": message.sender.npc_status,
 			"npc_story": message.sender.npc_story,
-			"scenario": message.sender.scenario,
+			"scenario": message.scenario,
 			"npc_inventory": message.sender.npc_inventory,
 			"npc_skill": message.sender.npc_skill,
 			"npc_hero_name": message.sender.hero_name,

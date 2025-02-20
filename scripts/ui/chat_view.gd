@@ -318,7 +318,7 @@ func on_accept_member_button_pressed() -> void:
 		npc.update_alias()
 		npc.origin_hero_name = hero
 		npc.origin_hero_id = GameManager.hero_id_dict[hero]
-		npc.origin_lane = lane
+		npc.origin_hero_lane = lane
 		npc.origin_lane_id = GameManager.lane_id_dict[lane]
 
 
@@ -343,7 +343,7 @@ func on_accept_member_button_pressed() -> void:
 		GameManager.player.lane_id = GameManager.lane_id_dict[random_lane]
 		GameManager.player.origin_hero_name = hero
 		GameManager.player.origin_hero_id = GameManager.hero_id_dict[hero]
-		GameManager.player.origin_lane = random_lane
+		GameManager.player.origin_hero_lane = random_lane
 		GameManager.player.origin_lane_id = GameManager.lane_id_dict[random_lane]
 
 

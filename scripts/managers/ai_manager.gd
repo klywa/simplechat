@@ -161,7 +161,7 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 				"hero_id": member.hero_id,
 				"lane": member.lane_id,
 				"is_alive": true,
-				"position": [randf_range(0, 1000), 0, randf_range(0, 1000)],
+				"positions": [randf_range(0, 1000), 0, randf_range(0, 1000)],
 			}
 		)
 
