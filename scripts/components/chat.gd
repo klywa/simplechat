@@ -91,6 +91,9 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	tmp_message.abandon = auxiliary.get("abandon", false)
 	tmp_message.elapsed_time = auxiliary.get("elapsed_time", "")
 	tmp_message.char_count = auxiliary.get("char_count", 0)
+	
+	if auxiliary.get("scenario", "") != "":
+		tmp_message.scenario = auxiliary.get("scenario", "")
 
 	var current_time = Time.get_datetime_string_from_system(false, true)
 	current_time = current_time.replace(" ", "-").replace(":", "-")
@@ -176,7 +179,8 @@ func on_message_added(message: Variant):
 				
 				if speaker_name in GameManager.npc_dict:
 					var speaker = GameManager.npc_dict[speaker_name]
-					add_message(speaker, content, {"elapsed_time": elapsed_time, "char_count": char_count})
+					var scenario = speaker.get_scenario()
+					add_message(speaker, content, {"elapsed_time": time_info, "char_count": char_count, "scenario": scenario})
 				if speaker_name == "系统":
 					add_message(GameManager.system, content, {"elapsed_time": time_info, "char_count": char_count})
 				
@@ -271,7 +275,8 @@ func save_to_json(json_file_path: String):
 				tmp_message["npc_type"] = "ENV"
 			NPC.NPCType.SYSTEM:
 				tmp_message["npc_type"] = "SYSTEM"
-		if tmp_message["npc_type"] != "SYSTEM":
+		# if tmp_message["npc_type"] != "SYSTEM":
+		if true:
 			json_dict["messages"].append(tmp_message)
 	json_file.store_string(JSON.stringify(json_dict, "\t", false))
 	json_file.close()

@@ -313,7 +313,14 @@ func on_accept_member_button_pressed() -> void:
 		var hero = hero_list[randi() % hero_list.size()]
 		npc.hero_name = hero
 		npc.hero_id = GameManager.hero_id_dict[hero]
+		npc.hero_lane = lane
+		npc.lane_id = GameManager.lane_id_dict[lane]
 		npc.update_alias()
+		npc.origin_hero_name = hero
+		npc.origin_hero_id = GameManager.hero_id_dict[hero]
+		npc.origin_lane = lane
+		npc.origin_lane_id = GameManager.lane_id_dict[lane]
+
 
 	# 在上路、打野、中路、辅助、下路中，选择一个上述NPC没有选择的lane，为GameManager.player指定一个这个lane的英雄
 	var used_lanes = []
@@ -334,6 +341,10 @@ func on_accept_member_button_pressed() -> void:
 		GameManager.player.hero_id = GameManager.hero_id_dict[hero]
 		GameManager.player.hero_lane = random_lane
 		GameManager.player.lane_id = GameManager.lane_id_dict[random_lane]
+		GameManager.player.origin_hero_name = hero
+		GameManager.player.origin_hero_id = GameManager.hero_id_dict[hero]
+		GameManager.player.origin_lane = random_lane
+		GameManager.player.origin_lane_id = GameManager.lane_id_dict[random_lane]
 
 
 	init(chat)

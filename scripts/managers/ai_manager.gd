@@ -217,13 +217,13 @@ func get_pipeline_response(chat : Chat) -> Dictionary:
 	var speaker_uid = response_data.get("response_dialogue", {}).get("extra_info", {}).get("bot_uid", "")
 	var content = response_data.get("response_dialogue", {}).get("asset", {}).get("sentence_text", "")
 
-	var time_info = response_data.get("extra_info", {}).get("time_info", {})
+	var time_info = response_data.get("response_dialogue", {}).get("extra_info", {}).get("time_info", {})
 	var time_info_str = ""
 	if time_info.size() > 0:
-		time_info_str += "总用时：" + str((time_info.get("all_time", 0) - time_info.get("pre_sensitive_wangzhe_cost", 0)) / 1000) + "ms"
-		time_info_str += " | 前置：" + str((time_info.get("sft_safety", 0) - time_info.get("pre_sensitive_wangzhe_cost", 0)) / 1000) + "ms"
-		time_info_str += " | 回复：" + str((time_info.get("reply", 0)) - time_info.get("post_sensitive_wangzhe_cost", 0) / 1000) + "ms"
-		time_info_str += " | 后置：" + str((time_info.get("post_sensitive_wangzhe_cost", 0)) / 1000) + "ms"
+		time_info_str += str(round((time_info.get("all_time", 0) - time_info.get("pre_sensitive_wangzhe_cost", 0)) / 1000)) + "ms"
+		time_info_str += " | 前：" + str(round((time_info.get("sft_safety", 0) - time_info.get("pre_sensitive_wangzhe_cost", 0)) / 1000)) + "ms"
+		time_info_str += " | 回：" + str(round((time_info.get("reply", 0) - time_info.get("post_sensitive_wangzhe_cost", 0)) / 1000)) + "ms"
+		time_info_str += " | 后：" + str((time_info.get("post_sensitive_wangzhe_cost", 0)) / 1000) + "ms"
 
 	if speaker_uid == "":
 		return {

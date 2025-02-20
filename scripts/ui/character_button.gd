@@ -66,27 +66,32 @@ func on_hero_button_pressed() -> void:
 	# new_hero_label.text = character.hero_name
 	# new_lane_label.text = character.hero_lane
 
+	var skip_change = false
+	if character.hero_name == GameManager.player.origin_hero_name:
+		skip_change = true
+
 	for n in chat.members.values():
 		n.hero_name = n.origin_hero_name
 		n.hero_lane = n.origin_hero_lane
 		n.hero_id = n.origin_hero_id
 		n.lane_id = n.origin_lane_id
+	
+	if not skip_change:
+		var player = GameManager.player
+		var tmp_hero_name = player.hero_name
+		var tmp_hero_lane = player.hero_lane
+		var tmp_hero_id = player.hero_id
+		var tmp_lane_id = player.lane_id
 
-	var player = GameManager.player
-	var tmp_hero_name = player.hero_name
-	var tmp_hero_lane = player.hero_lane
-	var tmp_hero_id = player.hero_id
-	var tmp_lane_id = player.lane_id
+		player.hero_name = character.hero_name
+		player.hero_lane = character.hero_lane
+		player.hero_id = character.hero_id
+		player.lane_id = character.lane_id
 
-	player.hero_name = character.hero_name
-	player.hero_lane = character.hero_lane
-	player.hero_id = character.hero_id
-	player.lane_id = character.lane_id
-
-	character.hero_name = tmp_hero_name
-	character.hero_lane = tmp_hero_lane
-	character.hero_id = tmp_hero_id
-	character.lane_id = tmp_lane_id
+		character.hero_name = tmp_hero_name
+		character.hero_lane = tmp_hero_lane
+		character.hero_id = tmp_hero_id
+		character.lane_id = tmp_lane_id
 
 	for panel in get_parent().get_parent().get_children():
 		for child in panel.get_children():
