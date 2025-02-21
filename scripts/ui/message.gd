@@ -19,6 +19,7 @@ var time : String = ""
 var elapsed_time : String = ""
 var char_count : int = 0
 var scenario : String = ""
+var skip_save : bool = false
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel

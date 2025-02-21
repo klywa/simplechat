@@ -270,7 +270,7 @@ func _on_dialogue_submitted(text: String):
 	on_send_button_pressed()
 
 func on_env_button_pressed():
-	var response = await GameManager.env.generate_response(chat, false)
+	var response = await GameManager.env.generate_response(chat, use_ai_toggle.button_pressed)
 	chat.add_message(GameManager.env, response.get("response", ""), response)
 
 # func add_system_message(message: String) -> void:

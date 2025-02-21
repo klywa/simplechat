@@ -181,7 +181,7 @@ func on_message_added(message: Variant):
 				
 				if speaker_name in GameManager.npc_dict:
 					var speaker = GameManager.npc_dict[speaker_name]
-					var scenario = speaker.get_scenario()
+					var scenario = speaker.get_scenario(self)
 					add_message(speaker, content, {"elapsed_time": time_info, "char_count": char_count, "scenario": scenario})
 				if speaker_name == "系统":
 					add_message(GameManager.system, content, {"elapsed_time": time_info, "char_count": char_count})
@@ -251,6 +251,7 @@ func save_to_json(json_file_path: String):
 			"negative_message": message.negative_message,
 			"score": message.score,
 			"problem_tags": message.problem_tags,
+			"skip_save": message.skip_save,
 			"abandon": message.abandon,
 			"query": message.query,
 			"model_version": message.model_version,

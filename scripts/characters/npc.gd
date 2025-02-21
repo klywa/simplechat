@@ -90,9 +90,55 @@ func update_alias():
 			break
 
 func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null) -> Dictionary:
+	print("generate_response", str(npc_type))
 	if npc_type == NPCType.ENV:
-		await GameManager.main_view.get_tree().create_timer(1).timeout
-		return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
+		print("in env")
+		if not use_ai:
+			print("not use ai")
+			await GameManager.main_view.get_tree().create_timer(1).timeout
+			return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
+		else:
+			print("use ai")
+			var request = {
+				"request_type": "npc",
+				"messages": chat.get_chat_history(until_message),
+				"npc_name": "王者荣耀模拟器",
+				"npc_setting": "你是一个王者荣耀局面模拟器，你将根据玩家和队友的对话，生成一个符合当前局面的事件，事件应该和【交互历史】形成连续的战报。你的回复应该避免和历史对话中的内容重复。例如“玩家（伽罗）被击杀了。”“某某（兰陵王）击败了风暴龙王。”",
+				"npc_style": "你的语言风格应该简练、客观。",
+				"npc_example": "“玩家（伽罗）被击杀了。”\n“某某（兰陵王）击败了风暴龙王。”\n“某某（蔡文姬）奶量充足，硬生生把残血队友全部抬满，成功守住高地。”\n“玩家（盾山）精准卡住敌方关键技能，为队友创造了绝佳的反打机会。”\n“某某（百里守约）在超远距离狙击，成功收割掉敌方残血刺客。”\n“玩家（貂蝉）在团战中翩翩起舞，打出了高额的真实伤害，拿下三杀。”\n“某某（程咬金）丝血浪进敌方水晶，成功骗出敌方关键技能。”",
+				"npc_status": "",
+				"npc_story": "",
+				"npc_hero_name": "",
+				"npc_hero_lane": "",
+				"scenario": "",
+				"player_hero_name": GameManager.player.hero_name,
+				"player_hero_lane": GameManager.player.hero_lane,
+				"instructions": "你应该参照示例的格式，结合【交互历史】推演游戏局面的演化，生成一条本次对局中的事件。"
+			}
+
+			var env_scenario = "本局中我方的英雄有："
+			for npc in chat.members.values():
+				if npc.npc_type in [NPCType.NPC, NPCType.PLAYER]:
+					env_scenario += npc.npc_name + "（" + npc.hero_name + "-" + npc.hero_lane + "）,"
+			env_scenario = env_scenario.rstrip(",") + "。"
+			request["scenario"] = env_scenario
+
+			print("=====", request)
+			var response = await AIManager.get_ai_response(request)
+
+			if response.get("status") == "success":
+				if response.has("prompt") and response.has("query"):
+					print(response["prompt"] + "\n" + response["query"])
+				return {
+					"response": response.get("response", ""), 
+					"prompt": response.get("prompt", ""), 
+					"query": response.get("query", ""), 
+					"model_version": response.get("model_version", ""),
+					"skip_save": true
+				}
+			else:
+				return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
+			
 	elif npc_type == NPCType.NPC:
 		scenario = get_scenario(chat)
 
@@ -123,7 +169,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"response": response.get("response", ""), 
 				"prompt": response.get("prompt", ""), 
 				"query": response.get("query", ""), 
-				"model_version": response.get("model_version", "")
+				"model_version": response.get("model_version", ""),
 			}
 		else:
 			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}

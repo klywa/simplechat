@@ -26,6 +26,7 @@ var time : String = ""
 var elapsed_time : String = ""
 var char_count : int = 0
 var scenario : String = ""
+var skip_save : bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
