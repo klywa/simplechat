@@ -97,6 +97,9 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	else:
 		tmp_message.scenario = sender.scenario
 
+	if auxiliary.get("skip_save", false):
+		tmp_message.skip_save = true
+
 	var current_time = Time.get_datetime_string_from_system(false, true)
 	current_time = current_time.replace(" ", "-").replace(":", "-")
 	tmp_message.time = current_time

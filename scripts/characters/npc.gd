@@ -104,8 +104,8 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"messages": chat.get_chat_history(until_message),
 				"npc_name": "王者荣耀模拟器",
 				"npc_setting": "你是一个王者荣耀局面模拟器，你将根据玩家和队友的对话，生成一个符合当前局面的事件，事件应该和【交互历史】形成连续的战报。你的回复应该避免和历史对话中的内容重复。例如“玩家（伽罗）被击杀了。”“某某（兰陵王）击败了风暴龙王。”",
-				"npc_style": "你的语言风格应该简练、客观。",
-				"npc_example": "“玩家（伽罗）被击杀了。”\n“某某（兰陵王）击败了风暴龙王。”\n“某某（蔡文姬）奶量充足，硬生生把残血队友全部抬满，成功守住高地。”\n“玩家（盾山）精准卡住敌方关键技能，为队友创造了绝佳的反打机会。”\n“某某（百里守约）在超远距离狙击，成功收割掉敌方残血刺客。”\n“玩家（貂蝉）在团战中翩翩起舞，打出了高额的真实伤害，拿下三杀。”\n“某某（程咬金）丝血浪进敌方水晶，成功骗出敌方关键技能。”",
+				"npc_style": "你的语言风格应该简练、客观。你生成的事件应该和【交互历史】形成连续的战报。你生成的事件可以对玩家阵营有利，也可以对敌方阵营有利。",
+				"npc_example": "“玩家（伽罗）被击杀了。”\n“某某（兰陵王）击败了风暴龙王。”\n“某某（蔡文姬）奶量充足，硬生生把残血队友全部抬满，成功守住高地。”\n“玩家（盾山）精准卡住敌方关键技能，为队友创造了绝佳的反打机会。”\n“某某（百里守约）在超远距离狙击，成功收割掉敌方残血刺客。”\n“玩家（貂蝉）在团战中翩翩起舞，打出了高额的真实伤害，拿下三杀。”\n“某某（程咬金）丝血浪进敌方水晶，成功骗出敌方关键技能。”\n”我方（吕布）在团战中大招跳空，导致输出脱节，被敌方集火瞬间团灭。“\n”某某（韩信）在前期野区遭遇敌方入侵，不仅丢了野怪，还被敌方击杀，节奏全乱。“\n”我方（后羿）站位过于靠前，被敌方（阿轲）绕后瞬秒，团战直接少了关键输出。“\n”某某（瑶）被敌方（张良）大招控住，无法附身队友，导致我方前排孤立无援，惨遭击杀。“\n”我方（大乔）在关键团战中放错大招位置，队友赶来支援后直接被敌方包饺子。“\n”某某（东皇太一）大招咬空，敌方关键英雄得以逃脱，反手还将我方多名队友击杀。“",
 				"npc_status": "",
 				"npc_story": "",
 				"npc_hero_name": "",
@@ -122,6 +122,9 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 					env_scenario += npc.npc_name + "（" + npc.hero_name + "-" + npc.hero_lane + "）,"
 			env_scenario = env_scenario.rstrip(",") + "。"
 			request["scenario"] = env_scenario
+
+			if request.get("messages").length() == 0:
+				request["messages"] = "系统：比赛开始。"
 
 			print("=====", request)
 			var response = await AIManager.get_ai_response(request)
