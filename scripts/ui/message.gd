@@ -11,6 +11,7 @@ var negative_message: String
 var prompt : String = ""
 var query : String = ""
 var model_version : String = ""
+var score : String = ""
 var problem_tags : String = ""
 var right_side_label_text : String = ""
 var abandon : bool = false

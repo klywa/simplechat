@@ -249,6 +249,7 @@ func save_to_json(json_file_path: String):
 			"npc_name": message.sender.npc_name,
 			"message": message.message,
 			"negative_message": message.negative_message,
+			"score": message.score,
 			"problem_tags": message.problem_tags,
 			"abandon": message.abandon,
 			"query": message.query,

@@ -94,15 +94,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 		await GameManager.main_view.get_tree().create_timer(1).timeout
 		return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
 	elif npc_type == NPCType.NPC:
-		scenario = get_scenario()
-
-		var other_list = []
-		for other in chat.members.values():
-			if other.npc_name != npc_name and other.npc_name != GameManager.player.npc_name and other.npc_name != GameManager.system.npc_name and other.npc_name != GameManager.env.npc_name:
-				other_list.append(other.npc_name + "（" + other.hero_name + "-" + other.hero_lane + "）")
-		scenario += ", ".join(other_list)
-		if other_list.size() > 0:
-			scenario += "。"
+		scenario = get_scenario(chat)
 
 		if not use_ai:
 			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
@@ -143,7 +135,7 @@ func quit_group_chat() -> void:
 		current_chat.remove_member(npc_name)
 		current_chat = GameManager.chat_dict[npc_name]
 
-func get_scenario() -> String:
+func get_scenario(chat: Chat) -> String:
 	# 获取日期和时间（早上、中午、晚上等）
 	var current_time = GameManager.main_view.chat_view.current_time
 	var current_date = GameManager.main_view.chat_view.current_date
@@ -177,5 +169,13 @@ func get_scenario() -> String:
 	scenario = "当前时间：" + datetime_str + "。\n"
 	scenario += "现在是" + time_period + "。\n"
 	scenario += "这是一段发生在队友之间的语音聊天。" + npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。其他队友包括："
+
+	var other_list = []
+	for other in chat.members.values():
+		if other.npc_name != npc_name and other.npc_name != GameManager.player.npc_name and other.npc_name != GameManager.system.npc_name and other.npc_name != GameManager.env.npc_name:
+			other_list.append(other.npc_name + "（" + other.hero_name + "-" + other.hero_lane + "）")
+	scenario += ", ".join(other_list)
+	if other_list.size() > 0:
+		scenario += "。"
 
 	return scenario

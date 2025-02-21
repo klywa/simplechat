@@ -131,6 +131,10 @@ theme_override_constants/margin_bottom = 12
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="Score" type="LineEdit" parent="PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
+layout_mode = 2
+placeholder_text = "打分"
+
 [node name="ProblemTags" type="LineEdit" parent="PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3

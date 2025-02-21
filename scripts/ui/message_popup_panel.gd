@@ -10,6 +10,7 @@ extends PopupPanel
 
 @onready var more_panel := $MorePanel
 @onready var origin_response := $PanelContainer/VBoxContainer/MarginContainer3/OriginResponse
+@onready var score := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/Score
 @onready var problem_tags := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/ProblemTags
 @onready var save_problem_button := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/SaveProblem
 @onready var close_more_button := $MorePanel/PanelContainer/VBoxContainer/MarginContainer/Close
@@ -28,6 +29,7 @@ func _show() -> void:
 	revise_content.text = get_parent().content_label.text
 	revise_content.grab_focus()
 	revise_content.set_caret_column(revise_content.text.length())
+	score.text = get_parent().score
 	problem_tags.text = get_parent().problem_tags
 	if get_parent().negative_message != "":
 		origin_response.text = get_parent().sender.npc_name + "：" + get_parent().negative_message
@@ -51,6 +53,7 @@ func on_close_more_button_pressed() -> void:
 
 func on_save_problem_button_pressed() -> void:
 	var message = get_parent()
+	message.score = score.text
 	message.problem_tags = problem_tags.text
 	# on_close_more_button_pressed()
 
