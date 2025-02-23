@@ -76,6 +76,8 @@ func _show():
 		if abandon:
 			abandon_toggle.button_pressed = true
 
+	chat.save_to_json(GameManager.tmp_save_file_path)
+
 func on_button_pressed():
 	if GameManager.mode == "pipeline" and GameManager.safe_export:
 		return
@@ -90,7 +92,7 @@ func on_revise_button_pressed():
 	revise_panel.revise_content.text = ""
 	revise_panel.visible = false
 
-	if revise_panel.score.text.length() == 0:
+	if revise_panel.score.text.length() > 0:
 		revise_panel.on_save_problem_button_pressed()
 
 	_show()

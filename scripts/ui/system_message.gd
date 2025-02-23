@@ -44,6 +44,7 @@ func _process(delta: float) -> void:
 
 func _show() -> void:
 	content_label.text = message
+	chat.save_to_json(GameManager.tmp_save_file_path)
 
 func on_button_pressed() -> void:
 	revise_panel.visible = true
@@ -56,7 +57,7 @@ func on_revise_button_pressed() -> void:
 	revise_panel.revise_content.text = ""
 	revise_panel.visible = false
 
-	if revise_panel.score.text.length() == 0:
+	if revise_panel.score.text.length() > 0:
 		revise_panel.on_save_problem_button_pressed()
 
 	_show()

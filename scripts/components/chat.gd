@@ -122,6 +122,9 @@ func remove_message(message : Variant):
 	messages.erase(message)
 
 func on_message_added(message: Variant):
+
+	# save_to_json(GameManager.tmp_save_file_path)
+
 	print("on_message_added: ", message.message)
 	if chat_type == ChatType.PRIVATE:
 		await GameManager.get_tree().process_frame

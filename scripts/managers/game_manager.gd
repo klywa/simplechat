@@ -22,6 +22,8 @@ var id_hero_dict : Dictionary
 var hero_lane_dict : Dictionary
 var lane_hero_dict : Dictionary
 
+var tmp_save_file_path : String = "res://data/tmp_save.json"
+
 var id_lane_dict := {
 	 "1":"上路", 
 	 "2":"打野", 
