@@ -22,6 +22,8 @@ var chat : Chat
 @onready var confirm_hero_change_button := $HeroPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Confirm
 @onready var cancel_hero_change_button := $HeroPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Cancel
 
+@onready var exchange_button := $ExchangeButton
+
 
 signal character_left_clicked(character: NPC)
 
@@ -35,6 +37,9 @@ func _ready() -> void:
 	hero_button.pressed.connect(on_hero_button_pressed)
 	confirm_hero_change_button.pressed.connect(on_confirm_hero_change_button_pressed)
 	cancel_hero_change_button.pressed.connect(on_cancel_hero_change_button_pressed)
+	exchange_button.pressed.connect(on_exchange_button_pressed)
+
+	new_hero_label.text_changed.connect(on_new_hero_label_text_changed)
 
 func init(character_in: NPC, chat_in: Chat) -> void:
 
@@ -51,6 +56,9 @@ func init(character_in: NPC, chat_in: Chat) -> void:
 		lane_label.text = "无"
 		lane_label.add_theme_color_override("font_color", Color(0, 0, 0, 0))
 		name_label.text = character.npc_name
+	
+	if character.npc_type == NPC.NPCType.PLAYER:
+		exchange_button.visible = false
 
 func on_pressed() -> void:
 	character_left_clicked.emit(character)
@@ -62,9 +70,11 @@ func on_name_button_pressed() -> void:
 	character_info_panel.visible = true
 
 func on_hero_button_pressed() -> void:
-	# hero_panel.visible = true
-	# new_hero_label.text = character.hero_name
-	# new_lane_label.text = character.hero_lane
+	hero_panel.visible = true
+	new_hero_label.text = character.hero_name
+	new_lane_label.text = character.hero_lane
+
+func on_exchange_button_pressed() -> void:
 
 	var skip_change = false
 	if character.hero_name == GameManager.player.origin_hero_name:
@@ -117,3 +127,7 @@ func on_confirm_hero_change_button_pressed() -> void:
 
 func on_cancel_hero_change_button_pressed() -> void:
 	hero_panel.visible = false
+
+func on_new_hero_label_text_changed(new_hero_str : String) -> void:
+	if new_hero_str in GameManager.hero_lane_dict:
+		new_lane_label.text = GameManager.hero_lane_dict[new_hero_str]

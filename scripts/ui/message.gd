@@ -90,6 +90,9 @@ func on_revise_button_pressed():
 	revise_panel.revise_content.text = ""
 	revise_panel.visible = false
 
+	if revise_panel.score.text.length() == 0:
+		revise_panel.on_save_problem_button_pressed()
+
 	_show()
 
 	# print(self)

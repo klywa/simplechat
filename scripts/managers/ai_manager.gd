@@ -114,6 +114,7 @@ func init_chat(chat: Chat) -> void:
 		request["aiserver_content"]["player_info"].append(
 			{
 				"uid": member.uid,
+				"openid": str(member.uid),
 				"name": member.npc_name,
 				"is_ai": true if member.npc_type == NPC.NPCType.NPC else false,
 				"hero_Id": member.hero_id,
