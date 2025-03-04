@@ -6,9 +6,9 @@ extends Control
 @export var ai_pipeline_url : String = "http://30.50.188.179:8080/api/smartnpc"
 @export var safe_export : bool = false
 
-@onready var player_icon := $VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
-@onready var chat_view : ChatView = $VBoxContainer/ChatPanel/ChatWindow/ChatView
-@onready var chat_list := $VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/ChatList
+@onready var player_icon := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
+@onready var chat_view : ChatView = $HBoxContainer/VBoxContainer/ChatPanel/ChatWindow/ChatView
+@onready var chat_list := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/ChatList
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

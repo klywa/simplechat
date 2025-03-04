@@ -91,7 +91,7 @@ func update_alias():
 
 func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null) -> Dictionary:
 	print("generate_response", str(npc_type))
-	if npc_type == NPCType.ENV:
+	if npc_type in [NPCType.ENV, NPCType.SYSTEM]:
 		print("in env")
 		if not use_ai:
 			print("not use ai")

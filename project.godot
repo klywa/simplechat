@@ -23,7 +23,7 @@ UUIDGenerator="*res://scenes/manager/uuid_generator.tscn"
 
 [display]
 
-window/size/viewport_width=960
+window/size/viewport_width=2400
 window/size/viewport_height=1600
 
 [gui]

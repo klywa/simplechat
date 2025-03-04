@@ -458,9 +458,9 @@ func on_save_button_pressed() -> void:
 		save_file_panel.current_file = load_file_name
 	else:
 		if chat.host is NPC:
-			save_file_panel.current_file = chat.host.npc_name + "_" + current_time_string.replace(" ", "_") + ".json"
+			save_file_panel.current_file = chat.host.npc_name + "_" + current_time_string.replace(" ", "_").replace(":", "-") + ".json"
 		elif chat.host is Location:
-			save_file_panel.current_file = chat.host.location_name + "_" + current_time_string.replace(" ", "_") + ".json"
+			save_file_panel.current_file = chat.host.location_name + "_" + current_time_string.replace(" ", "_").replace(":", "-") + ".json"
 
 func on_confirm_save_button_pressed(file_path: String) -> void:
 	# save_panel.visible = false
