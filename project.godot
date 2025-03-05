@@ -30,6 +30,11 @@ window/size/viewport_height=1600
 
 theme/default_font_multichannel_signed_distance_field=true
 
+[layer_names]
+
+2d_physics/layer_1="Pawn"
+2d_physics/layer_2="Detect"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

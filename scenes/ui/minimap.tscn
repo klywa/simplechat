@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://d154s1gpcxqty"]
+[gd_scene load_steps=4 format=3 uid="uid://d154s1gpcxqty"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_yr276"]
+[ext_resource type="PackedScene" uid="uid://dxobbxxmlnw5d" path="res://scenes/simulator/koh_simulator.tscn" id="2_aemuc"]
+[ext_resource type="Script" path="res://scripts/ui/minimap.gd" id="2_hw4us"]
 
 [node name="Minimap" type="MarginContainer"]
 anchors_preset = 15
@@ -9,19 +11,44 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_yr276")
+script = ExtResource("2_hw4us")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 200
-theme_override_constants/margin_top = 200
-theme_override_constants/margin_right = 200
-theme_override_constants/margin_bottom = 200
 
-[node name="Panel" type="Panel" parent="Panel/MarginContainer"]
-custom_minimum_size = Vector2(1200, 1200)
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
+size_flags_vertical = 0
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "模拟下一步"
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Panel2" type="Panel" parent="PanelContainer/VBoxContainer/CenterContainer"]
+custom_minimum_size = Vector2(1152, 1152)
+layout_mode = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="PanelContainer/VBoxContainer/CenterContainer/Panel2"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="PanelContainer/VBoxContainer/CenterContainer/Panel2/SubViewportContainer"]
+handle_input_locally = false
+canvas_item_default_texture_filter = 0
+size = Vector2i(1152, 1152)
+render_target_update_mode = 4
+
+[node name="KoHSimulator" parent="PanelContainer/VBoxContainer/CenterContainer/Panel2/SubViewportContainer/SubViewport" instance=ExtResource("2_aemuc")]

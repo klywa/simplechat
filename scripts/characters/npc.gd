@@ -36,6 +36,8 @@ var origin_lane_id: int
 
 var current_chat : Chat = null
 
+var pawn : Pawn = null
+
 func _ready():
 	pass
 

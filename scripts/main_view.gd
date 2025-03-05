@@ -9,12 +9,20 @@ extends Control
 @onready var player_icon := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
 @onready var chat_view : ChatView = $HBoxContainer/VBoxContainer/ChatPanel/ChatWindow/ChatView
 @onready var chat_list := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/ChatList
+@onready var minimap := $HBoxContainer/Minimap
+
+
+var simulator
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+
+	simulator = minimap.simulator
 	if config_path.length() > 0:
-		GameManager.init(self, config_path)
+		GameManager.init(self, config_path, simulator)
+	
 	if mode == "pipeline":
 		AIManager.init(ai_pipeline_url)
 	else:
 		AIManager.init(ai_server_url)
+

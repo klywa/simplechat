@@ -1,0 +1,175 @@
+[gd_scene load_steps=12 format=3 uid="uid://0k428716fuul"]
+
+[ext_resource type="Texture2D" uid="uid://yljchi6a0dk7" path="res://assets/tileset/miniworld.png" id="1_742q4"]
+[ext_resource type="Script" path="res://scripts/simulator/pawn.gd" id="1_t3l22"]
+[ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="2_da0j3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kcut5"]
+atlas = ExtResource("1_742q4")
+region = Rect2(192, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e8mws"]
+atlas = ExtResource("1_742q4")
+region = Rect2(208, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wgx5d"]
+atlas = ExtResource("1_742q4")
+region = Rect2(224, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_msgsb"]
+atlas = ExtResource("1_742q4")
+region = Rect2(240, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_knctd"]
+atlas = ExtResource("1_742q4")
+region = Rect2(256, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_v7qx1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kcut5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e8mws")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wgx5d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_msgsb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_knctd")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tfp6w"]
+radius = 66.0076
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_emxjd"]
+
+[node name="Pawn" type="Node2D"]
+script = ExtResource("1_t3l22")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_v7qx1")
+autoplay = "default"
+
+[node name="Button" type="Button" parent="."]
+offset_left = -17.0
+offset_top = -21.0
+offset_right = 17.0
+offset_bottom = 21.0
+theme = ExtResource("2_da0j3")
+theme_type_variation = &"InvisibleButton"
+
+[node name="Name" type="Label" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = -39.0
+offset_top = -57.0
+offset_right = 39.0
+offset_bottom = 24.0
+grow_horizontal = 2
+theme = ExtResource("2_da0j3")
+theme_override_font_sizes/font_size = 24
+text = "兰陵王"
+horizontal_alignment = 1
+
+[node name="CampColor" type="ColorRect" parent="."]
+offset_left = 21.0
+offset_top = 21.0
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0.988235, 1)
+
+[node name="DetectArea" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectArea"]
+shape = SubResource("CircleShape2D_tfp6w")
+
+[node name="BodyArea" type="Area2D" parent="."]
+position = Vector2(1, 0)
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BodyArea"]
+shape = SubResource("CapsuleShape2D_emxjd")
+
+[node name="PopupPanel" type="PopupPanel" parent="."]
+initial_position = 1
+size = Vector2i(600, 600)
+theme = ExtResource("2_da0j3")
+
+[node name="PanelContainer" type="PanelContainer" parent="PopupPanel"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 596.0
+offset_bottom = 596.0
+
+[node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "英雄名"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "血量"
+
+[node name="HP" type="LineEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+placeholder_text = "血量"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "等级"
+
+[node name="LineEdit" type="LineEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+placeholder_text = "等级"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+text = "击败"
+
+[node name="KillTarget" type="OptionButton" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+allow_reselect = true
+item_count = 3
+popup/item_0/text = "英雄1"
+popup/item_1/text = "英雄2"
+popup/item_1/id = 1
+popup/item_2/text = "防御塔1"
+popup/item_2/id = 2
+
+[node name="KillSubmit" type="Button" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+text = "提交"

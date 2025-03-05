@@ -352,6 +352,11 @@ func on_accept_member_button_pressed() -> void:
 
 
 	init(chat)
+
+	print("simulator: ", GameManager.simulator)
+	print("chat simulator", GameManager.main_view.simulator)
+	GameManager.simulator.init(chat)
+
 	# for npc_name in add_list:
 	# 	chat.add_message(GameManager.system, npc_name + "来到了" + chat.host + "。")
 	# for npc_name in leave_list:

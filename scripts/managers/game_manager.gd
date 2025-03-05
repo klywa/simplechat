@@ -15,6 +15,8 @@ var env : NPC
 var system : NPC
 var ai_instructions : String
 
+var simulator : KoHSimulator
+
 var hero_alias_dict: Dictionary
 var lane_alias_dict
 var hero_id_dict : Dictionary
@@ -43,7 +45,7 @@ var lane_id_dict := {
 	}
 
 
-func init(main, config_path: String) -> void:
+func init(main, config_path: String, simulator_in: KoHSimulator = null) -> void:
 
 	lane_hero_dict = {
 		"上路": [],
@@ -55,6 +57,10 @@ func init(main, config_path: String) -> void:
 
 	main_view = main
 	mode = main.mode
+
+	simulator = simulator_in
+	print("simulator: ", simulator)
+
 	safe_export = main.safe_export
 	var hero_conf_file = FileAccess.open("res://config/hero_conf.json", FileAccess.READ)
 	if hero_conf_file:

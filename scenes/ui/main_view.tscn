@@ -31,6 +31,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ChatPanel" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -109,7 +110,7 @@ theme_override_font_sizes/font_size = 36
 text = "其他"
 
 [node name="Minimap" parent="HBoxContainer" instance=ExtResource("6_bx73v")]
-custom_minimum_size = Vector2(1200, 1200)
+custom_minimum_size = Vector2(1400, 1600)
 layout_mode = 2
 
 [node name="Setting" type="PopupPanel" parent="."]
