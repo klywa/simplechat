@@ -146,6 +146,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			
 	elif npc_type == NPCType.NPC:
 		scenario = get_scenario(chat)
+		npc_status = pawn.get_self_status()
 
 		if not use_ai:
 			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
@@ -179,7 +180,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"npc_setting": npc_setting,
 				"npc_style": npc_style,
 				"npc_example": npc_example,
-				"npc_status": pawn.get_self_status(),
+				"npc_status": npc_status,
 				"npc_story": npc_story,
 				"npc_inventory": npc_inventory,
 				"npc_skill": npc_skill,
@@ -200,7 +201,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"npc_setting": npc_setting,
 				"npc_style": npc_style,
 				"npc_example": npc_example,
-				"npc_status": pawn.get_self_status(),
+				"npc_status": npc_status,
 				"npc_story": npc_story,
 				"npc_inventory": npc_inventory,
 				"npc_skill": npc_skill,
@@ -250,7 +251,8 @@ func get_scenario(chat: Chat) -> String:
 		current_time["second"],
 		weekday
 	]
-	scenario = "当前时间：" + datetime_str + "。\n"
+	scenario = "[整体情况]\n"
+	scenario += "当前时间：" + datetime_str + "。\n"
 	scenario += "现在是" + time_period + "。\n"
 	scenario += "这是一段发生在队友之间的语音聊天。" + npc_name + "正在和玩家进行一场王者荣耀对局，" + npc_name + "是玩家的队友。玩家使用的角色是" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），" + npc_name + "使用的角色是" + hero_name + "（" + hero_lane + "）。其他队友包括："
 
@@ -262,6 +264,6 @@ func get_scenario(chat: Chat) -> String:
 	if other_list.size() > 0:
 		scenario += "。"
 
-	scenario += "\n" + pawn.get_scenario_stirng()
+	scenario += "\n\n" + pawn.get_scenario_stirng()
 
 	return scenario

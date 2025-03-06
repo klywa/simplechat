@@ -684,15 +684,16 @@ func get_in_sight_status():
 func get_builing_status():
 	var destroyed_status = "被摧毁的防御塔："
 	var remaining_status = "未被摧毁的防御塔："
-	if type == "BUILDING":
-		for p in simulator.name_poi_dict.values():
-			if p.type == "BUILDING":
-				if p.is_alive():
-					remaining_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
-				else:
-					destroyed_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
-		destroyed_status = destroyed_status.rstrip("，") + "。"
-		remaining_status = remaining_status.rstrip("，") + "。"
+
+	for p in simulator.name_poi_dict.values():
+		print(p.pawn_name)
+		if p.type == "BUILDING":
+			if p.is_alive():
+				remaining_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
+			else:
+				destroyed_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
+	destroyed_status = destroyed_status.rstrip("，") + "。"
+	remaining_status = remaining_status.rstrip("，") + "。"
 	return destroyed_status + "\n" + remaining_status
 
 func get_scenario_stirng():
@@ -707,7 +708,7 @@ func get_scenario_stirng():
 		if p.type == "CHARACTER" and p.camp != camp:
 			scenario += p.get_in_sight_status() + "\n"
 
-	scenario += "\n[不在附近但视野课件的英雄]\n"
+	scenario += "\n[不在附近但在视野中的英雄]\n"
 	for p in simulator.name_pawn_dict.values():
 		if p.type == "CHARACTER" and p not in nearby_pawns:
 			scenario += p.get_in_sight_status() + "\n"
