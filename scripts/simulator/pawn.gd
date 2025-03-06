@@ -46,6 +46,7 @@ var move_target : Pawn = null
 @onready var submit_kill_button := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3/KillSubmit
 
 @onready var hp_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/HP
+@onready var money_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Money
 
 @onready var level_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Level
 
@@ -103,6 +104,8 @@ func _ready() -> void:
 	revive_button.pressed.connect(_on_revive_button_pressed)
 
 	submit_kill_button.pressed.connect(_on_submit_kill_button_pressed)
+
+	move_target_dropdown.item_selected.connect(_on_target_dropdown_item_selected)
 	
 	# 连接检测区域的信号
 	detect_shape.area_entered.connect(_on_detect_area_entered)
@@ -247,7 +250,7 @@ func _on_button_pressed():
 
 		kill_target_dropdown.clear()
 		for p in simulator.name_pawn_dict.values():
-			if p.camp != camp and p.is_attackable():
+			if p.camp != camp and p.is_attackable() and p.is_alive():
 				var unique_name = p.get_unique_name()
 				kill_target_dropdown.add_item(unique_name)
 	
@@ -340,9 +343,15 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 	else:
 		self_name = pawn_name + "-" + lane
 	if camp == "BLUE":
-		self_name = "我方-" + self_name
+		if type == "BUILDING":
+			self_name = pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
+		else:
+			self_name = "我方-" + self_name
 	elif camp == "RED":
-		self_name = "敌方-" + self_name
+		if type == "BUILDING":
+			self_name = pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
+		else:
+			self_name = "敌方-" + self_name
 	
 	var killer_name = ""
 	if pawn.npc != null:
@@ -351,9 +360,15 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 		killer_name = pawn.pawn_name + "-" + pawn.lane
 
 	if pawn.camp == "BLUE":
-		killer_name = "我方-" + killer_name
+		if pawn.type == "BUILDING":
+			killer_name = killer_name.replace("红方", "敌方").replace("蓝方", "我方")
+		else:
+			killer_name = "我方-" + killer_name
 	elif pawn.camp == "RED":
-		killer_name = "敌方-" + killer_name
+		if pawn.type == "BUILDING":
+			killer_name = killer_name.replace("红方", "敌方").replace("蓝方", "我方")
+		else:
+			killer_name = "敌方-" + killer_name
 	
 
 	var assist_msg = ""
@@ -484,7 +499,13 @@ func _on_level_editor_changed(value: String):
 func _on_revive_button_pressed():
 	revive()
 	popup_panel.visible = false
-	
+
+func _on_target_dropdown_item_selected(index: int):
+	var target_name = move_target_dropdown.get_item_text(index)
+	var target_pawn = simulator.name_pawn_dict.get(target_name, null)
+	if target_pawn != null:
+		move_target = target_pawn
+
 func die():
 	hp = 0
 	if type == "CHARACTER":
