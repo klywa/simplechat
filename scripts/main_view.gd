@@ -4,6 +4,7 @@ extends Control
 @export var config_path : String = "res://config/default.json"
 @export var ai_server_url : String = "http://9.208.245.48:8000/model_chat_14b"
 @export var ai_pipeline_url : String = "http://30.50.188.179:8080/api/smartnpc"
+@export var knowledge_path : String = "res://config/knowledge.json"
 @export var safe_export : bool = false
 
 @onready var player_icon := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
@@ -19,7 +20,7 @@ func _ready() -> void:
 
 	simulator = minimap.simulator
 	if config_path.length() > 0:
-		GameManager.init(self, config_path, simulator)
+		GameManager.init(self, config_path, knowledge_path, simulator)
 	
 	if mode == "pipeline":
 		AIManager.init(ai_pipeline_url)

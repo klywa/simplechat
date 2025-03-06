@@ -12,7 +12,7 @@ script = ExtResource("1_8anij")
 [node name="POIs" type="Node" parent="KoHMap"]
 
 [node name="BlueCrystal" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
-position = Vector2(71, 1075)
+position = Vector2(109, 1044)
 pawn_name = "蓝方水晶"
 camp = "BLUE"
 type = "BUILDING"
@@ -72,7 +72,7 @@ camp = "BLUE"
 type = "BUILDING"
 
 [node name="RedCrystal" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
-position = Vector2(1081, 71)
+position = Vector2(1045, 106)
 pawn_name = "红方水晶"
 camp = "RED"
 type = "BUILDING"
@@ -160,6 +160,18 @@ type = "MONSTER"
 position = Vector2(745, 793)
 pawn_name = "暴君"
 type = "MONSTER"
+
+[node name="RedFountain" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
+position = Vector2(1138, 11)
+pawn_name = "红方泉水"
+camp = "RED"
+type = "BUILDING"
+
+[node name="BlueFountain" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
+position = Vector2(13, 1141)
+pawn_name = "蓝方泉水"
+camp = "BLUE"
+type = "BUILDING"
 
 [node name="Pawns" type="Node" parent="KoHMap"]
 

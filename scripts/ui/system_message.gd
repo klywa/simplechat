@@ -41,7 +41,7 @@ var npc_hero_lane : String = ""
 var player_hero_name : String = ""
 var player_hero_lane : String = ""
 var instructions : String = ""
-
+var knowledge : String = ""
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	button.pressed.connect(on_button_pressed)

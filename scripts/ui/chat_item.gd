@@ -14,3 +14,4 @@ func init() -> void:
 	
 func on_pressed() -> void:
 	GameManager.activate_chat(chat)
+	

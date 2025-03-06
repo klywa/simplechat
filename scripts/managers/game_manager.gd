@@ -44,8 +44,9 @@ var lane_id_dict := {
 	"分路未知": 0
 	}
 
+var knowledge : Dictionary
 
-func init(main, config_path: String, simulator_in: KoHSimulator = null) -> void:
+func init(main, config_path: String, knowledge_path: String, simulator_in: KoHSimulator = null) -> void:
 
 	lane_hero_dict = {
 		"上路": [],
@@ -158,9 +159,66 @@ func init(main, config_path: String, simulator_in: KoHSimulator = null) -> void:
 
 		file.close()
 
+	# 读取知识库文件
+	if knowledge_path.length() > 0:
+		var knowledge_file = FileAccess.open(knowledge_path, FileAccess.READ)
+		if knowledge_file:
+			var json_string = knowledge_file.get_as_text()
+			var knowledge_json = JSON.new()
+			var knowledge_parse_result = knowledge_json.parse(json_string)
+			if knowledge_parse_result == OK:
+				knowledge = knowledge_json.get_data()
+			else:
+				print("解析知识库文件失败: ", knowledge_json.get_error_message(), " at line ", knowledge_json.get_error_line())
+			knowledge_file.close()
+		else:
+			print("无法打开知识库文件: ", knowledge_path)
 	
 
 func activate_chat(chat_in : Chat) -> void:
 
 	main_view.chat_view.init(chat_in)
 	main_view.chat_view.refresh()
+	if chat_in.chat_type == Chat.ChatType.GROUP and chat_in.is_koh:
+		main_view.chat_view.on_new_button_pressed()
+
+
+func get_knowledge(chat : Chat) -> String:
+	var match_string = ""
+	var knowledge_list = []
+	if player in chat.members.values():
+		match_string += player.hero_name
+	
+	# 从聊天记录中获取最后五条消息
+	var recent_messages = []
+	var messages_count = chat.messages.size()
+	var start_index = max(0, messages_count - 5)
+	
+	for i in range(start_index, messages_count):
+		if i < chat.messages.size():
+			recent_messages.append(chat.messages[i].message)
+	
+	# 将最近的消息添加到匹配字符串中
+	for msg in recent_messages:
+		match_string += " " + msg
+
+	print("match_string: ", match_string, chat.members)
+
+	# 从知识库中查找匹配的知识
+	for key in knowledge.keys():
+		var use = false
+		if key in match_string:
+			use = true
+		else:
+			for alias in knowledge[key].get("别名", []):
+				if alias in match_string:
+					use = true
+					break
+		
+		if use and knowledge[key].get("内容", "") not in knowledge_list:
+			knowledge_list.append(knowledge[key].get("内容", ""))
+	
+	if knowledge_list.size() > 0:
+		return "\n".join(knowledge_list)
+	else:
+		return ""

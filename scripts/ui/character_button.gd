@@ -85,6 +85,8 @@ func on_exchange_button_pressed() -> void:
 		n.hero_lane = n.origin_hero_lane
 		n.hero_id = n.origin_hero_id
 		n.lane_id = n.origin_lane_id
+		if n.pawn != null and n.origin_pawn != null:
+			n.pawn = GameManager.simulator.name_pawn_dict[n.origin_pawn.get_unique_name()]
 	
 	if not skip_change:
 		var player = GameManager.player
@@ -92,16 +94,21 @@ func on_exchange_button_pressed() -> void:
 		var tmp_hero_lane = player.hero_lane
 		var tmp_hero_id = player.hero_id
 		var tmp_lane_id = player.lane_id
+		var tmp_pawn = player.pawn
 
 		player.hero_name = character.hero_name
 		player.hero_lane = character.hero_lane
 		player.hero_id = character.hero_id
 		player.lane_id = character.lane_id
+		player.pawn = character.pawn
+		player.pawn.npc = player
 
 		character.hero_name = tmp_hero_name
 		character.hero_lane = tmp_hero_lane
 		character.hero_id = tmp_hero_id
 		character.lane_id = tmp_lane_id
+		character.pawn = tmp_pawn
+		tmp_pawn.npc = character
 
 	for panel in get_parent().get_parent().get_children():
 		for child in panel.get_children():
@@ -124,6 +131,8 @@ func on_confirm_hero_change_button_pressed() -> void:
 	character.update_alias()
 	hero_panel.visible = false
 	init(character, chat)
+
+	character.pawn.load_npc(character)
 
 func on_cancel_hero_change_button_pressed() -> void:
 	hero_panel.visible = false

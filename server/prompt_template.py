@@ -9,6 +9,7 @@ chat_template = """
 角色行为风格：{npc_style}
 角色台词示例：{npc_example}
 角色故事：{npc_story}
+知识：{knowledge}
 
 【其他规则】
 除了扮演角色之外，你需要遵守以下规则：

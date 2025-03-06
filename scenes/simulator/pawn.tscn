@@ -1,8 +1,13 @@
-[gd_scene load_steps=16 format=3 uid="uid://0k428716fuul"]
+[gd_scene load_steps=18 format=3 uid="uid://0k428716fuul"]
 
 [ext_resource type="Texture2D" uid="uid://yljchi6a0dk7" path="res://assets/tileset/miniworld.png" id="1_742q4"]
 [ext_resource type="Script" path="res://scripts/simulator/pawn.gd" id="1_t3l22"]
+[ext_resource type="Texture2D" uid="uid://b1u56ooubo50m" path="res://assets/avatars/hero_avatar/亚瑟.webp" id="2_5m6ed"]
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="2_da0j3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ce6kw"]
+atlas = ExtResource("2_5m6ed")
+region = Rect2(0, 0, 96, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_kcut5"]
 atlas = ExtResource("1_742q4")
@@ -48,9 +53,11 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tfp6w"]
-radius = 66.0076
+radius = 98.0816
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_emxjd"]
+radius = 18.0
+height = 40.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35ei6"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -80,7 +87,20 @@ animations = [{
 [node name="Pawn" type="Node2D"]
 script = ExtResource("1_t3l22")
 
+[node name="HeroIcon" type="ColorRect" parent="."]
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+color = Color(0, 0, 0.988235, 1)
+
+[node name="Avatar" type="Sprite2D" parent="HeroIcon"]
+position = Vector2(32, 32)
+scale = Vector2(0.54, 0.54)
+texture = SubResource("AtlasTexture_ce6kw")
+
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
+visible = false
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_v7qx1")
 autoplay = "default"
@@ -97,9 +117,9 @@ theme_type_variation = &"InvisibleButton"
 anchors_preset = 10
 anchor_right = 1.0
 offset_left = -39.0
-offset_top = -57.0
+offset_top = -60.0
 offset_right = 39.0
-offset_bottom = 24.0
+offset_bottom = 21.0
 grow_horizontal = 2
 theme = ExtResource("2_da0j3")
 theme_override_font_sizes/font_size = 24
@@ -120,7 +140,6 @@ collision_layer = 2
 shape = SubResource("CircleShape2D_tfp6w")
 
 [node name="BodyArea" type="Area2D" parent="."]
-position = Vector2(1, 0)
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BodyArea"]

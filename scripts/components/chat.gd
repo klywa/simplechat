@@ -160,6 +160,11 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	else:
 		tmp_message.player_hero_lane = GameManager.player.hero_lane
 
+	if auxiliary.get("knowledge", "") != "":
+		tmp_message.knowledge = auxiliary.get("knowledge", "")
+	else:
+		tmp_message.knowledge = sender.knowledge
+
 	if auxiliary.get("instructions", "") != "":
 		tmp_message.instructions = auxiliary.get("instructions", "")
 	else:
@@ -319,6 +324,7 @@ func save_to_json(json_file_path: String):
 		var tmp_message = {
 			"npc_name": message.npc_name,
 			"message": message.message,
+			"knowledge": message.knowledge,
 			"negative_message": message.negative_message,
 			"score": message.score,
 			"problem_tags": message.problem_tags,
@@ -440,6 +446,7 @@ func load_from_json(json_file_path: String):
 			"player_hero_name": message["player_hero_name"],
 			"player_hero_lane": message["player_hero_lane"],
 			"instructions": message["instructions"],
+			"knowledge": message.get("knowledge", ""),
 		}, false)
 		
 	json_file.close()

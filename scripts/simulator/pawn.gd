@@ -18,6 +18,11 @@ var dragged = false
 var drag_start = Vector2()
 var drag_start_position = Vector2()
 
+# 添加变量控制虚线显示
+var show_target_line : bool = false
+# 添加变量记录拖动悬停的目标
+var hover_target : Pawn = null
+
 var map_rect 
 var tile_size
 var map_size
@@ -39,6 +44,8 @@ var move_target : Pawn = null
 @onready var detect_shape := $DetectArea
 
 @onready var health_bar := $HealthBar
+@onready var hero_icon := $HeroIcon
+@onready var hero_avatar := $HeroIcon/Avatar
 
 @onready var move_target_dropdown := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer4/TargetDropdown
 @onready var kill_target_dropdown := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3/KillTarget
@@ -97,6 +104,10 @@ func _ready() -> void:
 	button.button_down.connect(_on_button_down)
 	button.button_up.connect(_on_button_up)
 	button.pressed.connect(_on_button_pressed)
+	
+	# 添加鼠标悬停和离开事件
+	button.mouse_entered.connect(_on_button_mouse_entered)
+	button.mouse_exited.connect(_on_button_mouse_exited)
 
 	hp_editor.text_submitted.connect(_on_hp_editor_changed)
 	level_editor.text_submitted.connect(_on_level_editor_changed)
@@ -116,8 +127,10 @@ func _ready() -> void:
 	match camp:
 		"BLUE":
 			camp_color_flag.color = Color.BLUE
+			hero_icon.color = Color.BLUE
 		"RED":
 			camp_color_flag.color = Color.RED
+			hero_icon.color = Color.RED
 		"NEUTRAL":
 			camp_color_flag.color = Color.GRAY
 
@@ -127,21 +140,25 @@ func _ready() -> void:
 			# pawn_name = lane
 			if camp == "RED":
 				visible_to_blue = false
+			camp_color_flag.visible = false
 		"BUILDING":
 			moveable = false
 			name_label.visible = false
+			hero_icon.visible = false
 			sprite.visible = false
 			camp_color_flag.modulate.a = 0.5
 			health_bar.modulate.a = 0.0
 		"RESOURCE":
 			moveable = false
 			name_label.visible = false
+			hero_icon.visible = false
 			sprite.visible = false
 			camp_color_flag.modulate.a = 0.2
 			health_bar.modulate.a = 0.0
 		"MONSTER":
 			moveable = false
 			name_label.visible = false
+			hero_icon.visible = false
 			sprite.visible = false
 			camp_color_flag.modulate.a = 0.2
 			health_bar.modulate.a = 0.0
@@ -149,6 +166,43 @@ func _ready() -> void:
 
 func _show():
 	name_label.text = pawn_name
+	set_hero_avatar()
+
+func load_npc(npc: NPC):
+	self.npc = npc
+	pawn_name = npc.hero_name
+	lane = npc.hero_lane
+	_show()
+
+func set_hero_avatar():
+	# 尝试根据pawn_name加载英雄头像
+	var avatar_path = "res://assets/avatars/hero_avatar/%s.webp" % pawn_name
+	var avatar_path_2 = "res://assets/avatars/hero_avatar/%s.jpg" % pawn_name
+	var default_path = "res://assets/avatars/hero_avatar/默认.webp"
+	
+	# 检查文件是否存在
+	print("avatar_path: ", avatar_path)
+	if FileAccess.file_exists(avatar_path):
+		var texture = load(avatar_path)
+		if texture:
+			hero_avatar.texture = texture
+	elif FileAccess.file_exists(avatar_path_2):
+		var texture = load(avatar_path_2)
+		if texture:
+			hero_avatar.texture = texture
+	else:
+		# 如果找不到对应头像，使用默认头像
+		print("default_path: ", default_path)
+		var texture = load(default_path)
+		if texture:
+			hero_avatar.texture = texture
+	
+	# 缩放头像至96*96大小
+	if hero_avatar.texture:
+		var image = hero_avatar.texture.get_image()
+		image.resize(96, 96)
+		var new_texture = ImageTexture.create_from_image(image)
+		hero_avatar.texture = new_texture
 
 func _on_button_down():
 	if moveable:
@@ -162,9 +216,25 @@ func _on_button_up():
 	dragging = false
 	if get_global_mouse_position().distance_to(drag_start_position) > 1:
 		dragged = true
-		reselect_move_target()
+		
+		# 如果有悬停目标，则设置为移动目标并恢复原位置
+		if hover_target != null:
+			move_target = hover_target
+			position = drag_start_position
+			print("%s设置移动目标为%s" % [pawn_name, hover_target.pawn_name])
+		else:
+			# 如果没有悬停目标，则重新选择移动目标
+			reselect_move_target()
+			
+		# 清除悬停目标
+		hover_target = null
 	else:
 		dragged = false
+	
+	# 确保松开鼠标后虚线消失（除非鼠标悬停在按钮上）
+	if not button.is_hovered():
+		show_target_line = false
+	queue_redraw()  # 触发重绘以更新显示
 
 func _process(_delta):
 
@@ -178,6 +248,15 @@ func _process(_delta):
 		# 如果移动距离超过阈值，标记为已拖动
 		if position.distance_to(drag_start_position) > 1:
 			dragged = true
+			
+		# 在拖动过程中检查是否悬停在其他pawn上
+		hover_target = null
+		for pawn in simulator.name_pawn_dict.values():
+			if pawn != self and pawn.is_alive():
+				var distance = get_global_mouse_position().distance_to(pawn.position)
+				if distance < 50:  # 与_on_button_up中的阈值保持一致
+					hover_target = pawn
+					break
 
 	if move_target == null or not move_target.is_alive():
 		reselect_move_target()
@@ -198,6 +277,10 @@ func _process(_delta):
 		shield_flag.visible = false
 	else:
 		shield_flag.visible = true
+		
+	# 如果正在拖动且有悬停目标，或者有移动目标且显示目标线，则触发重绘
+	if (dragging and hover_target != null) or (show_target_line and move_target != null):
+		queue_redraw()
 
 func random_move():
 	if dragging:
@@ -339,42 +422,42 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 	var msg = ""
 	var self_name = ""
 	if npc != null:
-		self_name = npc.npc_name + "-" + pawn_name + "-" + lane
+		self_name = npc.npc_name + "-" + pawn_name
 	else:
-		self_name = pawn_name + "-" + lane
+		self_name = pawn_name
 	if camp == "BLUE":
 		if type == "BUILDING":
 			self_name = pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
-			self_name = "我方-" + self_name
+			self_name = "<我方-" + self_name + ">"
 	elif camp == "RED":
 		if type == "BUILDING":
 			self_name = pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
-			self_name = "敌方-" + self_name
+			self_name = "<敌方-" + self_name + ">"
 	
 	var killer_name = ""
 	if pawn.npc != null:
-		killer_name = pawn.npc.npc_name + "-" + pawn.pawn_name + "-" + pawn.lane
+		killer_name = pawn.npc.npc_name + "-" + pawn.pawn_name
 	else:
-		killer_name = pawn.pawn_name + "-" + pawn.lane
+		killer_name = pawn.pawn_name
 
 	if pawn.camp == "BLUE":
 		if pawn.type == "BUILDING":
 			killer_name = killer_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
-			killer_name = "我方-" + killer_name
+			killer_name = "<我方-" + killer_name + ">"
 	elif pawn.camp == "RED":
 		if pawn.type == "BUILDING":
 			killer_name = killer_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
-			killer_name = "敌方-" + killer_name
-	
+			killer_name = "<敌方-" + killer_name + ">"
+
 
 	var assist_msg = ""
 
 	if assist_pawns.size() > 0:
-		assist_msg = "助攻："
+		assist_msg = "，参与助攻的有"
 		var assist_names = []
 		for p in assist_pawns:
 			var tmp_name = ""
@@ -383,12 +466,12 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 			else:
 				tmp_name = p.pawn_name + "-" + p.lane
 			if p.camp == "BLUE":
-				tmp_name = "我方-" + tmp_name
+				tmp_name = "<我方-" + tmp_name + ">"
 			else:
-				tmp_name = "敌方-" + tmp_name
+				tmp_name = "<敌方-" + tmp_name + ">"
 			assist_names.append(tmp_name)
-		assist_msg += ",".join(assist_names)
-		assist_msg = "(" + assist_msg + ")"
+		assist_msg += "、".join(assist_names)
+		assist_msg = assist_msg + "。"
 
 	match type:
 		"CHARACTER":
@@ -448,28 +531,73 @@ func reselect_move_target():
 	
 	# 如果血量大于50，选择非我方pawn作为目标，否则选择我方pawn作为目标
 	if hp > 50:
-		# 寻找非我方的pawn
 		var potential_targets = []
-		for pawn in simulator.name_pawn_dict.values():
-			if pawn.camp != camp and pawn.is_alive() and pawn.is_attackable():
-				potential_targets.append(pawn)
+		if lane == "辅助":
+			for pawn in simulator.name_pawn_dict.values():
+				if pawn.camp == camp and pawn.is_alive() and pawn.type == "CHARACTER" and pawn != self:
+					potential_targets.append(pawn)
+		else:
+			for pawn in simulator.name_pawn_dict.values():
+				if pawn.camp != camp and pawn.is_alive() and pawn.is_attackable() and pawn != self:
+					potential_targets.append(pawn)
 		
-		# 如果有可用目标，随机选择一个
-		if potential_targets.size() > 0:
-			var random_index = randi() % potential_targets.size()
-			move_target = potential_targets[random_index]
+		move_target = select_target_by_distance(potential_targets)
 	else:
 		# 寻找我方的pawn
 		var potential_targets = []
 		for pawn in simulator.name_pawn_dict.values():
-			if pawn.camp == camp and pawn.is_alive():
+			if pawn.camp == camp and pawn.is_alive() and pawn != self:
 				potential_targets.append(pawn)
 		
-		# 如果有可用目标，随机选择一个
-		if potential_targets.size() > 0:
-			var random_index = randi() % potential_targets.size()
-			move_target = potential_targets[random_index]
+		move_target = select_target_by_distance(potential_targets)
+	
+func select_target_by_distance(targets: Array):
+	if targets.size() == 0:
+		return null
 		
+	var weights = []
+	var total_weight = 0.0
+	
+	# 调试信息
+	# print("选择目标，当前位置：", position)
+	
+	var debug_str = pawn_name + "距离："
+	for target in targets:
+		var distance = position.distance_to(target.position)
+		# 距离越近，权重越大，使用更强的距离惩罚
+		var weight = 1.0 / pow(max(distance/1000, 0.1), 2) # 使用三次方权重，更强调近距离目标
+		weights.append(weight)
+		total_weight += weight
+		debug_str += "目标:%s 距离:%.2f 权重:%.4f | " % [target.pawn_name, distance, weight]
+	print(debug_str + "总权重:%.4f" % total_weight)
+	
+	# 如果总权重为0（极端情况），直接选择最近的目标
+	if total_weight <= 0.0001:
+		var closest_target = targets[0]
+		var min_distance = position.distance_to(closest_target.position)
+		
+		for target in targets:
+			var distance = position.distance_to(target.position)
+			if distance < min_distance:
+				min_distance = distance
+				closest_target = target
+		
+		print("使用最近目标：", closest_target.pawn_name)
+		return closest_target
+	
+	# 根据权重随机选择目标
+	var random_value = randf() * total_weight
+	var current_sum = 0.0
+	
+	for i in range(targets.size()):
+		current_sum += weights[i]
+		if random_value <= current_sum:
+			print("选择了目标：", targets[i].pawn_name)
+			return targets[i]
+	
+	# 保险起见，如果没有选中任何目标，返回第一个
+	print("未选中任何目标，返回第一个")
+	return targets[0] if targets.size() > 0 else null
 
 func _on_submit_kill_button_pressed():
 	var target_name = kill_target_dropdown.text
@@ -506,6 +634,40 @@ func _on_target_dropdown_item_selected(index: int):
 	if target_pawn != null:
 		move_target = target_pawn
 
+func set_init_move_target():
+	var opposite_camp_string = "红方" if camp == "BLUE" else "蓝方"
+	var camp_string = "红方" if camp == "RED" else "蓝方"
+
+	match lane:
+		"打野":
+			# 获取自己方的红Buff和蓝Buff
+			var blue_buff = simulator.name_poi_dict[camp_string + "蓝Buff"]
+			var red_buff = simulator.name_poi_dict[camp_string + "红Buff"]
+			
+			# 计算到两个Buff的距离
+			var distance_to_blue = position.distance_to(blue_buff.position)
+			var distance_to_red = position.distance_to(red_buff.position)
+			
+			# 选择距离较近的Buff作为移动目标
+			if distance_to_blue <= distance_to_red:
+				move_target = blue_buff
+			else:
+				move_target = red_buff
+		"辅助":
+			reselect_move_target()
+		_:
+			# 寻找对方阵营中与自己相同位置的英雄作为移动目标
+			var target_found = false
+			for pawn in simulator.name_pawn_dict.values():
+				if pawn.is_alive() and pawn.camp != camp and pawn.lane == lane and pawn.type == "CHARACTER":
+					move_target = pawn
+					target_found = true
+					break
+			
+			# 如果没有找到对应位置的敌方英雄，则选择对方水晶或其他目标
+			if not target_found:
+				reselect_move_target()
+		
 func die():
 	hp = 0
 	if type == "CHARACTER":
@@ -516,11 +678,11 @@ func die():
 	match type:
 		"CHARACTER":
 			if camp == "RED":
-				position = simulator.name_poi_dict["红方水晶"].position + Vector2(randf_range(-simulator.init_random_range, simulator.init_random_range), randf_range(-simulator.init_random_range, simulator.init_random_range))
+				position = simulator.name_poi_dict["红方泉水"].position + Vector2(randf_range(-simulator.init_random_range, simulator.init_random_range), randf_range(-simulator.init_random_range, simulator.init_random_range))
 				position.x = clamp(position.x, 0, map_size.x * map.scale.x)
 				position.y = clamp(position.y, 0, map_size.y * map.scale.y)
 			else:
-				position = simulator.name_poi_dict["蓝方水晶"].position + Vector2(randf_range(-simulator.init_random_range, simulator.init_random_range), randf_range(-simulator.init_random_range, simulator.init_random_range))
+				position = simulator.name_poi_dict["蓝方泉水"].position + Vector2(randf_range(-simulator.init_random_range, simulator.init_random_range), randf_range(-simulator.init_random_range, simulator.init_random_range))
 				position.x = clamp(position.x, 0, map_size.x * map.scale.x)
 				position.y = clamp(position.y, 0, map_size.y * map.scale.y)
 		"BUILDING":
@@ -583,7 +745,13 @@ func get_region():
 		return closest.pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
 
 func get_health():
-	if hp < 20:
+
+	if not is_alive():
+		if type == "BUILDING":
+			return "被摧毁"
+		else:
+			return "已阵亡"
+	elif hp < 20:
 		return "血量低"
 	elif hp < 40:
 		return "血量中等"
@@ -610,12 +778,12 @@ func get_on_lane():
 	
 	# 如果附近有可攻击的建筑物，50%概率返回"正在和小兵交战"
 	if nearby_buildings.size() > 0 and randf() < 0.5:
-		return "正在和小兵交战"
+		return "附近有兵线"
 	
 	# 检查附近是否有中立单位（野怪）
 	for p in nearby_pawns:
 		if p.camp == "NEUTRAL":
-			return "正在和野怪交战"
+			return "附近有野怪"
 
 	# 默认返回空字符串
 	return ""
@@ -623,6 +791,8 @@ func get_on_lane():
 func is_attackable():
 	if type == "BUILDING":
 		match pawn_name:
+			"红方泉水": return false
+			"蓝方泉水": return false
 			"红方水晶":
 				return not simulator.name_poi_dict.get("红方上路高地塔", null).is_alive() or not simulator.name_poi_dict.get("红方中路高地塔", null).is_alive() or not simulator.name_poi_dict.get("红方下路高地塔", null).is_alive()
 			"蓝方水晶":
@@ -662,31 +832,49 @@ func get_self_status():
 	if camp == "BLUE":
 		var name_string = "“" + npc.npc_name + "”"
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
-		status += name_string + "的" + get_health() + "。"
+		status += name_string + "" + get_health() + "。"
 		status += name_string + get_kda() + "。"
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
+	
+	return status
+
+
+func get_status():
+	var status = ""
+
+	if camp == "BLUE":
+		var name_string = "<我方-" + npc.npc_name + "-" + pawn_name + ">"
+		status += name_string + "是我方" + lane + "，"
+		status += get_health() + "，"
+		status += get_kda() + "，"
+		status += "在" + get_region() + "附近"
+		if get_on_lane() != "":
+			status += get_on_lane() + "。"
+		else:
+			status += "。"
 
 	elif camp == "RED":
-		var name_string = pawn_name
-		status += name_string + "是敌方英雄。"
-		status += name_string + "是" + lane + "。"
-		status += name_string + "的" + get_health() + "。"
-		status += name_string + get_kda() + "。"
+		var name_string = "<敌方-" + pawn_name + ">"
+		status += name_string + "是" + lane + "，"
+		status += get_health() + "，"
+		status += get_kda() + "，"
+		status += "在" + get_region() + "附近"
 		if get_on_lane() != "":
-			status += name_string + get_on_lane() + "。"
-		status += name_string + "在" + get_region() + "附近。"
+			status += get_on_lane() + "。"
+		else:
+			status += "。"
 
 	return status
 		
 
 func get_player_status():
 	var player_pawn = GameManager.player.pawn
-	var status = player_pawn.get_self_status()
+	var status = player_pawn.get_status()
 
-	if player_pawn in nearby_pawns:
-		status += "“玩家”在" + "”" + npc.npc_name + "”" + "附近。"
+	# if player_pawn in nearby_pawns:
+	# 	status += "“玩家”在" + "”" + npc.npc_name + "”" + "附近。"
 
 	return status
 
@@ -708,7 +896,7 @@ func get_builing_status():
 
 	for p in simulator.name_poi_dict.values():
 		print(p.pawn_name)
-		if p.type == "BUILDING":
+		if p.type == "BUILDING" and p.pawn_name.contains("塔"):
 			if p.is_alive():
 				remaining_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
 			else:
@@ -729,13 +917,88 @@ func get_scenario_stirng():
 		if p.type == "CHARACTER" and p.camp != camp:
 			scenario += p.get_in_sight_status() + "\n"
 
-	scenario += "\n[不在附近但在视野中的英雄]\n"
+	scenario += "\n[不在附近但在视野可见的英雄]\n"
 	for p in simulator.name_pawn_dict.values():
-		if p.type == "CHARACTER" and p not in nearby_pawns:
-			scenario += p.get_in_sight_status() + "\n"
+		if p.type == "CHARACTER" and p not in nearby_pawns and p.visible_to_blue and p != self:
+			scenario += p.get_status() + "\n"
 
 	scenario += "\n[附近防御塔]\n"
 	scenario += get_builing_status() + "\n"
 	
 	
 	return scenario
+
+# 鼠标进入按钮时显示虚线
+func _on_button_mouse_entered():
+	# 只有在非拖动状态下才显示虚线
+	if not dragging:
+		show_target_line = true
+		queue_redraw()  # 触发重绘
+
+# 鼠标离开按钮时隐藏虚线
+func _on_button_mouse_exited():
+	# 无论是否在拖动，都隐藏虚线
+	show_target_line = false
+	queue_redraw()  # 触发重绘
+
+# 重写_draw方法来绘制虚线
+func _draw():
+	# 如果正在拖动且有悬停目标
+	if dragging and hover_target != null:
+		# 绘制从起始位置到悬停目标的虚线
+		var start_pos = to_local(drag_start_position)
+		var target_pos = to_local(hover_target.global_position)
+		
+		# 根据阵营选择颜色
+		var line_color
+		match camp:
+			"BLUE":
+				line_color = Color.BLUE
+			"RED":
+				line_color = Color.RED
+			"NEUTRAL":
+				line_color = Color.GRAY
+		
+		# 绘制虚线
+		custom_draw_dashed_line(start_pos, target_pos, line_color, 2.0, 5.0)
+	# 如果显示目标线且有移动目标
+	elif show_target_line and move_target != null and move_target.is_alive():
+		# 获取目标位置（相对于当前pawn的局部坐标）
+		var target_pos = to_local(move_target.global_position)
+		
+		# 根据阵营选择颜色
+		var line_color
+		match camp:
+			"BLUE":
+				line_color = Color.BLUE
+			"RED":
+				line_color = Color.RED
+			"NEUTRAL":
+				line_color = Color.GRAY
+		
+		# 绘制虚线
+		custom_draw_dashed_line(Vector2.ZERO, target_pos, line_color, 2.0, 5.0)
+
+# 绘制虚线的辅助方法
+func custom_draw_dashed_line(from, to, color, width, dash_length):
+	var length = from.distance_to(to)
+	var normal = (to - from).normalized()
+	var dash_step = normal * dash_length
+	
+	var current = from
+	var drawn = 0.0
+	
+	while drawn < length:
+		var next = current + dash_step
+		if drawn + dash_length > length:
+			next = to
+		
+		draw_line(current, next, color, width)
+		
+		# 移动到下一段虚线的起点（跳过一段空白）
+		current = next + dash_step
+		drawn += dash_length * 2.0
+		
+		# 确保不会超出总长度
+		if drawn >= length:
+			break

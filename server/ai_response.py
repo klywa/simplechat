@@ -21,6 +21,7 @@ def get_ai_response(request, api_key):
         chat_history = request.get("messages", ""),
         instructions = request.get("instructions", ""),
         scenario = request.get("scenario", ""),
+        knowledge = request.get("knowledge", "")
     )
     print(prompt)
     

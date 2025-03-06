@@ -30,7 +30,7 @@ var name_poi_dict : Dictionary = {}
 
 var name_pawn_dict : Dictionary = {}
 
-var init_random_range : int = 100
+var init_random_range : int = 30
 var chat: Chat
 
 const PAWN_SCENE = preload("res://scenes/simulator/pawn.tscn")
@@ -76,6 +76,7 @@ func init(chat_in: Chat):
 			pawns.add_child(new_pawn)
 			new_pawn._show()
 			npc.pawn = new_pawn
+			npc.origin_pawn = new_pawn
 			new_pawn.add_to_group("hero")
 
 			name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
@@ -86,7 +87,10 @@ func init(chat_in: Chat):
 				"上路":
 					new_pawn.position = name_poi_dict["蓝方上路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 				"打野":
-					new_pawn.position = name_poi_dict["蓝方蓝Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+					if randf() < 0.5:
+						new_pawn.position = name_poi_dict["蓝方蓝Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+					else:
+						new_pawn.position = name_poi_dict["蓝方红Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 				"中路":
 					new_pawn.position = name_poi_dict["蓝方中路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 				"下路":
@@ -118,7 +122,10 @@ func init(chat_in: Chat):
 			"上路":
 				new_pawn.position = name_poi_dict["红方上路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 			"打野":
-				new_pawn.position = name_poi_dict["红方蓝Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+				if randf() < 0.5:
+					new_pawn.position = name_poi_dict["红方蓝Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+				else:
+					new_pawn.position = name_poi_dict["红方红Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 			"中路":
 				new_pawn.position = name_poi_dict["红方中路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 			"下路":
@@ -132,6 +139,14 @@ func init(chat_in: Chat):
 		new_pawn.position.y = clamp(new_pawn.position.y, 0, map_size.y * map.scale.y)
 
 
+	name_pawn_dict["暴君"].die()
+	name_pawn_dict["主宰"].die()
+
+	for pawn in name_pawn_dict.values():
+		if pawn.type == "CHARACTER":
+			pawn.set_init_move_target()
+
+
 func simulate():
 	for pawn in name_pawn_dict.values():
 
@@ -141,6 +156,7 @@ func simulate():
 				pawn.money += randi() % 10
 				if randi() % 100 < 10:
 					pawn.level += 1
+					pawn.level = min(pawn.level, 25)
 				
 				
 				pawn.random_move()
@@ -150,7 +166,10 @@ func simulate():
 				if pawn.is_alive() and other.is_alive() and other.camp != pawn.camp and pawn.is_attackable():
 					var damage : int = 0
 					if other.type == "CHARACTER":
-						damage = randi() % 100
+						if other.lane == "辅助":
+							damage = randi() % 20
+						else:
+							damage = randi() % 50
 					elif other.type == "BUILDING":
 						damage = randi() % 50
 					elif other.type == "MONSTER":
