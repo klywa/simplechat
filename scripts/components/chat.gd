@@ -99,7 +99,72 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 
 	if auxiliary.get("skip_save", false):
 		tmp_message.skip_save = true
+	
+	if auxiliary.get("npc_name", "") != "":
+		tmp_message.npc_name = auxiliary.get("npc_name", "")
+	else:
+		tmp_message.npc_name = sender.npc_name
 
+	if auxiliary.get("npc_setting", "") != "":
+		tmp_message.npc_setting = auxiliary.get("npc_setting", "")
+	else:
+		tmp_message.npc_setting = sender.npc_setting
+
+	if auxiliary.get("npc_style", "") != "":
+		tmp_message.npc_style = auxiliary.get("npc_style", "")
+	else:
+		tmp_message.npc_style = sender.npc_style
+
+	if auxiliary.get("npc_example", "") != "":
+		tmp_message.npc_example = auxiliary.get("npc_example", "")
+	else:
+		tmp_message.npc_example = sender.npc_example
+
+	if auxiliary.get("npc_status", "") != "":
+		tmp_message.npc_status = auxiliary.get("npc_status", "")
+	else:
+		tmp_message.npc_status = sender.npc_status
+
+	if auxiliary.get("npc_story", "") != "":
+		tmp_message.npc_story = auxiliary.get("npc_story", "")
+	else:
+		tmp_message.npc_story = sender.npc_story
+
+	if auxiliary.get("npc_inventory", {}).size() > 0:
+		tmp_message.npc_inventory = auxiliary.get("npc_inventory", "")
+	else:
+		tmp_message.npc_inventory = sender.npc_inventory
+
+	if auxiliary.get("npc_skill", {}).size() > 0:
+		tmp_message.npc_skill = auxiliary.get("npc_skill", "")
+	else:
+		tmp_message.npc_skill = sender.npc_skill
+
+	if auxiliary.get("npc_hero_name", "") != "":
+		tmp_message.npc_hero_name = auxiliary.get("npc_hero_name", "")
+	else:
+		tmp_message.npc_hero_name = sender.hero_name
+
+	if auxiliary.get("npc_hero_lane", "") != "":
+		tmp_message.npc_hero_lane = auxiliary.get("npc_hero_lane", "")
+	else:
+		tmp_message.npc_hero_lane = sender.hero_lane
+
+	if auxiliary.get("player_hero_name", "") != "":
+		tmp_message.player_hero_name = auxiliary.get("player_hero_name", "")
+	else:
+		tmp_message.player_hero_name = GameManager.player.hero_name
+
+	if auxiliary.get("player_hero_lane", "") != "":
+		tmp_message.player_hero_lane = auxiliary.get("player_hero_lane", "")
+	else:
+		tmp_message.player_hero_lane = GameManager.player.hero_lane
+
+	if auxiliary.get("instructions", "") != "":
+		tmp_message.instructions = auxiliary.get("instructions", "")
+	else:
+		tmp_message.instructions = GameManager.ai_instructions
+	
 	var current_time = Time.get_datetime_string_from_system(false, true)
 	current_time = current_time.replace(" ", "-").replace(":", "-")
 	tmp_message.time = current_time
@@ -252,7 +317,7 @@ func save_to_json(json_file_path: String):
 	for message in messages:
 		# print("scenario", message.sender.scenario)
 		var tmp_message = {
-			"npc_name": message.sender.npc_name,
+			"npc_name": message.npc_name,
 			"message": message.message,
 			"negative_message": message.negative_message,
 			"score": message.score,
@@ -262,19 +327,19 @@ func save_to_json(json_file_path: String):
 			"query": message.query,
 			"model_version": message.model_version,
 			"npc_type": "",
-			"npc_setting": message.sender.npc_setting,
-			"npc_style": message.sender.npc_style,
-			"npc_example": message.sender.npc_example,
-			"npc_status": message.sender.npc_status,
-			"npc_story": message.sender.npc_story,
+			"npc_setting": message.npc_setting,
+			"npc_style": message.npc_style,
+			"npc_example": message.npc_example,
+			"npc_status": message.npc_status,
+			"npc_story": message.npc_story,
 			"scenario": message.scenario,
-			"npc_inventory": message.sender.npc_inventory,
-			"npc_skill": message.sender.npc_skill,
-			"npc_hero_name": message.sender.hero_name,
-			"npc_hero_lane": message.sender.hero_lane,
-			"player_hero_name": GameManager.player.hero_name,
-			"player_hero_lane": GameManager.player.hero_lane,
-			"instructions": GameManager.ai_instructions,
+			"npc_inventory": message.npc_inventory,
+			"npc_skill": message.npc_skill,
+			"npc_hero_name": message.npc_hero_name,
+			"npc_hero_lane": message.npc_hero_lane,
+			"player_hero_name": message.player_hero_name,
+			"player_hero_lane": message.player_hero_lane,
+			"instructions": message.instructions,
 		}
 		match message.sender.npc_type:
 			NPC.NPCType.NPC:
@@ -362,6 +427,19 @@ func load_from_json(json_file_path: String):
 			"query": message["query"],
 			"model_version": message["model_version"],
 			"abandon": message.get("abandon", false),
+			"npc_name": message["npc_name"],
+			"npc_setting": message["npc_setting"],
+			"npc_style": message["npc_style"],
+			"npc_example": message["npc_example"],
+			"npc_status": message["npc_status"],
+			"npc_story": message["npc_story"],
+			"npc_inventory": message["npc_inventory"],
+			"npc_skill": message["npc_skill"],
+			"npc_hero_name": message["npc_hero_name"],
+			"npc_hero_lane": message["npc_hero_lane"],
+			"player_hero_name": message["player_hero_name"],
+			"player_hero_lane": message["player_hero_lane"],
+			"instructions": message["instructions"],
 		}, false)
 		
 	json_file.close()
@@ -403,5 +481,3 @@ func get_pipeline_messages() -> Array:
 				}
 			)
 	return pipeline_messages
-
-

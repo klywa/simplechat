@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://0k428716fuul"]
+[gd_scene load_steps=16 format=3 uid="uid://0k428716fuul"]
 
 [ext_resource type="Texture2D" uid="uid://yljchi6a0dk7" path="res://assets/tileset/miniworld.png" id="1_742q4"]
 [ext_resource type="Script" path="res://scripts/simulator/pawn.gd" id="1_t3l22"]
@@ -52,6 +52,31 @@ radius = 66.0076
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_emxjd"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35ei6"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cu4u1"]
+bg_color = Color(0.6, 0.14, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r32d2"]
+atlas = ExtResource("1_742q4")
+region = Rect2(64, 96, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6kvk0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r32d2")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="Pawn" type="Node2D"]
 script = ExtResource("1_t3l22")
 
@@ -103,14 +128,14 @@ shape = SubResource("CapsuleShape2D_emxjd")
 
 [node name="PopupPanel" type="PopupPanel" parent="."]
 initial_position = 1
-size = Vector2i(600, 600)
+size = Vector2i(880, 620)
 theme = ExtResource("2_da0j3")
 
 [node name="PanelContainer" type="PanelContainer" parent="PopupPanel"]
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 596.0
-offset_bottom = 596.0
+offset_right = 876.0
+offset_bottom = 616.0
 
 [node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer"]
 layout_mode = 2
@@ -123,10 +148,21 @@ theme_override_constants/margin_bottom = 24
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "英雄名"
 horizontal_alignment = 1
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer4"]
+layout_mode = 2
+text = "目标"
+
+[node name="TargetDropdown" type="OptionButton" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer4"]
+layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -140,6 +176,10 @@ text = "血量"
 layout_mode = 2
 placeholder_text = "血量"
 
+[node name="ReviveButton" type="Button" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "复活"
+
 [node name="HBoxContainer2" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -148,9 +188,17 @@ theme_override_constants/separation = 12
 layout_mode = 2
 text = "等级"
 
-[node name="LineEdit" type="LineEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+[node name="Level" type="LineEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 placeholder_text = "等级"
+
+[node name="Label2" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "经济"
+
+[node name="Money" type="LineEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+placeholder_text = "经济"
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -163,13 +211,41 @@ text = "击败"
 [node name="KillTarget" type="OptionButton" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 allow_reselect = true
-item_count = 3
-popup/item_0/text = "英雄1"
-popup/item_1/text = "英雄2"
-popup/item_1/id = 1
-popup/item_2/text = "防御塔1"
-popup/item_2/id = 2
+
+[node name="Label2" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+text = "助攻"
+
+[node name="Assist" type="OptionButton" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+allow_reselect = true
+item_count = 1
+popup/item_0/text = "无"
 
 [node name="KillSubmit" type="Button" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 text = "提交"
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+offset_left = -24.0
+offset_top = -74.0
+offset_right = 24.0
+offset_bottom = -63.0
+theme = ExtResource("2_da0j3")
+theme_override_constants/outline_size = 5
+theme_override_styles/background = SubResource("StyleBoxFlat_35ei6")
+theme_override_styles/fill = SubResource("StyleBoxFlat_cu4u1")
+value = 50.0
+show_percentage = false
+
+[node name="ShieldFlag" type="AnimatedSprite2D" parent="."]
+position = Vector2(-27, 26)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_6kvk0")
+
+[node name="MoveTarget" type="Label" parent="."]
+offset_left = -20.0
+offset_top = 50.0
+offset_right = 20.0
+offset_bottom = 72.3333
+horizontal_alignment = 1

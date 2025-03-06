@@ -26,6 +26,12 @@ UUIDGenerator="*res://scenes/manager/uuid_generator.tscn"
 window/size/viewport_width=2400
 window/size/viewport_height=1600
 
+[global_group]
+
+tower=""
+hero=""
+monster=""
+
 [gui]
 
 theme/default_font_multichannel_signed_distance_field=true

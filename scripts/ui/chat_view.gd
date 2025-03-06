@@ -27,6 +27,7 @@ enum ChatType {
 @onready var join_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/JoinChat
 @onready var leave_group_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/LeaveChat
 @onready var clear_chat_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/ClearChat
+@onready var new_button := $ChatContainer/ScenePanel/MarginContainer2/RightCornerButtonList/NewButton
 @onready var save_button := $ChatContainer/NamePanel/MarginContainer/VBoxContainer/SaveButton
 @onready var load_button := $ChatContainer/NamePanel/MarginContainer/VBoxContainer/LoadButton
 @onready var save_panel := $SavePanel
@@ -75,6 +76,7 @@ func _ready() -> void:
 	join_group_chat_button.pressed.connect(on_join_group_chat_button_pressed)
 	leave_group_chat_button.pressed.connect(on_leave_group_chat_button_pressed)
 
+	new_button.pressed.connect(on_new_button_pressed)
 	save_button.pressed.connect(on_save_button_pressed)
 	load_button.pressed.connect(on_load_button_pressed)
 	# confirm_save_button.pressed.connect(on_confirm_save_button_pressed)
@@ -515,3 +517,7 @@ func on_expand_button_pressed() -> void:
 		expand_button.text = "<"
 
 
+func on_new_button_pressed() -> void:
+	on_member_button_pressed()
+	on_random_member_button_pressed()
+	on_accept_member_button_pressed()

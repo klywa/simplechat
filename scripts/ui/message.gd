@@ -18,8 +18,22 @@ var abandon : bool = false
 var time : String = ""
 var elapsed_time : String = ""
 var char_count : int = 0
-var scenario : String = ""
 var skip_save : bool = false
+
+var npc_name : String = ""
+var npc_setting : String = ""
+var npc_style : String = ""
+var npc_example : String = ""
+var npc_status : String = ""
+var npc_story : String = ""
+var npc_inventory : Variant
+var scenario : String = ""
+var npc_skill : Variant
+var npc_hero_name : String = ""
+var npc_hero_lane : String = ""
+var player_hero_name : String = ""
+var player_hero_lane : String = ""
+var instructions : String = ""
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel

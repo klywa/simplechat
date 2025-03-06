@@ -28,7 +28,10 @@ var blue_pawns: Array[Pawn] = []
 var red_pawns: Array[Pawn] = []
 var name_poi_dict : Dictionary = {}
 
+var name_pawn_dict : Dictionary = {}
+
 var init_random_range : int = 100
+var chat: Chat
 
 const PAWN_SCENE = preload("res://scenes/simulator/pawn.tscn")
 
@@ -43,12 +46,20 @@ func _ready() -> void:
 	tile_size = map.ground_layer.tile_set.tile_size
 	map_size = map_rect.size * tile_size
 
-func init(chat: Chat):
+func init(chat_in: Chat):
+	chat = chat_in
+
+	name_pawn_dict.clear()
+	for p_name in name_poi_dict:
+		name_pawn_dict[p_name] = name_poi_dict[p_name]
 
 	# 清除所有pawn的子节点
 	for child in pawns.get_children():
 		pawns.remove_child(child)
 		child.queue_free()
+		
+	for pawn in name_pawn_dict.values():
+		pawn.revive()
 
 	for npc_name in chat.members:
 		var npc = chat.members[npc_name]
@@ -65,6 +76,9 @@ func init(chat: Chat):
 			pawns.add_child(new_pawn)
 			new_pawn._show()
 			npc.pawn = new_pawn
+			new_pawn.add_to_group("hero")
+
+			name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
 			
 			print("movable: ", new_pawn.moveable)
 
@@ -96,6 +110,9 @@ func init(chat: Chat):
 		new_pawn.type = "CHARACTER"
 		pawns.add_child(new_pawn)
 		new_pawn._show()
+		new_pawn.add_to_group("hero")
+
+		name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
 
 		match new_pawn.lane:
 			"上路":
@@ -113,3 +130,73 @@ func init(chat: Chat):
 		
 		new_pawn.position.x = clamp(new_pawn.position.x, 0, map_size.x * map.scale.x)
 		new_pawn.position.y = clamp(new_pawn.position.y, 0, map_size.y * map.scale.y)
+
+
+func simulate():
+	for pawn in name_pawn_dict.values():
+
+		if pawn.is_alive():
+			if pawn.type == "CHARACTER":
+
+				pawn.money += randi() % 10
+				if randi() % 100 < 10:
+					pawn.level += 1
+				
+				
+				pawn.random_move()
+		
+
+			for other in pawn.nearby_pawns:
+				if pawn.is_alive() and other.is_alive() and other.camp != pawn.camp and pawn.is_attackable():
+					var damage : int = 0
+					if other.type == "CHARACTER":
+						damage = randi() % 100
+					elif other.type == "BUILDING":
+						damage = randi() % 50
+					elif other.type == "MONSTER":
+						damage = randi() % 20
+				
+					if damage > pawn.hp:
+						var killer = other
+						# 从附近的不同阵营角色中随机选择一些作为助攻
+						var assist_pawns = []
+						var potential_assists = []
+						
+						# 收集所有附近的、与被击杀者阵营不同的角色型单位
+						for nearby in other.nearby_pawns:
+							if nearby != killer and nearby.is_alive() and nearby.camp == killer.camp and nearby.type == "CHARACTER":
+								potential_assists.append(nearby)
+						
+						# 随机决定有多少个助攻（0-3个）
+						var assist_count = min(randi() % 4, potential_assists.size())
+						
+						# 随机选择助攻
+						potential_assists.shuffle()
+						for i in range(assist_count):
+							if i < potential_assists.size():
+								assist_pawns.append(potential_assists[i])
+						
+						# 处理击杀
+						if pawn.type == "CHARACTER":
+							pawn.killed_by(killer, assist_pawns)
+						else:
+							pawn.killed_by(killer)
+					elif damage > 0:
+						pawn.take_damage(damage)
+
+			
+			if pawn.type == "CHARACTER":
+				var has_other_camp_nearby = false
+				for nearby in pawn.nearby_pawns:
+					if nearby.is_alive() and nearby.camp != pawn.camp:
+						has_other_camp_nearby = true
+						break
+				
+				if not has_other_camp_nearby:
+					pawn.heal(randi() % 20 + 10)
+		else:
+			if pawn.type in ["CHARACTER", "MONSTER"]:
+				pawn.revive_count_down -= 1
+				if pawn.revive_count_down <= 0:
+					pawn.revive()
+

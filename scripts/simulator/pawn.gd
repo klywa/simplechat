@@ -3,7 +3,7 @@ extends Node2D
 
 @export var pawn_name: String
 @export var moveable: bool = true
-@export var max_speed: float = 1.0
+@export var max_speed: float = 100
 @export_enum("BLUE", "RED", "NEUTRAL") var camp: String = "NEUTRAL"
 @export_enum("CHARACTER", "BUILDING", "RESOURCE", "MONSTER") var type: String = "CHARACTER"
 @export_enum("上路", "打野", "中路", "辅助", "下路") var lane: String
@@ -11,6 +11,7 @@ extends Node2D
 @onready var button = $Button
 var move_speed : float
 
+var simulator : KoHSimulator
 var map : KohMap
 var dragging = false
 var dragged = false
@@ -21,7 +22,15 @@ var map_rect
 var tile_size
 var map_size
 
+var kill_number : int = 0
+var death_number : int = 0
+var assist_number : int = 0
+
+var move_target : Pawn = null
+@onready var move_target_label := $MoveTarget
+
 @onready var camp_color_flag := $CampColor
+@onready var shield_flag := $ShieldFlag
 @onready var name_label := $Name
 @onready var sprite := $Sprite
 @onready var popup_panel := $PopupPanel
@@ -29,9 +38,28 @@ var map_size
 @onready var body_shape := $BodyArea
 @onready var detect_shape := $DetectArea
 
+@onready var health_bar := $HealthBar
+
+@onready var move_target_dropdown := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer4/TargetDropdown
+@onready var kill_target_dropdown := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3/KillTarget
+@onready var assist_dropdown := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3/Assist
+@onready var submit_kill_button := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3/KillSubmit
+
+@onready var hp_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/HP
+
+@onready var level_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Level
+
+@onready var revive_button := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ReviveButton
+
+@onready var popup_panel_title := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/Title
+
 var npc : NPC
 var hp : int = 100
+var level : int = 1
+var money : int = 0
+var revive_count_down : int = 0
 var visible_to_blue : bool = true
+var nearby_pawns : Array[Pawn] = []
 
 const PAWN_SCENE = preload("res://scenes/simulator/pawn.tscn")
 
@@ -54,7 +82,9 @@ static func create_pawn(map: KohMap, npc: NPC, name: String, camp: String, lane:
 
 func _ready() -> void:
 
+	simulator = get_parent().get_parent().get_parent()
 	map = get_parent().get_parent()
+
 
 	if not map.is_node_ready():
 		await map.ready
@@ -66,6 +96,17 @@ func _ready() -> void:
 	button.button_down.connect(_on_button_down)
 	button.button_up.connect(_on_button_up)
 	button.pressed.connect(_on_button_pressed)
+
+	hp_editor.text_submitted.connect(_on_hp_editor_changed)
+	level_editor.text_submitted.connect(_on_level_editor_changed)
+
+	revive_button.pressed.connect(_on_revive_button_pressed)
+
+	submit_kill_button.pressed.connect(_on_submit_kill_button_pressed)
+	
+	# 连接检测区域的信号
+	detect_shape.area_entered.connect(_on_detect_area_entered)
+	detect_shape.area_exited.connect(_on_detect_area_exited)
 
 	move_speed = max_speed * scale.x
 
@@ -87,18 +128,20 @@ func _ready() -> void:
 			moveable = false
 			name_label.visible = false
 			sprite.visible = false
-			camp_color_flag.modulate.a = 0.2
+			camp_color_flag.modulate.a = 0.5
+			health_bar.modulate.a = 0.0
 		"RESOURCE":
 			moveable = false
 			name_label.visible = false
 			sprite.visible = false
 			camp_color_flag.modulate.a = 0.2
+			health_bar.modulate.a = 0.0
 		"MONSTER":
 			moveable = false
 			name_label.visible = false
 			sprite.visible = false
 			camp_color_flag.modulate.a = 0.2
-
+			health_bar.modulate.a = 0.0
 	name_label.text = pawn_name
 
 func _show():
@@ -116,10 +159,12 @@ func _on_button_up():
 	dragging = false
 	if get_global_mouse_position().distance_to(drag_start_position) > 1:
 		dragged = true
+		reselect_move_target()
 	else:
 		dragged = false
 
 func _process(_delta):
+
 	if dragging:
 		var new_pos = get_global_mouse_position() - drag_start
 		
@@ -131,19 +176,43 @@ func _process(_delta):
 		if position.distance_to(drag_start_position) > 1:
 			dragged = true
 
-	if camp == "RED" and not visible_to_blue:
-		sprite.modulate.a = 0.5
-		camp_color_flag.modulate.a = 0.5
+	if move_target == null or not move_target.is_alive():
+		reselect_move_target()
+
+	# 根据可见性状态更新显示
+	if camp == "RED":
+		if visible_to_blue:
+			sprite.modulate.a = 1.0
+			camp_color_flag.modulate.a = 1.0
+		else:
+			sprite.modulate.a = 0.5
+			camp_color_flag.modulate.a = 0.5
+
+	health_bar.value = hp
+	move_target_label.text = move_target.get_unique_name() if move_target != null else ""
+
+	if is_attackable():
+		shield_flag.visible = false
+	else:
+		shield_flag.visible = true
 
 func random_move():
 	if dragging:
 		return
 
 	# 生成随机方向
-	var random_direction = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized()
+	var random_direction
+	if move_target != null:
+		# 如果有目标，朝目标方向移动
+		var direction_to_target = (move_target.position - position).normalized()
+		random_direction = direction_to_target
+	else:
+		# 如果没有目标或目标已死亡，随机移动
+		random_direction = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized()
+		reselect_move_target()
 	
 	# 计算随机移动距离
-	var random_distance = randf_range(0, move_speed)
+	var random_distance = randf_range(move_speed * 0.5, move_speed)
 	
 	# 计算新位置
 	var random_x = position.x + random_direction.x * random_distance
@@ -158,9 +227,493 @@ func random_move():
 
 
 func _on_button_pressed():
-	if not dragged:
+	popup_panel_title.text = pawn_name
+
+	if not dragged or not moveable:
 		popup_panel.visible = true
+
+		move_target_dropdown.clear()
+		for p in simulator.name_pawn_dict.values():
+			var unique_name = p.get_unique_name()
+			move_target_dropdown.add_item(unique_name)
+		
+		# 选择当前的移动目标
+		if move_target != null:
+			var target_unique_name = move_target.get_unique_name()
+			for i in range(move_target_dropdown.get_item_count()):
+				if move_target_dropdown.get_item_text(i) == target_unique_name:
+					move_target_dropdown.select(i)
+					break
+
+		kill_target_dropdown.clear()
+		for p in simulator.name_pawn_dict.values():
+			if p.camp != camp and p.is_attackable():
+				var unique_name = p.get_unique_name()
+				kill_target_dropdown.add_item(unique_name)
+	
+		for p in simulator.name_pawn_dict.values():
+			if p.camp == camp and p.type == "CHARACTER" and p != self:
+				var unique_name = p.get_unique_name()
+				var found = false
+				for i in range(assist_dropdown.get_item_count()):
+					if assist_dropdown.get_item_text(i) == unique_name:
+						found = true
+						break
+				
+				if not found:
+					assist_dropdown.add_item(unique_name)
+	
+		hp_editor.text = str(hp)
+		level_editor.text = str(level)
 
 func is_alive():
 	return hp > 0
 
+func get_unique_name():
+	if type == "CHARACTER":
+		var prefix = "红" if camp == "RED" else "蓝"
+		return prefix + "-" + pawn_name
+	else:
+		return pawn_name
+
+# 当其他pawn进入检测区域时调用
+func _on_detect_area_entered(area: Area2D) -> void:
+	# 检查进入的区域是否是另一个pawn的body_shape
+	if area.get_parent() is Pawn and area.name == "BodyArea":
+		var other_pawn = area.get_parent() as Pawn
+		if other_pawn != self and not nearby_pawns.has(other_pawn):
+			nearby_pawns.append(other_pawn)
+			print("%s检测到%s进入范围" % [pawn_name, other_pawn.pawn_name])
+			
+			# 如果自己是RED阵营，且进入的pawn是BLUE阵营
+			if camp == "RED" and other_pawn.camp == "BLUE":
+				if not visible_to_blue:
+					visible_to_blue = true
+					# 更新可见性
+					sprite.modulate.a = 1.0
+					camp_color_flag.modulate.a = 1.0
+					print("%s被BLUE阵营发现，变为可见" % pawn_name)
+
+# 当其他pawn离开检测区域时调用
+func _on_detect_area_exited(area: Area2D) -> void:
+	# 检查离开的区域是否是另一个pawn的body_shape
+	if area.get_parent() is Pawn and area.name == "BodyArea":
+		var other_pawn = area.get_parent() as Pawn
+		if nearby_pawns.has(other_pawn):
+			nearby_pawns.erase(other_pawn)
+			print("%s检测到%s离开范围" % [pawn_name, other_pawn.pawn_name])
+			
+			# 如果自己是RED阵营，且离开的pawn是BLUE阵营
+			if camp == "RED" and other_pawn.camp == "BLUE":
+				# 检查nearby_pawns中是否还有其他BLUE阵营的pawn
+				var has_blue_pawn = false
+				for pawn in nearby_pawns:
+					if pawn.camp == "BLUE":
+						has_blue_pawn = true
+						break
+				
+				# 如果没有其他BLUE阵营的pawn，则变为不可见
+				if not has_blue_pawn:
+					visible_to_blue = false
+					# 立即更新可见性
+					sprite.modulate.a = 0.5
+					camp_color_flag.modulate.a = 0.5
+					print("%s附近没有BLUE阵营单位，变为不可见" % pawn_name)
+
+func send_message(message: String):
+	simulator.chat.add_message(GameManager.system, message)
+
+func killed_by(pawn: Pawn, assist_pawns: Array = []):
+
+	death_number += 1
+	pawn.kill_number += 1
+	pawn.money += randi() % 100
+	for p in assist_pawns:
+		p.assist_number += 1
+		p.money += randi() % 50
+
+	hp = 0
+	var msg = ""
+	var self_name = ""
+	if npc != null:
+		self_name = npc.npc_name + "-" + pawn_name + "-" + lane
+	else:
+		self_name = pawn_name + "-" + lane
+	if camp == "BLUE":
+		self_name = "我方-" + self_name
+	elif camp == "RED":
+		self_name = "敌方-" + self_name
+	
+	var killer_name = ""
+	if pawn.npc != null:
+		killer_name = pawn.npc.npc_name + "-" + pawn.pawn_name + "-" + pawn.lane
+	else:
+		killer_name = pawn.pawn_name + "-" + pawn.lane
+
+	if pawn.camp == "BLUE":
+		killer_name = "我方-" + killer_name
+	elif pawn.camp == "RED":
+		killer_name = "敌方-" + killer_name
+	
+
+	var assist_msg = ""
+
+	if assist_pawns.size() > 0:
+		assist_msg = "助攻："
+		var assist_names = []
+		for p in assist_pawns:
+			var tmp_name = ""
+			if p.npc != null:
+				tmp_name = p.npc.npc_name + "-" + p.pawn_name + "-" + p.lane
+			else:
+				tmp_name = p.pawn_name + "-" + p.lane
+			if p.camp == "BLUE":
+				tmp_name = "我方-" + tmp_name
+			else:
+				tmp_name = "敌方-" + tmp_name
+			assist_names.append(tmp_name)
+		assist_msg += ",".join(assist_names)
+		assist_msg = "(" + assist_msg + ")"
+
+	match type:
+		"CHARACTER":
+			match camp:
+				"RED":
+					msg = "%s击杀了%s。%s" % [killer_name, self_name, assist_msg]
+				"BLUE":
+					msg = "%s被%s击杀。%s" % [self_name, killer_name, assist_msg]
+				"NEUTRAL":
+					if pawn.camp == "RED":
+						msg = "%s击杀了%s。" % [killer_name, self_name]
+					else:
+						msg = "%s击杀了%s。" % [killer_name, self_name]
+		"BUILDING":
+			match camp:
+				"BLUE":
+					msg = "%s被%s摧毁。" % [self_name, killer_name]
+				"RED":
+					msg = "%s摧毁了%s。" % [killer_name, self_name]
+				"NEUTRAL":
+					msg = "%s摧毁了%s。" % [killer_name, self_name]
+		"MONSTER":
+			match camp:
+				"NEUTRAL":
+					msg = "%s击杀了%s。" % [killer_name, self_name]
+				"BLUE":
+					msg = "%s被%s击杀。" % [self_name, killer_name]
+				"RED":
+					msg = "%s击杀了%s。" % [killer_name, self_name]
+
+	die()
+	send_message(msg)
+
+func take_damage(damage: int):
+	var origin_hp = hp
+	hp -= damage
+	if hp <= 0:
+		die()
+	
+	if origin_hp >= 50 and hp < 50:
+		reselect_move_target()
+
+func heal(heal: int):
+	var origin_hp = hp
+	hp += heal
+	if hp > 100:
+		hp = 100
+	
+	if origin_hp < 100 and hp >= 100:
+		reselect_move_target()
+
+func reselect_move_target():
+
+	move_target = null
+	if type != "CHARACTER":
+		return 
+	
+	# 如果血量大于50，选择非我方pawn作为目标，否则选择我方pawn作为目标
+	if hp > 50:
+		# 寻找非我方的pawn
+		var potential_targets = []
+		for pawn in simulator.name_pawn_dict.values():
+			if pawn.camp != camp and pawn.is_alive() and pawn.is_attackable():
+				potential_targets.append(pawn)
+		
+		# 如果有可用目标，随机选择一个
+		if potential_targets.size() > 0:
+			var random_index = randi() % potential_targets.size()
+			move_target = potential_targets[random_index]
+	else:
+		# 寻找我方的pawn
+		var potential_targets = []
+		for pawn in simulator.name_pawn_dict.values():
+			if pawn.camp == camp and pawn.is_alive():
+				potential_targets.append(pawn)
+		
+		# 如果有可用目标，随机选择一个
+		if potential_targets.size() > 0:
+			var random_index = randi() % potential_targets.size()
+			move_target = potential_targets[random_index]
+		
+
+func _on_submit_kill_button_pressed():
+	var target_name = kill_target_dropdown.text
+	
+	var killed_pawn = simulator.name_pawn_dict.get(target_name, null)
+
+	var assist_pawn_names = assist_dropdown.text.split(",")
+	var assist_pawns = []
+	for p_name in assist_pawn_names:
+		var p = simulator.name_pawn_dict.get(p_name, null)
+		if p != null:
+			assist_pawns.append(p)
+
+	if killed_pawn != null:
+		killed_pawn.killed_by(self, assist_pawns)
+
+	popup_panel.visible = false
+
+func _on_hp_editor_changed(value: String):
+	hp = int(value)
+	if hp <= 0:
+		die()
+
+func _on_level_editor_changed(value: String):
+	level = int(value)
+
+func _on_revive_button_pressed():
+	revive()
+	popup_panel.visible = false
+	
+func die():
+	hp = 0
+	if type == "CHARACTER":
+		revive_count_down = 10
+	elif type == "MONSTER":
+		revive_count_down = 40
+
+	match type:
+		"CHARACTER":
+			if camp == "RED":
+				position = simulator.name_poi_dict["红方水晶"].position + Vector2(randf_range(-simulator.init_random_range, simulator.init_random_range), randf_range(-simulator.init_random_range, simulator.init_random_range))
+				position.x = clamp(position.x, 0, map_size.x * map.scale.x)
+				position.y = clamp(position.y, 0, map_size.y * map.scale.y)
+			else:
+				position = simulator.name_poi_dict["蓝方水晶"].position + Vector2(randf_range(-simulator.init_random_range, simulator.init_random_range), randf_range(-simulator.init_random_range, simulator.init_random_range))
+				position.x = clamp(position.x, 0, map_size.x * map.scale.x)
+				position.y = clamp(position.y, 0, map_size.y * map.scale.y)
+		"BUILDING":
+			# sprite.visible = false
+			camp_color_flag.color = Color.BLACK
+		"MONSTER":
+			# sprite.modulate.a = 0.05
+			camp_color_flag.color = Color.BLACK
+
+
+func revive():
+	hp = 100
+	revive_count_down = 0
+	match type:
+		"BUILDING":
+			# sprite.visible = true
+			if camp == "RED":
+				camp_color_flag.color = Color.RED
+			else:
+				camp_color_flag.color = Color.BLUE
+		"MONSTER":
+			# sprite.modulate.a = 0.2
+			camp_color_flag.color = Color.GRAY
+		"CHARACTER":
+			reselect_move_target()
+	
+func get_near_by_pawns():
+	var result = {
+		"hero":{
+			"BLUE": [],
+			"RED": [],
+		},
+		"tower":{
+			"BLUE": [],
+			"RED": [],
+		},
+	}
+	for p in nearby_pawns:
+		if p.is_alive():
+			if p.type == "CHARACTER":
+				result["hero"][p.camp].append(p)
+			elif p.type == "BUILDING":
+				result["tower"][p.camp].append(p)
+	return result
+
+func get_region():
+	var closest = null
+	var min_distance = 100000
+	for p in simulator.name_poi_dict.values():
+		var distance = position.distance_to(p.position)
+		if distance < min_distance:
+			min_distance = distance
+			closest = p
+	if closest.type == "MONSTER":
+		if closest.pawn_name.contains("Buff"):
+			return closest.pawn_name + "野区"
+		else:
+			return closest.pawn_name + "区域"
+	else:
+		return closest.pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
+
+func get_health():
+	if hp < 20:
+		return "血量低"
+	elif hp < 40:
+		return "血量中等"
+	else:
+		return "血量健康"
+
+func get_kda():
+	var kda = (kill_number + assist_number + 0.01) / (death_number + 0.01)
+	if kda < 0.8:
+		return "战绩很差"
+	elif kda < 1.2:
+		return "战绩一般"
+	elif kda < 1.5:
+		return "战绩不错"
+	else:
+		return "战绩超神"
+
+func get_on_lane():
+	# 获取附近的建筑物
+	var nearby_buildings = []
+	for p in nearby_pawns:
+		if p.type == "BUILDING" and p.is_attackable():
+			nearby_buildings.append(p)
+	
+	# 如果附近有可攻击的建筑物，50%概率返回"正在和小兵交战"
+	if nearby_buildings.size() > 0 and randf() < 0.5:
+		return "正在和小兵交战"
+	
+	# 检查附近是否有中立单位（野怪）
+	for p in nearby_pawns:
+		if p.camp == "NEUTRAL":
+			return "正在和野怪交战"
+
+	# 默认返回空字符串
+	return ""
+
+func is_attackable():
+	if type == "BUILDING":
+		match pawn_name:
+			"红方水晶":
+				return not simulator.name_poi_dict.get("红方上路高地塔", null).is_alive() or not simulator.name_poi_dict.get("红方中路高地塔", null).is_alive() or not simulator.name_poi_dict.get("红方下路高地塔", null).is_alive()
+			"蓝方水晶":
+				return not simulator.name_poi_dict.get("蓝方上路高地塔", null).is_alive() or not simulator.name_poi_dict.get("蓝方中路高地塔", null).is_alive() or not simulator.name_poi_dict.get("蓝方下路高地塔", null).is_alive()
+			"红方上路高地塔":
+				return not simulator.name_poi_dict.get("红方上路一塔", null).is_alive() and not simulator.name_poi_dict.get("红方上路二塔", null).is_alive()
+			"蓝方上路高地塔":
+				return not simulator.name_poi_dict.get("蓝方上路一塔", null).is_alive() and not simulator.name_poi_dict.get("蓝方上路二塔", null).is_alive()
+			"红方中路高地塔":
+				return not simulator.name_poi_dict.get("红方中路一塔", null).is_alive() and not simulator.name_poi_dict.get("红方中路二塔", null).is_alive()
+			"蓝方中路高地塔":
+				return not simulator.name_poi_dict.get("蓝方中路一塔", null).is_alive() and not simulator.name_poi_dict.get("蓝方中路二塔", null).is_alive()
+			"红方下路高地塔":
+				return not simulator.name_poi_dict.get("红方下路一塔", null).is_alive() and not simulator.name_poi_dict.get("红方下路二塔", null).is_alive()
+			"蓝方下路高地塔":
+				return not simulator.name_poi_dict.get("蓝方下路一塔", null).is_alive() and not simulator.name_poi_dict.get("蓝方下路二塔", null).is_alive()
+			"红方上路二塔":
+				return not simulator.name_poi_dict.get("红方上路一塔", null).is_alive()
+			"蓝方上路二塔":
+				return not simulator.name_poi_dict.get("蓝方上路一塔", null).is_alive()
+			"红方中路二塔":
+				return not simulator.name_poi_dict.get("红方中路一塔", null).is_alive()
+			"蓝方中路二塔":
+				return not simulator.name_poi_dict.get("蓝方中路一塔", null).is_alive()
+			"红方下路二塔":
+				return not simulator.name_poi_dict.get("红方下路一塔", null).is_alive()
+			"蓝方下路二塔":
+				return not simulator.name_poi_dict.get("蓝方下路一塔", null).is_alive()
+			_:
+				return true
+	else:
+		return true
+
+func get_self_status():
+	var status = ""
+
+	if camp == "BLUE":
+		var name_string = "“" + npc.npc_name + "”"
+		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
+		status += name_string + "的" + get_health() + "。"
+		status += name_string + get_kda() + "。"
+		if get_on_lane() != "":
+			status += name_string + get_on_lane() + "。"
+		status += name_string + "在" + get_region() + "附近。"
+
+	elif camp == "RED":
+		var name_string = pawn_name
+		status += name_string + "是敌方英雄。"
+		status += name_string + "是" + lane + "。"
+		status += name_string + "的" + get_health() + "。"
+		status += name_string + get_kda() + "。"
+		if get_on_lane() != "":
+			status += name_string + get_on_lane() + "。"
+		status += name_string + "在" + get_region() + "附近。"
+
+	return status
+		
+
+func get_player_status():
+	var player_pawn = GameManager.player.pawn
+	var status = player_pawn.get_self_status()
+
+	if player_pawn in nearby_pawns:
+		status += "“玩家”在" + "”" + npc.npc_name + "”" + "附近。"
+
+	return status
+
+
+func get_in_sight_status():
+	var status = ""
+	if camp == "BLUE":
+		var name_string = "<" + npc.npc_name + "-" + pawn_name + "-我方>"
+		status += name_string + "是我方" + lane + "，在" + get_region() + "附近，" + get_health() + "。"
+	elif camp == "RED":
+		var name_string = "<" + pawn_name + "-敌方>"
+		status += name_string + "是敌方" + lane + "，在" + get_region() + "附近，" + get_health() + "。"
+
+	return status
+
+func get_builing_status():
+	var destroyed_status = "被摧毁的防御塔："
+	var remaining_status = "未被摧毁的防御塔："
+	if type == "BUILDING":
+		for p in simulator.name_poi_dict.values():
+			if p.type == "BUILDING":
+				if p.is_alive():
+					remaining_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
+				else:
+					destroyed_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
+		destroyed_status = destroyed_status.rstrip("，") + "。"
+		remaining_status = remaining_status.rstrip("，") + "。"
+	return destroyed_status + "\n" + remaining_status
+
+func get_scenario_stirng():
+	var scenario = "[玩家情况]\n"
+	scenario += get_player_status() + "\n"
+	
+	scenario += "\n[附近英雄]\n"
+	for p in nearby_pawns:
+		if p.type == "CHARACTER" and p.camp == camp:
+			scenario += p.get_in_sight_status() + "\n"
+	for p in nearby_pawns:
+		if p.type == "CHARACTER" and p.camp != camp:
+			scenario += p.get_in_sight_status() + "\n"
+
+	scenario += "\n[不在附近但视野课件的英雄]\n"
+	for p in simulator.name_pawn_dict.values():
+		if p.type == "CHARACTER" and p not in nearby_pawns:
+			scenario += p.get_in_sight_status() + "\n"
+
+	scenario += "\n[附近防御塔]\n"
+	scenario += get_builing_status() + "\n"
+	
+	
+	return scenario

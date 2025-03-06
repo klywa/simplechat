@@ -91,7 +91,7 @@ func update_alias():
 					alias.append(a)
 			break
 
-func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null) -> Dictionary:
+func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null, instructions: String="") -> Dictionary:
 	print("generate_response", str(npc_type))
 	if npc_type in [NPCType.ENV, NPCType.SYSTEM]:
 		print("in env")
@@ -163,7 +163,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			"scenario": scenario,
 			"player_hero_name": GameManager.player.hero_name,
 			"player_hero_lane": GameManager.player.hero_lane,
-			"instructions": GameManager.ai_instructions
+			"instructions": instructions if instructions != "" else GameManager.ai_instructions
 		}
 		var response = await AIManager.get_ai_response(request)
 		
@@ -175,9 +175,42 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"prompt": response.get("prompt", ""), 
 				"query": response.get("query", ""), 
 				"model_version": response.get("model_version", ""),
+				"npc_name": npc_name,
+				"npc_setting": npc_setting,
+				"npc_style": npc_style,
+				"npc_example": npc_example,
+				"npc_status": pawn.get_self_status(),
+				"npc_story": npc_story,
+				"npc_inventory": npc_inventory,
+				"npc_skill": npc_skill,
+				"npc_hero_name": hero_name,
+				"npc_hero_lane": hero_lane,
+				"player_hero_name": GameManager.player.hero_name,
+				"player_hero_lane": GameManager.player.hero_lane,
+				"instructions": instructions if instructions != "" else GameManager.ai_instructions,
+				"scenario": scenario
 			}
 		else:
-			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
+			return {
+				"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), 
+				"prompt": "", 
+				"query": "", 
+				"model_version": "",
+				"npc_name": npc_name,
+				"npc_setting": npc_setting,
+				"npc_style": npc_style,
+				"npc_example": npc_example,
+				"npc_status": pawn.get_self_status(),
+				"npc_story": npc_story,
+				"npc_inventory": npc_inventory,
+				"npc_skill": npc_skill,
+				"npc_hero_name": hero_name,
+				"npc_hero_lane": hero_lane,
+				"player_hero_name": GameManager.player.hero_name,
+				"player_hero_lane": GameManager.player.hero_lane,
+				"instructions": instructions if instructions != "" else GameManager.ai_instructions,
+				"scenario": scenario
+			}
 	else:
 		return {"response": "", "prompt": "", "query": "", "model_version": ""}
 
@@ -228,5 +261,7 @@ func get_scenario(chat: Chat) -> String:
 	scenario += ", ".join(other_list)
 	if other_list.size() > 0:
 		scenario += "。"
+
+	scenario += "\n" + pawn.get_scenario_stirng()
 
 	return scenario
