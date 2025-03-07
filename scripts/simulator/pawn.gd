@@ -411,7 +411,8 @@ func has_friend_hero_nearby():
 
 func _on_button_pressed():
 
-	var title_string = pawn_name + " (" + lane + ")"
+	var npc_name = npc.npc_name if npc != null else "未知"
+	var title_string = npc_name + " - " + pawn_name + "(" + lane + ")"
 	title_string += " - 红方" if camp == "RED" else " - 蓝方"
 	popup_panel_title.text = title_string
 
@@ -559,7 +560,7 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 	if pawn.npc != null:
 		killer_name = pawn.npc.npc_name + "-" + pawn.pawn_name
 	else:
-		killer_name = pawn.pawn_name
+		killer_name = pawn_name
 
 	if pawn.camp == "BLUE":
 		if pawn.type == "BUILDING":
@@ -581,9 +582,9 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 		for p in assist_pawns:
 			var tmp_name = ""
 			if p.npc != null:
-				tmp_name = p.npc.npc_name + "-" + p.pawn_name + "-" + p.lane
+				tmp_name = p.npc.npc_name + "-" + p.pawn_name
 			else:
-				tmp_name = p.pawn_name + "-" + p.lane
+				tmp_name = p.pawn_name
 			if p.camp == "BLUE":
 				tmp_name = "<我方-" + tmp_name + ">"
 			else:
@@ -1018,9 +1019,10 @@ func is_attackable():
 
 func get_self_status():
 	var status = ""
+	var npc_name = npc.npc_name if npc != null else "未知"
 
 	if camp == "BLUE":
-		var name_string = "“" + npc.npc_name + "”"
+		var name_string = "“" + npc_name + "”"
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
 		status += name_string + "" + get_health() + "。"
 		status += name_string + get_kda() + "。"
@@ -1028,7 +1030,7 @@ func get_self_status():
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
 	elif camp == "RED":
-		var name_string = "“敌方-" + pawn_name + "”"
+		var name_string = "“" + npc_name + "”"
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
 		status += name_string + "" + get_health() + "。"
 		status += name_string + get_kda() + "。"
@@ -1040,9 +1042,10 @@ func get_self_status():
 
 func get_status():
 	var status = ""
+	var npc_name = npc.npc_name if npc != null else "未知"
 
 	if camp == "BLUE":
-		var name_string = "<我方-" + npc.npc_name + "-" + pawn_name + ">"
+		var name_string = "<我方-" + npc_name + "-" + pawn_name + ">"
 		status += name_string + "是我方" + lane + "，"
 		status += get_health() + "，"
 		status += get_kda() + "，"
@@ -1053,7 +1056,7 @@ func get_status():
 			status += "。"
 
 	elif camp == "RED":
-		var name_string = "<敌方-" + pawn_name + ">"
+		var name_string = "<敌方-" + npc_name + "-" + pawn_name + ">"
 		status += name_string + "是" + lane + "，"
 		status += get_health() + "，"
 		status += get_kda() + "，"
@@ -1078,11 +1081,13 @@ func get_player_status():
 
 func get_in_sight_status():
 	var status = ""
+	var npc_name = npc.npc_name if npc != null else "未知"
+
 	if camp == "BLUE":
-		var name_string = "<" + npc.npc_name + "-" + pawn_name + "-我方>"
+		var name_string = "<我方-" + npc_name + "-" + pawn_name + ">"
 		status += name_string + "是我方" + lane + "，在" + get_region() + "附近，" + get_health() + "。"
 	elif camp == "RED":
-		var name_string = "<" + pawn_name + "-敌方>"
+		var name_string = "<敌方-" + npc_name + "-" + pawn_name + "->"
 		status += name_string + "是敌方" + lane + "，在" + get_region() + "附近，" + get_health() + "。"
 
 	return status
@@ -1114,10 +1119,10 @@ func get_scenario_stirng():
 	scenario += "\n[附近英雄]\n"
 	for p in nearby_pawns:
 		if p.type == "CHARACTER" and p.camp == camp:
-			scenario += p.get_in_sight_status() + "\n"
+			scenario += p.get_status() + "\n"
 	for p in nearby_pawns:
 		if p.type == "CHARACTER" and p.camp != camp:
-			scenario += p.get_in_sight_status() + "\n"
+			scenario += p.get_status() + "\n"
 
 	scenario += "\n[不在附近但在视野可见的英雄]\n"
 	for p in simulator.name_pawn_dict.values():

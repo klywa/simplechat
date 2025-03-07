@@ -352,11 +352,37 @@ func on_accept_member_button_pressed() -> void:
 			GameManager.player.origin_hero_lane = random_lane
 			GameManager.player.origin_lane_id = GameManager.lane_id_dict[random_lane]
 
+		# 为上路、打野、中路、辅助、下路的每个分路，选择一个目前不再chat.members中的NPC，作为chat.opponent_members的成员
+		chat.opponent_members.clear()
+		for lane in ["上路", "打野", "中路", "辅助", "下路"]:
+			var lane_npcs = []
+			for npc_name in GameManager.npc_dict:
+				var npc = GameManager.npc_dict[npc_name]
+				if npc.hero_lane == lane and npc.npc_name not in chat.members:
+					lane_npcs.append(npc)
+			
+			if lane_npcs.size() > 0:
+				var random_npc = lane_npcs[randi() % lane_npcs.size()]
+				# 为对手NPC设置英雄
+				var hero_list = GameManager.lane_hero_dict[lane]
+				var hero = hero_list[randi() % hero_list.size()]
+				random_npc.hero_name = hero
+				random_npc.hero_id = GameManager.hero_id_dict[hero]
+				random_npc.hero_lane = lane
+				random_npc.lane_id = GameManager.lane_id_dict[lane]
+				random_npc.update_alias()
+				random_npc.origin_hero_name = hero
+				random_npc.origin_hero_id = GameManager.hero_id_dict[hero]
+				random_npc.origin_hero_lane = lane
+				random_npc.origin_lane_id = GameManager.lane_id_dict[lane]
+				
+				chat.opponent_members[random_npc.npc_name] = random_npc
 
 	init(chat)
 
 	print("simulator: ", GameManager.simulator)
 	print("chat simulator", GameManager.main_view.simulator)
+	print("chat opponent_members: ", chat.opponent_members.keys())
 	GameManager.simulator.init(chat)
 
 	# for npc_name in add_list:

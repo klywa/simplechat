@@ -112,39 +112,45 @@ func init(chat_in: Chat):
 			new_pawn.position.y = clamp(new_pawn.position.y, 0, map_size.y * map.scale.y)
 
 
-	for lane in ["上路", "打野", "中路", "下路", "辅助"]:
-		var new_pawn = PAWN_SCENE.instantiate()
-		new_pawn.npc = null
-		var lane_heroes = GameManager.lane_hero_dict[lane]
-		new_pawn.pawn_name = lane_heroes[randi() % lane_heroes.size()] if lane_heroes.size() > 0 else "未知英雄"
-		new_pawn.camp = "RED"
-		new_pawn.lane = lane
-		new_pawn.type = "CHARACTER"
-		pawns.add_child(new_pawn)
-		new_pawn._show()
-		new_pawn.add_to_group("hero")
+	for npc_name in chat.opponent_members:
+		var npc = chat.opponent_members[npc_name]
 
-		name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
+		if npc.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
+			var new_pawn = PAWN_SCENE.instantiate()
+			new_pawn.npc = npc
+			var lane_heroes = GameManager.lane_hero_dict[npc.hero_lane]
+			new_pawn.pawn_name = lane_heroes[randi() % lane_heroes.size()] if lane_heroes.size() > 0 else "未知英雄"
+			new_pawn.camp = "RED"
+			new_pawn.lane = npc.hero_lane
+			new_pawn.type = "CHARACTER"
+			pawns.add_child(new_pawn)
+			
+			new_pawn._show()
+			npc.pawn = new_pawn
+			npc.origin_pawn = new_pawn
+			new_pawn.add_to_group("hero")
 
-		match new_pawn.lane:
-			"上路":
-				new_pawn.position = name_poi_dict["红方上路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
-			"打野":
-				if randf() < 0.5:
-					new_pawn.position = name_poi_dict["红方蓝Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
-				else:
-					new_pawn.position = name_poi_dict["红方红Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
-			"中路":
-				new_pawn.position = name_poi_dict["红方中路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
-			"下路":
-				new_pawn.position = name_poi_dict["红方下路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
-			"辅助":
-				new_pawn.position = name_poi_dict["红方下路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
-			_:
-				new_pawn.position = name_poi_dict["红方水晶"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
-		
-		new_pawn.position.x = clamp(new_pawn.position.x, 0, map_size.x * map.scale.x)
-		new_pawn.position.y = clamp(new_pawn.position.y, 0, map_size.y * map.scale.y)
+			name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
+
+			match new_pawn.lane:
+				"上路":
+					new_pawn.position = name_poi_dict["红方上路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+				"打野":
+					if randf() < 0.5:
+						new_pawn.position = name_poi_dict["红方蓝Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+					else:
+						new_pawn.position = name_poi_dict["红方红Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+				"中路":
+					new_pawn.position = name_poi_dict["红方中路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+				"下路":
+					new_pawn.position = name_poi_dict["红方下路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+				"辅助":
+					new_pawn.position = name_poi_dict["红方下路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+				_:
+					new_pawn.position = name_poi_dict["红方水晶"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+			
+			new_pawn.position.x = clamp(new_pawn.position.x, 0, map_size.x * map.scale.x)
+			new_pawn.position.y = clamp(new_pawn.position.y, 0, map_size.y * map.scale.y)
 
 
 	name_pawn_dict["暴君"].die()

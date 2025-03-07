@@ -9,6 +9,7 @@ enum ChatType {
 var messages: Array
 var chat_type : ChatType
 var members: Dictionary
+var opponent_members: Dictionary
 var host: Variant
 var host_name : String
 var speaker_index : int
