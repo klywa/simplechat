@@ -5,7 +5,7 @@ extends Node2D
 @export var moveable: bool = true
 @export var max_speed: float = 100
 @export_enum("BLUE", "RED", "NEUTRAL") var camp: String = "NEUTRAL"
-@export_enum("CHARACTER", "BUILDING", "RESOURCE", "MONSTER") var type: String = "CHARACTER"
+@export_enum("CHARACTER", "BUILDING", "RESOURCE", "MONSTER", "MINION") var type: String = "CHARACTER"
 @export_enum("上路", "打野", "中路", "辅助", "下路") var lane: String
 
 @onready var button = $Button
@@ -22,10 +22,21 @@ var drag_start_position = Vector2()
 var show_target_line : bool = false
 # 添加变量记录拖动悬停的目标
 var hover_target : Pawn = null
+# 添加变量控制检测区域圆形的显示
+var show_detect_shape : bool = false
 
 var map_rect 
 var tile_size
 var map_size
+
+# 添加平滑移动所需的变量
+var is_moving : bool = false
+var move_start_position : Vector2 = Vector2()
+var move_target_position : Vector2 = Vector2()
+var move_progress : float = 0.0
+var move_duration : float = 1.0  # 移动持续时间为1秒
+
+# var is_on_lane : bool = false
 
 var kill_number : int = 0
 var death_number : int = 0
@@ -36,12 +47,15 @@ var move_target : Pawn = null
 
 @onready var camp_color_flag := $CampColor
 @onready var shield_flag := $ShieldFlag
+@onready var lane_flag := $LaneFlag
 @onready var name_label := $Name
 @onready var sprite := $Sprite
 @onready var popup_panel := $PopupPanel
+@onready var minion_sprite := $MinionSprite
 
 @onready var body_shape := $BodyArea
 @onready var detect_shape := $DetectArea
+@onready var detect_shape_collision_shape := $DetectArea/CollisionShape2D
 
 @onready var health_bar := $HealthBar
 @onready var hero_icon := $HeroIcon
@@ -54,8 +68,8 @@ var move_target : Pawn = null
 
 @onready var hp_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/HP
 @onready var money_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Money
-
 @onready var level_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Level
+@onready var nearby_text := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/NearbyText
 
 @onready var revive_button := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/ReviveButton
 
@@ -68,6 +82,9 @@ var money : int = 0
 var revive_count_down : int = 0
 var visible_to_blue : bool = true
 var nearby_pawns : Array[Pawn] = []
+var is_on_lane : bool = false
+
+var origin_color
 
 const PAWN_SCENE = preload("res://scenes/simulator/pawn.tscn")
 
@@ -111,6 +128,7 @@ func _ready() -> void:
 
 	hp_editor.text_submitted.connect(_on_hp_editor_changed)
 	level_editor.text_submitted.connect(_on_level_editor_changed)
+	money_editor.text_submitted.connect(_on_money_editor_changed)
 
 	revive_button.pressed.connect(_on_revive_button_pressed)
 
@@ -127,7 +145,11 @@ func _ready() -> void:
 	match camp:
 		"BLUE":
 			camp_color_flag.color = Color.BLUE
-			hero_icon.color = Color.BLUE
+			if npc == GameManager.player:
+				hero_icon.color = Color.GREEN
+				hero_icon.scale = Vector2(1.2, 1.2)
+			else:
+				hero_icon.color = Color.BLUE
 		"RED":
 			camp_color_flag.color = Color.RED
 			hero_icon.color = Color.RED
@@ -141,25 +163,33 @@ func _ready() -> void:
 			if camp == "RED":
 				visible_to_blue = false
 			camp_color_flag.visible = false
+			minion_sprite.visible = false
+		"MINION":
+			moveable = true
+			minion_sprite.visible = true
+			name_label.visible = false
+			hero_icon.visible = false
+			camp_color_flag.modulate.a = 0.5
+			minion_sprite.modulate.a = 0.5
 		"BUILDING":
 			moveable = false
 			name_label.visible = false
 			hero_icon.visible = false
-			sprite.visible = false
+			minion_sprite.visible = false
 			camp_color_flag.modulate.a = 0.5
 			health_bar.modulate.a = 0.0
 		"RESOURCE":
 			moveable = false
 			name_label.visible = false
 			hero_icon.visible = false
-			sprite.visible = false
+			minion_sprite.visible = false
 			camp_color_flag.modulate.a = 0.2
 			health_bar.modulate.a = 0.0
 		"MONSTER":
 			moveable = false
 			name_label.visible = false
 			hero_icon.visible = false
-			sprite.visible = false
+			minion_sprite.visible = false
 			camp_color_flag.modulate.a = 0.2
 			health_bar.modulate.a = 0.0
 	name_label.text = pawn_name
@@ -168,10 +198,25 @@ func _show():
 	name_label.text = pawn_name
 	set_hero_avatar()
 
+
 func load_npc(npc: NPC):
 	self.npc = npc
 	pawn_name = npc.hero_name
 	lane = npc.hero_lane
+
+	if npc == GameManager.player:
+		hero_icon.color = Color.GREEN
+		hero_icon.scale = Vector2(1.2, 1.2)
+	else:
+		match camp:
+			"BLUE":
+				hero_icon.color = Color.BLUE
+			"RED":
+				hero_icon.color = Color.RED
+			"NEUTRAL":
+				hero_icon.color = Color.GRAY
+		hero_icon.scale = Vector2(1.0, 1.0)
+
 	_show()
 
 func set_hero_avatar():
@@ -220,6 +265,8 @@ func _on_button_up():
 		# 如果有悬停目标，则设置为移动目标并恢复原位置
 		if hover_target != null:
 			move_target = hover_target
+			# 停止当前的平滑移动
+			is_moving = false
 			position = drag_start_position
 			print("%s设置移动目标为%s" % [pawn_name, hover_target.pawn_name])
 		else:
@@ -236,7 +283,7 @@ func _on_button_up():
 		show_target_line = false
 	queue_redraw()  # 触发重绘以更新显示
 
-func _process(_delta):
+func _process(delta):
 
 	if dragging:
 		var new_pos = get_global_mouse_position() - drag_start
@@ -257,6 +304,17 @@ func _process(_delta):
 				if distance < 50:  # 与_on_button_up中的阈值保持一致
 					hover_target = pawn
 					break
+	
+	# 处理平滑移动
+	if is_moving:
+		move_progress += delta / move_duration
+		if move_progress >= 1.0:
+			# 移动完成
+			position = move_target_position
+			is_moving = false
+		else:
+			# 线性插值计算当前位置
+			position = move_start_position.lerp(move_target_position, move_progress)
 
 	if move_target == null or not move_target.is_alive():
 		reselect_move_target()
@@ -264,10 +322,12 @@ func _process(_delta):
 	# 根据可见性状态更新显示
 	if camp == "RED":
 		if visible_to_blue:
-			sprite.modulate.a = 1.0
+			hero_icon.modulate.a = 1.0
+			minion_sprite.modulate.a = 1.0
 			camp_color_flag.modulate.a = 1.0
 		else:
-			sprite.modulate.a = 0.5
+			hero_icon.modulate.a = 0.5
+			minion_sprite.modulate.a = 0.5
 			camp_color_flag.modulate.a = 0.5
 
 	health_bar.value = hp
@@ -278,12 +338,17 @@ func _process(_delta):
 	else:
 		shield_flag.visible = true
 		
+	if is_on_lane:
+		lane_flag.visible = true
+	else:
+		lane_flag.visible = false
+
 	# 如果正在拖动且有悬停目标，或者有移动目标且显示目标线，则触发重绘
 	if (dragging and hover_target != null) or (show_target_line and move_target != null):
 		queue_redraw()
 
 func random_move():
-	if dragging:
+	if dragging or is_moving:
 		return
 
 	# 生成随机方向
@@ -308,12 +373,47 @@ func random_move():
 	random_x = clamp(random_x, 0, map_size.x * map.scale.x)
 	random_y = clamp(random_y, 0, map_size.y * map.scale.y)
 	
-	# 设置新位置
-	position = Vector2(random_x, random_y)
+	# 设置移动参数
+	move_start_position = position
+	if type == "CHARACTER":
+		move_target_position = Vector2(random_x, random_y)
+	elif type == "MINION":
+		match lane:
+			"上路":
+				if camp == "BLUE":
+					move_target_position = restrict_move_angle(random_x, random_y, "x")
+				else:
+					move_target_position = restrict_move_angle(random_x, random_y, "y")
+			"下路":
+				if camp == "BLUE":
+					move_target_position = restrict_move_angle(random_x, random_y, "y")
+				else:
+					move_target_position = restrict_move_angle(random_x, random_y, "x")
+			"中路":
+				move_target_position = Vector2(random_x, random_y)
+	move_progress = 0.0
+	is_moving = true
 
+func restrict_move_angle(x, y, x_or_y: String):
+	if x_or_y == "x":
+		if abs(y) > 10:
+			x = 0
+	elif x_or_y == "y":
+		if abs(x) > 10:
+			y = 0
+	return Vector2(x, y)
+
+func has_friend_hero_nearby():
+	for pawn in nearby_pawns:
+		if pawn.type == "CHARACTER" and pawn.camp == camp:
+			return true
+	return false
 
 func _on_button_pressed():
-	popup_panel_title.text = pawn_name
+
+	var title_string = pawn_name + " (" + lane + ")"
+	title_string += " - 红方" if camp == "RED" else " - 蓝方"
+	popup_panel_title.text = title_string
 
 	if not dragged or not moveable:
 		popup_panel.visible = true
@@ -351,6 +451,9 @@ func _on_button_pressed():
 	
 		hp_editor.text = str(hp)
 		level_editor.text = str(level)
+		money_editor.text = str(money)
+
+		nearby_text.text = get_nearby_string()
 
 func is_alive():
 	return hp > 0
@@ -376,7 +479,7 @@ func _on_detect_area_entered(area: Area2D) -> void:
 				if not visible_to_blue:
 					visible_to_blue = true
 					# 更新可见性
-					sprite.modulate.a = 1.0
+					minion_sprite.modulate.a = 1.0
 					camp_color_flag.modulate.a = 1.0
 					print("%s被BLUE阵营发现，变为可见" % pawn_name)
 
@@ -402,7 +505,7 @@ func _on_detect_area_exited(area: Area2D) -> void:
 				if not has_blue_pawn:
 					visible_to_blue = false
 					# 立即更新可见性
-					sprite.modulate.a = 0.5
+					minion_sprite.modulate.a = 0.5
 					camp_color_flag.modulate.a = 0.5
 					print("%s附近没有BLUE阵营单位，变为不可见" % pawn_name)
 
@@ -411,12 +514,28 @@ func send_message(message: String):
 
 func killed_by(pawn: Pawn, assist_pawns: Array = []):
 
-	death_number += 1
-	pawn.kill_number += 1
-	pawn.money += randi() % 100
+	var max_money
+
+	match type:
+		"CHARACTER":
+			max_money = 100
+		"BUILDING":
+			max_money = 200
+		"MONSTER":
+			max_money = 100
+		"RESOURCE":
+			max_money = 100
+
+	pawn.money += randi() % max_money
 	for p in assist_pawns:
-		p.assist_number += 1
-		p.money += randi() % 50
+		p.money += randi() % int(round(max_money * 0.5))
+	
+	if type == "CHARACTER":
+		death_number += 1
+		pawn.kill_number += 1
+	
+		for p in assist_pawns:
+			p.assist_number += 1
 
 	hp = 0
 	var msg = ""
@@ -517,7 +636,7 @@ func take_damage(damage: int):
 func heal(heal: int):
 	var origin_hp = hp
 	hp += heal
-	if hp > 100:
+	if hp > 100 and type != "BUILDING":
 		hp = 100
 	
 	if origin_hp < 100 and hp >= 100:
@@ -624,6 +743,9 @@ func _on_hp_editor_changed(value: String):
 func _on_level_editor_changed(value: String):
 	level = int(value)
 
+func _on_money_editor_changed(value: String):
+	money = int(value)
+
 func _on_revive_button_pressed():
 	revive()
 	popup_panel.visible = false
@@ -633,6 +755,44 @@ func _on_target_dropdown_item_selected(index: int):
 	var target_pawn = simulator.name_pawn_dict.get(target_name, null)
 	if target_pawn != null:
 		move_target = target_pawn
+		# 如果正在平滑移动，停止移动
+		if is_moving:
+			is_moving = false
+
+func get_nearby_string():
+	var status_string = "状态：" + get_self_status()
+	var nearby_friend_string = "附近友方英雄："
+	var nearby_enemy_string = "附近敌方英雄："
+	var nearby_friend_building_string = "附近友方建筑物："
+	var nearby_enemy_building_string = "附近敌方建筑物："
+	var nearby_monster_string = "附近野怪："
+	
+	# 将附近pawns按类型加入对应string，逗号隔开
+	for p in nearby_pawns:
+		if p.type == "CHARACTER":
+			if p.camp == camp:
+				nearby_friend_string += p.pawn_name + "，"
+			else:
+				nearby_enemy_string += p.pawn_name + "，"
+		elif p.type == "BUILDING":
+			if p.camp == camp:
+				nearby_friend_building_string += p.pawn_name + "，"
+			else:
+				nearby_enemy_building_string += p.pawn_name + "，"
+		elif p.type == "MONSTER":
+			nearby_monster_string += p.pawn_name + "，"
+	
+	# 移除末尾的逗号并添加句号
+	nearby_friend_string = nearby_friend_string.rstrip("，") + "。"
+	nearby_enemy_string = nearby_enemy_string.rstrip("，") + "。"
+	nearby_friend_building_string = nearby_friend_building_string.rstrip("，") + "。"
+	nearby_enemy_building_string = nearby_enemy_building_string.rstrip("，") + "。"
+	nearby_monster_string = nearby_monster_string.rstrip("，") + "。"
+	
+	# 组合所有字符串
+	var result = status_string + "\n" + nearby_friend_string + "\n" + nearby_enemy_string + "\n" + nearby_friend_building_string + "\n" + nearby_enemy_building_string + "\n" + nearby_monster_string
+	return result
+	
 
 func set_init_move_target():
 	var opposite_camp_string = "红方" if camp == "BLUE" else "蓝方"
@@ -675,6 +835,9 @@ func die():
 	elif type == "MONSTER":
 		revive_count_down = 40
 
+	# 停止当前的平滑移动
+	is_moving = false
+
 	match type:
 		"CHARACTER":
 			if camp == "RED":
@@ -695,6 +858,17 @@ func die():
 
 func revive():
 	hp = 100
+	if type == "BUILDING":
+		if pawn_name.contains("一塔"):
+			hp += 50
+		elif pawn_name.contains("二塔"):
+			hp += 100
+		elif pawn_name.contains("高地塔"):
+			hp += 200
+		elif pawn_name.contains("水晶"):
+			hp += 100	
+	# print(pawn_name, "复活后血量：", hp)	
+	
 	revive_count_down = 0
 	match type:
 		"BUILDING":
@@ -769,15 +943,31 @@ func get_kda():
 	else:
 		return "战绩超神"
 
-func get_on_lane():
-	# 获取附近的建筑物
+func set_on_lane():
+
+	if type != "CHARACTER":
+		is_on_lane = false
+		return
+
 	var nearby_buildings = []
 	for p in nearby_pawns:
 		if p.type == "BUILDING" and p.is_attackable():
 			nearby_buildings.append(p)
 	
 	# 如果附近有可攻击的建筑物，50%概率返回"正在和小兵交战"
-	if nearby_buildings.size() > 0 and randf() < 0.5:
+	if nearby_buildings.size() > 0:
+		if is_on_lane:
+			is_on_lane = true
+		else:
+			if randf() < 0.5:
+				is_on_lane = true
+	else:
+		is_on_lane = false
+
+
+func get_on_lane():
+	# 获取附近的建筑物
+	if is_on_lane:
 		return "附近有兵线"
 	
 	# 检查附近是否有中立单位（野怪）
@@ -837,7 +1027,14 @@ func get_self_status():
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
-	
+	elif camp == "RED":
+		var name_string = "“敌方-" + pawn_name + "”"
+		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
+		status += name_string + "" + get_health() + "。"
+		status += name_string + get_kda() + "。"
+		if get_on_lane() != "":
+			status += name_string + get_on_lane() + "。"
+		status += name_string + "在" + get_region() + "附近。"
 	return status
 
 
@@ -906,7 +1103,12 @@ func get_builing_status():
 	return destroyed_status + "\n" + remaining_status
 
 func get_scenario_stirng():
-	var scenario = "[玩家情况]\n"
+
+	var scenario = "[总体态势]\n"
+	scenario += "我方人头数：" + str(simulator.blue_team_total_kill) + "，敌方人头数：" + str(simulator.red_team_total_kill) + "。\n"
+	scenario += "我方总经济：" + str(simulator.blue_team_total_money) + "，敌方总经济：" + str(simulator.red_team_total_money) + "。\n"
+	
+	scenario += "\n[玩家情况]\n"
 	scenario += get_player_status() + "\n"
 	
 	scenario += "\n[附近英雄]\n"
@@ -933,16 +1135,42 @@ func _on_button_mouse_entered():
 	# 只有在非拖动状态下才显示虚线
 	if not dragging:
 		show_target_line = true
+		show_detect_shape = true  # 显示检测区域圆形
 		queue_redraw()  # 触发重绘
+
 
 # 鼠标离开按钮时隐藏虚线
 func _on_button_mouse_exited():
 	# 无论是否在拖动，都隐藏虚线
 	show_target_line = false
+	show_detect_shape = false  # 隐藏检测区域圆形
 	queue_redraw()  # 触发重绘
 
 # 重写_draw方法来绘制虚线
 func _draw():
+	# 如果需要显示检测区域圆形
+	if show_detect_shape:
+		# 获取检测区域的半径
+		var collision_shape = detect_shape_collision_shape
+		var radius = 0
+		
+		# 假设碰撞形状是CircleShape2D
+		if collision_shape.shape is CircleShape2D:
+			radius = collision_shape.shape.radius
+		
+		# 根据阵营选择颜色
+		var circle_color
+		match camp:
+			"BLUE":
+				circle_color = Color(0, 0, 1, 0.2)  # 半透明蓝色
+			"RED":
+				circle_color = Color(1, 0, 0, 0.2)  # 半透明红色
+			"NEUTRAL":
+				circle_color = Color(0.5, 0.5, 0.5, 0.2)  # 半透明灰色
+		
+		# 绘制半透明圆形
+		draw_circle(Vector2.ZERO, radius, circle_color)
+	
 	# 如果正在拖动且有悬停目标
 	if dragging and hover_target != null:
 		# 绘制从起始位置到悬停目标的虚线

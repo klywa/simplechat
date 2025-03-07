@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://0k428716fuul"]
+[gd_scene load_steps=20 format=3 uid="uid://0k428716fuul"]
 
 [ext_resource type="Texture2D" uid="uid://yljchi6a0dk7" path="res://assets/tileset/miniworld.png" id="1_742q4"]
 [ext_resource type="Script" path="res://scripts/simulator/pawn.gd" id="1_t3l22"]
@@ -53,7 +53,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tfp6w"]
-radius = 98.0816
+radius = 100.02
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_emxjd"]
 radius = 18.0
@@ -84,6 +84,21 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_ff4ij"]
+atlas = ExtResource("1_742q4")
+region = Rect2(208, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fh33e"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ff4ij")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
 [node name="Pawn" type="Node2D"]
 script = ExtResource("1_t3l22")
 
@@ -99,7 +114,7 @@ position = Vector2(32, 32)
 scale = Vector2(0.54, 0.54)
 texture = SubResource("AtlasTexture_ce6kw")
 
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
+[node name="MinionSprite" type="AnimatedSprite2D" parent="."]
 visible = false
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_v7qx1")
@@ -245,6 +260,11 @@ popup/item_0/text = "无"
 layout_mode = 2
 text = "提交"
 
+[node name="NearbyText" type="TextEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+placeholder_text = "附近实体"
+
 [node name="HealthBar" type="ProgressBar" parent="."]
 offset_left = -24.0
 offset_top = -74.0
@@ -258,6 +278,7 @@ value = 50.0
 show_percentage = false
 
 [node name="ShieldFlag" type="AnimatedSprite2D" parent="."]
+visible = false
 position = Vector2(-27, 26)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_6kvk0")
@@ -268,3 +289,8 @@ offset_top = 50.0
 offset_right = 20.0
 offset_bottom = 72.3333
 horizontal_alignment = 1
+
+[node name="LaneFlag" type="AnimatedSprite2D" parent="."]
+position = Vector2(-28, 28)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_fh33e")

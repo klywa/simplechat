@@ -36,6 +36,7 @@ var player_hero_lane : String = ""
 var instructions : String = ""
 var knowledge : String = ""
 
+
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel
 @onready var content_label : RichTextLabel = $MessageContainer/VBoxContainer/ContentContainer/Content
@@ -45,6 +46,7 @@ var knowledge : String = ""
 @onready var name_right_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace
 @onready var revise_panel := $MessagePopupPanel
 @onready var abandon_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/AbandonToggle
+@onready var name_button := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel/NameButton
 # @onready var revise_content := $PopupPanel/PanelContainer/VBoxContainer/MarginContainer/ReviseContent
 # @onready var revise_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
 # @onready var delete_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer2/Delete
@@ -61,6 +63,8 @@ func _ready():
 	revise_panel.revise_content.text_submitted.connect(on_revise_content_submitted)
 	revise_panel.delete_button.pressed.connect(on_delete_button_pressed)
 	revise_panel.replay_button.pressed.connect(on_replay_button_pressed)
+
+	name_button.pressed.connect(on_name_button_pressed)
 
 	abandon_toggle.toggled.connect(on_abandon_toggled)
 
@@ -128,3 +132,6 @@ func on_replay_button_pressed():
 
 func on_revise_content_submitted(text: String):
 	on_revise_button_pressed()
+
+func on_name_button_pressed():
+	sender.character_button.on_name_button_pressed()

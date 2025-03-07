@@ -33,6 +33,13 @@ var name_pawn_dict : Dictionary = {}
 var init_random_range : int = 30
 var chat: Chat
 
+var blue_team_total_money : int = 0
+var red_team_total_money : int = 0
+var blue_team_total_kill : int = 0
+var red_team_total_kill : int = 0
+
+signal simulate_finished
+
 const PAWN_SCENE = preload("res://scenes/simulator/pawn.tscn")
 
 func _ready() -> void:
@@ -77,6 +84,7 @@ func init(chat_in: Chat):
 			new_pawn._show()
 			npc.pawn = new_pawn
 			npc.origin_pawn = new_pawn
+			npc.character_button.set_hero_avatar()
 			new_pawn.add_to_group("hero")
 
 			name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
@@ -148,7 +156,10 @@ func init(chat_in: Chat):
 
 
 func simulate():
-	for pawn in name_pawn_dict.values():
+	var pawn_list = name_pawn_dict.values()
+	pawn_list.shuffle()
+
+	for pawn in pawn_list:
 
 		if pawn.is_alive():
 			if pawn.type == "CHARACTER":
@@ -158,22 +169,44 @@ func simulate():
 					pawn.level += 1
 					pawn.level = min(pawn.level, 25)
 				
-				
 				pawn.random_move()
+				pawn.set_on_lane()
 		
 
 			for other in pawn.nearby_pawns:
 				if pawn.is_alive() and other.is_alive() and other.camp != pawn.camp and pawn.is_attackable():
 					var damage : int = 0
-					if other.type == "CHARACTER":
-						if other.lane == "辅助":
-							damage = randi() % 20
-						else:
-							damage = randi() % 50
-					elif other.type == "BUILDING":
-						damage = randi() % 50
-					elif other.type == "MONSTER":
-						damage = randi() % 20
+					damage = calculate_damage(other, pawn)
+					# if other.type == "CHARACTER":
+					# 	if other.lane == "辅助":
+					# 		if pawn.type == "CHARACTER":
+					# 			damage = randi() % int(round(20 + 10 * ((other.money + 0.01) / (pawn.money + 0.01) - 1)))
+					# 		elif pawn.pawn_name.contains("塔"):
+					# 			damage = randi() % 10
+					# 		else:
+					# 			damage = randi() % 20
+					# 	else:
+					# 		if pawn.type == "CHARACTER":
+					# 			damage = randi() % int(round(50 + 20 * ((other.money + 0.01) / (pawn.money + 0.01) - 1)))
+					# 		elif pawn.pawn_name.contains("塔"):
+					# 			damage = randi() % 20
+					# 		else:
+					# 			damage = randi() % 50
+					# 	damage = max(damage, 1)
+					# elif other.type == "BUILDING":
+					# 	var has_minion = false
+					# 	for nearby in other.nearby_pawns:
+					# 		if nearby.type == "MINION" and nearby.camp != other.camp:
+					# 			has_minion = true
+					# 			break
+					# 	if pawn.type == "CHARACTER" and has_minion:
+					# 		damage = 0
+					# 	else:
+					# 		damage = randi() % 20
+					# elif other.type == "MONSTER":
+					# 	damage = randi() % 20
+					# elif other.type == "MINION":
+					# 	damage = randi() % 10
 				
 					if damage > pawn.hp:
 						var killer = other
@@ -219,3 +252,68 @@ func simulate():
 				if pawn.revive_count_down <= 0:
 					pawn.revive()
 
+	blue_team_total_money = 0
+	red_team_total_money = 0
+	for pawn in name_pawn_dict.values():
+		if pawn.type == "CHARACTER":
+			if pawn.camp == "BLUE":
+				blue_team_total_money += pawn.money
+			elif pawn.camp == "RED":
+				red_team_total_money += pawn.money
+	
+	blue_team_total_kill = 0
+	red_team_total_kill = 0
+	for pawn in name_pawn_dict.values():
+		if pawn.type == "CHARACTER":
+			if pawn.camp == "BLUE":
+				blue_team_total_kill += pawn.kill_number
+			elif pawn.camp == "RED":
+				red_team_total_kill += pawn.kill_number
+	
+	simulate_finished.emit()
+
+func calculate_damage(attacker: Pawn, defender: Pawn):
+	if attacker.camp == defender.camp:
+		return 0
+
+	match attacker.type:
+		"CHARACTER":
+			match defender.type:
+				"CHARACTER":
+					if attacker.lane == "辅助":
+						return randi() % int(round(20 + 10 * ((attacker.money + 0.01) / (defender.money + 0.01) - 1)))
+					else:
+						return randi() % int(round(50 + 20 * ((attacker.money + 0.01) / (defender.money + 0.01) - 1)))
+				"BUILDING":
+					if defender.has_friend_hero_nearby():
+						return randi() % 5
+					else:
+						return randi() % 20
+				"MINION":
+					if attacker.lane == "辅助":
+						return randi() % int(round(20 + 10 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+					else:
+						return randi() % int(round(50 + 20 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+				"MONSTER":
+					if attacker.lane == "辅助":
+						return randi() % int(round(20 + 10 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+					else:
+						return randi() % int(round(50 + 20 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+		"BUILDING":
+			match defender.type:
+				"CHARACTER":
+					if defender.has_friend_hero_nearby():
+						if defender.move_target.type == "CHARACTER" and defender.move_target.camp == defender.camp:
+							return randi() % 50
+						else:
+							return randi() % 20
+					else:
+						return 0
+				"MINION":
+					return randi() % 20
+				_:
+					return 0
+		"MINION":
+			return randi() % 10
+		"MONSTER":
+			return randi() % 10

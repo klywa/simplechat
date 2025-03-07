@@ -41,6 +41,10 @@ var current_chat : Chat = null
 var pawn : Pawn = null
 var origin_pawn : Pawn = null
 
+var character_button : CharacterButton = null
+
+var ingame_info : String = ""
+
 func _ready():
 	pass
 
@@ -152,7 +156,9 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 		npc_status = pawn.get_self_status()
 		knowledge = GameManager.get_knowledge(chat)
 
-		print("knowledge: ", knowledge)
+		ingame_info =  npc_status + "\n\n" + scenario + "\n\n" + "[相关知识]\n" + knowledge
+
+		# print("knowledge: ", knowledge)
 
 		if not use_ai:
 			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}

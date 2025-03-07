@@ -15,6 +15,7 @@ var chat : Chat
 @onready var setting_info := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Setting
 @onready var style_info := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Style
 @onready var example_info := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Example
+@onready var ingame_info := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/InGame
 
 @onready var hero_panel := $HeroPanel
 @onready var new_hero_label := $HeroPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Hero
@@ -23,6 +24,8 @@ var chat : Chat
 @onready var cancel_hero_change_button := $HeroPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Cancel
 
 @onready var exchange_button := $ExchangeButton
+@onready var hero_avatar := $VBoxContainer/HeroAvatar
+@onready var hero_avatar_button := $VBoxContainer/HeroAvatar/HeroAvatarButton
 
 
 signal character_left_clicked(character: NPC)
@@ -38,6 +41,7 @@ func _ready() -> void:
 	confirm_hero_change_button.pressed.connect(on_confirm_hero_change_button_pressed)
 	cancel_hero_change_button.pressed.connect(on_cancel_hero_change_button_pressed)
 	exchange_button.pressed.connect(on_exchange_button_pressed)
+	hero_avatar_button.pressed.connect(on_hero_avatar_button_pressed)
 
 	new_hero_label.text_changed.connect(on_new_hero_label_text_changed)
 
@@ -60,6 +64,38 @@ func init(character_in: NPC, chat_in: Chat) -> void:
 	if character.npc_type == NPC.NPCType.PLAYER:
 		exchange_button.visible = false
 
+	character.character_button = self
+
+func set_hero_avatar():
+	# 尝试根据pawn_name加载英雄头像
+	var avatar_path = "res://assets/avatars/hero_avatar/%s.webp" % character.pawn.pawn_name
+	var avatar_path_2 = "res://assets/avatars/hero_avatar/%s.jpg" % character.pawn.pawn_name
+	var default_path = "res://assets/avatars/hero_avatar/默认.webp"
+	
+	# 检查文件是否存在
+	print("avatar_path: ", avatar_path)
+	if FileAccess.file_exists(avatar_path):
+		var texture = load(avatar_path)
+		if texture:
+			hero_avatar.texture = texture
+	elif FileAccess.file_exists(avatar_path_2):
+		var texture = load(avatar_path_2)
+		if texture:
+			hero_avatar.texture = texture
+	else:
+		# 如果找不到对应头像，使用默认头像
+		print("default_path: ", default_path)
+		var texture = load(default_path)
+		if texture:
+			hero_avatar.texture = texture
+	
+	# 缩放头像至96*96大小
+	if hero_avatar.texture:
+		var image = hero_avatar.texture.get_image()
+		image.resize(48, 48)
+		var new_texture = ImageTexture.create_from_image(image)
+		hero_avatar.texture = new_texture
+
 func on_pressed() -> void:
 	character_left_clicked.emit(character)
 
@@ -67,6 +103,7 @@ func on_name_button_pressed() -> void:
 	setting_info.text = character.npc_setting
 	style_info.text = character.npc_style
 	example_info.text = character.npc_example
+	ingame_info.text = character.ingame_info
 	character_info_panel.visible = true
 
 func on_hero_button_pressed() -> void:
@@ -87,6 +124,7 @@ func on_exchange_button_pressed() -> void:
 		n.lane_id = n.origin_lane_id
 		if n.pawn != null and n.origin_pawn != null:
 			n.pawn = GameManager.simulator.name_pawn_dict[n.origin_pawn.get_unique_name()]
+			n.pawn.load_npc(n)
 	
 	if not skip_change:
 		var player = GameManager.player
@@ -102,6 +140,8 @@ func on_exchange_button_pressed() -> void:
 		player.lane_id = character.lane_id
 		player.pawn = character.pawn
 		player.pawn.npc = player
+		player.pawn.load_npc(player)
+		# player.character_button.set_hero_avatar()
 
 		character.hero_name = tmp_hero_name
 		character.hero_lane = tmp_hero_lane
@@ -109,11 +149,14 @@ func on_exchange_button_pressed() -> void:
 		character.lane_id = tmp_lane_id
 		character.pawn = tmp_pawn
 		tmp_pawn.npc = character
+		tmp_pawn.load_npc(character)
+		# character.character_button.set_hero_avatar()
 
 	for panel in get_parent().get_parent().get_children():
 		for child in panel.get_children():
 			if child is CharacterButton:
 				child.init(child.character, child.chat)
+				child.set_hero_avatar()
 
 	if GameManager.mode == "pipeline":
 		chat.add_message(GameManager.env, "【交换英雄】")
@@ -140,3 +183,6 @@ func on_cancel_hero_change_button_pressed() -> void:
 func on_new_hero_label_text_changed(new_hero_str : String) -> void:
 	if new_hero_str in GameManager.hero_lane_dict:
 		new_lane_label.text = GameManager.hero_lane_dict[new_hero_str]
+
+func on_hero_avatar_button_pressed() -> void:
+	character.pawn._on_button_pressed()

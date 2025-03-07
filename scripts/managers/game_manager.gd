@@ -216,7 +216,7 @@ func get_knowledge(chat : Chat) -> String:
 					break
 		
 		if use and knowledge[key].get("内容", "") not in knowledge_list:
-			knowledge_list.append(knowledge[key].get("内容", ""))
+			knowledge_list.append(key + "：" + knowledge[key].get("内容", ""))
 	
 	if knowledge_list.size() > 0:
 		return "\n".join(knowledge_list)
