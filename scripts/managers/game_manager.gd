@@ -183,8 +183,8 @@ func activate_chat(chat_in : Chat) -> void:
 		main_view.chat_view.on_new_button_pressed()
 
 
-func get_knowledge(chat : Chat) -> String:
-	var match_string = ""
+func get_knowledge(chat : Chat, npc : NPC) -> String:
+	var match_string = npc.pawn.pawn_name
 	var knowledge_list = []
 	if player in chat.members.values():
 		match_string += player.hero_name

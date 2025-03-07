@@ -154,7 +154,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 	elif npc_type == NPCType.NPC:
 		scenario = get_scenario(chat)
 		npc_status = pawn.get_self_status()
-		knowledge = GameManager.get_knowledge(chat)
+		knowledge = GameManager.get_knowledge(chat, self)
 
 		ingame_info =  npc_status + "\n\n" + scenario + "\n\n" + "[相关知识]\n" + knowledge
 
