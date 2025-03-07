@@ -1048,6 +1048,21 @@ func is_attackable():
 	else:
 		return true
 
+func get_in_battle():
+	var in_battle = false
+	for p in nearby_pawns:
+		if p.type == "CHARACTER" and p.camp != camp:
+			in_battle = true
+			break
+	
+	if in_battle:
+		if camp == "BLUE":
+			return "正在与敌方交战。"
+		else:
+			return "正在与我方交战。"
+	else:
+		return ""
+
 func get_self_status():
 	var status = ""
 	var npc_name = npc.npc_name if npc != null else "未知"
@@ -1057,6 +1072,7 @@ func get_self_status():
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
 		status += name_string + "" + get_health() + "。"
 		status += name_string + get_kda() + "。"
+		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
@@ -1066,6 +1082,7 @@ func get_self_status():
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
 		status += name_string + "" + get_health() + "。"
 		status += name_string + get_kda() + "。"
+		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
@@ -1083,10 +1100,11 @@ func get_status():
 		status += get_health() + "，"
 		status += get_kda() + "，"
 		status += "在" + get_region() + "附近"
+		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += get_on_lane() + "。"
 		else:
-			status += "。"
+			status += ""
 		status += get_money() + "。"
 
 	elif camp == "RED":
@@ -1095,10 +1113,11 @@ func get_status():
 		status += get_health() + "，"
 		status += get_kda() + "，"
 		status += "在" + get_region() + "附近"
+		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += get_on_lane() + "。"
 		else:
-			status += "。"
+			status += ""
 		status += get_money() + "。"
 	return status
 		
