@@ -178,55 +178,36 @@ func simulate():
 				pawn.random_move()
 				pawn.set_on_lane()
 		
-
+			# attack
+			# choose random nearby target with opposite camp
+			var target = null
+			var potential_targets = []
 			for other in pawn.nearby_pawns:
-				if pawn.is_alive() and other.is_alive() and other.camp != pawn.camp and pawn.is_attackable():
-					var damage : int = 0
-					damage = calculate_damage(other, pawn)
-					# if other.type == "CHARACTER":
-					# 	if other.lane == "辅助":
-					# 		if pawn.type == "CHARACTER":
-					# 			damage = randi() % int(round(20 + 10 * ((other.money + 0.01) / (pawn.money + 0.01) - 1)))
-					# 		elif pawn.pawn_name.contains("塔"):
-					# 			damage = randi() % 10
-					# 		else:
-					# 			damage = randi() % 20
-					# 	else:
-					# 		if pawn.type == "CHARACTER":
-					# 			damage = randi() % int(round(50 + 20 * ((other.money + 0.01) / (pawn.money + 0.01) - 1)))
-					# 		elif pawn.pawn_name.contains("塔"):
-					# 			damage = randi() % 20
-					# 		else:
-					# 			damage = randi() % 50
-					# 	damage = max(damage, 1)
-					# elif other.type == "BUILDING":
-					# 	var has_minion = false
-					# 	for nearby in other.nearby_pawns:
-					# 		if nearby.type == "MINION" and nearby.camp != other.camp:
-					# 			has_minion = true
-					# 			break
-					# 	if pawn.type == "CHARACTER" and has_minion:
-					# 		damage = 0
-					# 	else:
-					# 		damage = randi() % 20
-					# elif other.type == "MONSTER":
-					# 	damage = randi() % 20
-					# elif other.type == "MINION":
-					# 	damage = randi() % 10
+				if other.is_alive() and other.camp != pawn.camp and other.is_attackable():
+					potential_targets.append(other)
+			
+			if potential_targets.size() > 0:
+				target = potential_targets[randi() % potential_targets.size()]
+
+			if target != null and pawn.is_alive():
+				var damage : int = 0
+
+				if true:
+					damage = calculate_damage(pawn, target)
 				
-					if damage > pawn.hp:
-						var killer = other
+					if damage > target.hp:
+						var killer = pawn
 						# 从附近的不同阵营角色中随机选择一些作为助攻
 						var assist_pawns = []
 						var potential_assists = []
 						
 						# 收集所有附近的、与被击杀者阵营不同的角色型单位
-						for nearby in other.nearby_pawns:
+						for nearby in target.nearby_pawns:
 							if nearby != killer and nearby.is_alive() and nearby.camp == killer.camp and nearby.type == "CHARACTER":
 								potential_assists.append(nearby)
 						
-						# 随机决定有多少个助攻（0-3个）
-						var assist_count = min(randi() % 4, potential_assists.size())
+						# 随机决定有多少个助攻（0-4个）
+						var assist_count = min(randi() % 5, potential_assists.size())
 						
 						# 随机选择助攻
 						potential_assists.shuffle()
@@ -235,14 +216,14 @@ func simulate():
 								assist_pawns.append(potential_assists[i])
 						
 						# 处理击杀
-						if pawn.type == "CHARACTER":
-							pawn.killed_by(killer, assist_pawns)
+						if target.type == "CHARACTER":
+							target.killed_by(killer, assist_pawns)
 						else:
-							pawn.killed_by(killer)
+							target.killed_by(killer)
 					elif damage > 0:
-						pawn.take_damage(damage)
+						target.take_damage(damage)
 
-			
+			# heal
 			if pawn.type == "CHARACTER":
 				var has_other_camp_nearby = false
 				for nearby in pawn.nearby_pawns:

@@ -519,7 +519,7 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 
 	match type:
 		"CHARACTER":
-			max_money = 100
+			max_money = 200
 		"BUILDING":
 			max_money = 200
 		"MONSTER":
@@ -560,7 +560,7 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 	if pawn.npc != null:
 		killer_name = pawn.npc.npc_name + "-" + pawn.pawn_name
 	else:
-		killer_name = pawn_name
+		killer_name = pawn.pawn_name
 
 	if pawn.camp == "BLUE":
 		if pawn.type == "BUILDING":
