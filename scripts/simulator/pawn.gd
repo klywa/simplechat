@@ -43,6 +43,7 @@ var death_number : int = 0
 var assist_number : int = 0
 
 var move_target : Pawn = null
+var force_move : bool = false
 @onready var move_target_label := $MoveTarget
 
 @onready var camp_color_flag := $CampColor
@@ -265,6 +266,7 @@ func _on_button_up():
 		# 如果有悬停目标，则设置为移动目标并恢复原位置
 		if hover_target != null:
 			move_target = hover_target
+			force_move = true
 			# 停止当前的平滑移动
 			is_moving = false
 			position = drag_start_position
@@ -409,14 +411,14 @@ func has_friend_hero_nearby():
 			return true
 	return false
 
-func _on_button_pressed():
+func _on_button_pressed(force_open: bool = false):
 
 	var npc_name = npc.npc_name if npc != null else "未知"
 	var title_string = npc_name + " - " + pawn_name + "(" + lane + ")"
 	title_string += " - 红方" if camp == "RED" else " - 蓝方"
 	popup_panel_title.text = title_string
 
-	if not dragged or not moveable:
+	if not dragged or not moveable or force_open:
 		popup_panel.visible = true
 
 		move_target_dropdown.clear()
@@ -526,10 +528,17 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 			max_money = 100
 		"RESOURCE":
 			max_money = 100
+		"MINION":
+			max_money = 200
 
 	pawn.money += randi() % max_money
 	for p in assist_pawns:
 		p.money += randi() % int(round(max_money * 0.5))
+
+	if type == "BUILDING":
+		for p in simulator.name_pawn_dict.values():
+			if p.type == "CHARACTER" and p.camp != camp:
+				p.money += randi() % max_money
 	
 	if type == "CHARACTER":
 		death_number += 1
@@ -546,15 +555,17 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 	else:
 		self_name = pawn_name
 	if camp == "BLUE":
-		if type == "BUILDING":
+		if type in ["BUILDING", "MONSTER"]:
 			self_name = pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
 			self_name = "<我方-" + self_name + ">"
 	elif camp == "RED":
-		if type == "BUILDING":
+		if type in ["BUILDING", "MONSTER"]:
 			self_name = pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
 			self_name = "<敌方-" + self_name + ">"
+	elif camp == "NEUTRAL":
+		self_name = pawn_name.replace("红方", "敌方").replace("蓝方", "我方")
 	
 	var killer_name = ""
 	if pawn.npc != null:
@@ -563,12 +574,12 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 		killer_name = pawn.pawn_name
 
 	if pawn.camp == "BLUE":
-		if pawn.type == "BUILDING":
+		if pawn.type in ["BUILDING", "MONSTER"]:
 			killer_name = killer_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
 			killer_name = "<我方-" + killer_name + ">"
 	elif pawn.camp == "RED":
-		if pawn.type == "BUILDING":
+		if pawn.type in ["BUILDING", "MONSTER"]:
 			killer_name = killer_name.replace("红方", "敌方").replace("蓝方", "我方")
 		else:
 			killer_name = "<敌方-" + killer_name + ">"
@@ -632,7 +643,13 @@ func take_damage(damage: int):
 		die()
 	
 	if origin_hp >= 50 and hp < 50:
-		reselect_move_target()
+		if force_move and not (move_target in nearby_pawns):
+			if hp < 30:
+				reselect_move_target()
+			else:
+				pass
+		else:
+			reselect_move_target()
 
 func heal(heal: int):
 	var origin_hp = hp
@@ -641,9 +658,15 @@ func heal(heal: int):
 		hp = 100
 	
 	if origin_hp < 100 and hp >= 100:
+		if force_move and not (move_target in nearby_pawns):
+			pass
+		else:
+			reselect_move_target()
+	elif origin_hp == 100 and (move_target in nearby_pawns):
 		reselect_move_target()
 
 func reselect_move_target():
+	force_move = false
 
 	move_target = null
 	if type != "CHARACTER":
@@ -944,6 +967,14 @@ func get_kda():
 	else:
 		return "战绩超神"
 
+func get_money():
+	if type == "CHARACTER":
+		return "当前经济：" + str(money)
+	elif type == "BUILDING":
+		return 0
+	elif type == "MONSTER":
+		return 0
+
 func set_on_lane():
 
 	if type != "CHARACTER":
@@ -952,7 +983,7 @@ func set_on_lane():
 
 	var nearby_buildings = []
 	for p in nearby_pawns:
-		if p.type == "BUILDING" and p.is_attackable():
+		if p.type == "BUILDING" and p.is_attackable() and p.pawn_name.contains("塔"):
 			nearby_buildings.append(p)
 	
 	# 如果附近有可攻击的建筑物，50%概率返回"正在和小兵交战"
@@ -1029,6 +1060,7 @@ func get_self_status():
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
+		status += name_string + get_money() + "。"
 	elif camp == "RED":
 		var name_string = "“" + npc_name + "”"
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
@@ -1037,6 +1069,7 @@ func get_self_status():
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
+		status += name_string + get_money() + "。"
 	return status
 
 
@@ -1054,6 +1087,7 @@ func get_status():
 			status += get_on_lane() + "。"
 		else:
 			status += "。"
+		status += get_money() + "。"
 
 	elif camp == "RED":
 		var name_string = "<敌方-" + npc_name + "-" + pawn_name + ">"
@@ -1065,7 +1099,7 @@ func get_status():
 			status += get_on_lane() + "。"
 		else:
 			status += "。"
-
+		status += get_money() + "。"
 	return status
 		
 
@@ -1107,6 +1141,20 @@ func get_builing_status():
 	remaining_status = remaining_status.rstrip("，") + "。"
 	return destroyed_status + "\n" + remaining_status
 
+func get_dead_pawns():
+	var dead_heros = "我方阵亡英雄："
+	var opponent_dead_heros = "敌方阵亡英雄："
+
+	for p in simulator.name_pawn_dict.values():
+		if p.type == "CHARACTER" and p.camp == camp and not p.is_alive():
+			dead_heros += p.pawn_name + "，"
+		elif p.type == "CHARACTER" and p.camp != camp and not p.is_alive():
+			opponent_dead_heros += p.pawn_name + "，"
+	
+	dead_heros = dead_heros.rstrip("，") + "。"
+	opponent_dead_heros = opponent_dead_heros.rstrip("，") + "。"
+	return dead_heros + "\n" + opponent_dead_heros
+
 func get_scenario_stirng():
 
 	var scenario = "[总体态势]\n"
@@ -1129,7 +1177,10 @@ func get_scenario_stirng():
 		if p.type == "CHARACTER" and p not in nearby_pawns and p.visible_to_blue and p != self:
 			scenario += p.get_status() + "\n"
 
-	scenario += "\n[附近防御塔]\n"
+	scenario += "\n[阵亡英雄]\n"
+	scenario += get_dead_pawns() + "\n"
+
+	scenario += "\n[防御塔状态]\n"
 	scenario += get_builing_status() + "\n"
 	
 	

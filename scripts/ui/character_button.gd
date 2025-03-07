@@ -185,4 +185,4 @@ func on_new_hero_label_text_changed(new_hero_str : String) -> void:
 		new_lane_label.text = GameManager.hero_lane_dict[new_hero_str]
 
 func on_hero_avatar_button_pressed() -> void:
-	character.pawn._on_button_pressed()
+	character.pawn._on_button_pressed(true)

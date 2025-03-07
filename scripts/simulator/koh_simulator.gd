@@ -195,7 +195,7 @@ func simulate():
 				if true:
 					damage = calculate_damage(pawn, target)
 				
-					if damage > target.hp:
+					if damage >= target.hp:
 						var killer = pawn
 						# 从附近的不同阵营角色中随机选择一些作为助攻
 						var assist_pawns = []
@@ -274,8 +274,10 @@ func calculate_damage(attacker: Pawn, defender: Pawn):
 				"BUILDING":
 					if defender.has_friend_hero_nearby():
 						return randi() % 5
+					elif attacker.is_on_lane:
+						return randi() % 40
 					else:
-						return randi() % 20
+						return randi() % 10
 				"MINION":
 					if attacker.lane == "辅助":
 						return randi() % int(round(20 + 10 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
@@ -292,6 +294,8 @@ func calculate_damage(attacker: Pawn, defender: Pawn):
 					if defender.has_friend_hero_nearby():
 						if defender.move_target.type == "CHARACTER" and defender.move_target.camp == defender.camp:
 							return randi() % 50
+						elif defender.is_on_lane:
+							return randi() % 5
 						else:
 							return randi() % 20
 					else:
