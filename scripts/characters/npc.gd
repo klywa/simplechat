@@ -104,10 +104,14 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 	print("generate_response", str(npc_type))
 	if npc_type in [NPCType.ENV, NPCType.SYSTEM]:
 		print("in env")
-		if not use_ai:
+		if true:
 			print("not use ai")
-			await GameManager.main_view.get_tree().create_timer(1).timeout
-			return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
+			# await GameManager.main_view.get_tree().create_timer(1).timeout
+			# 如果chat的messages中最后一条是system_message，则将response设置为该消息的内容
+			if chat.messages.size() > 0 and chat.messages[-1] is SystemMessage:
+				return {"response": chat.messages[-1].message, "prompt": "", "query": "", "model_version": ""}
+			else:
+				return {"response": "系统消息", "prompt": "", "query": "", "model_version": ""}
 		else:
 			print("use ai")
 			var request = {
