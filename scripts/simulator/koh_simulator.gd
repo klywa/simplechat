@@ -38,6 +38,8 @@ var red_team_total_money : int = 0
 var blue_team_total_kill : int = 0
 var red_team_total_kill : int = 0
 
+var match_time : int = 0
+
 signal simulate_finished
 
 const PAWN_SCENE = preload("res://scenes/simulator/pawn.tscn")
@@ -94,6 +96,7 @@ func init(chat_in: Chat):
 			match new_pawn.lane:
 				"上路":
 					new_pawn.position = name_poi_dict["蓝方上路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+					new_pawn.is_on_lane = true
 				"打野":
 					if randf() < 0.5:
 						new_pawn.position = name_poi_dict["蓝方蓝Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
@@ -101,10 +104,13 @@ func init(chat_in: Chat):
 						new_pawn.position = name_poi_dict["蓝方红Buff"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 				"中路":
 					new_pawn.position = name_poi_dict["蓝方中路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+					new_pawn.is_on_lane = true
 				"下路":
 					new_pawn.position = name_poi_dict["蓝方下路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+					new_pawn.is_on_lane = true
 				"辅助":
 					new_pawn.position = name_poi_dict["蓝方下路一塔"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+					new_pawn.is_on_lane = true
 				_:
 					new_pawn.position = name_poi_dict["蓝方水晶"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
 			
@@ -159,9 +165,13 @@ func init(chat_in: Chat):
 	for pawn in name_pawn_dict.values():
 		if pawn.type == "CHARACTER":
 			pawn.set_init_move_target()
-
+			
+	match_time = 0
 
 func simulate():
+
+	match_time += 1
+
 	var pawn_list = name_pawn_dict.values()
 	pawn_list.shuffle()
 
@@ -170,10 +180,16 @@ func simulate():
 		if pawn.is_alive():
 			if pawn.type == "CHARACTER":
 
-				pawn.money += randi() % 10
-				if randi() % 100 < 10:
+				if pawn.is_on_lane:
+					pawn.money += randi() % 20 + 20
+				elif pawn.has_monster_nearby():
+					pawn.money += randi() % 20 + 20
+				else:
+					pawn.money += randi() % 10
+
+				if randi() % 100 <= 10:
 					pawn.level += 1
-					pawn.level = min(pawn.level, 25)
+					pawn.level = min(pawn.level, 20)
 				
 				pawn.random_move()
 				pawn.set_on_lane()
@@ -267,27 +283,46 @@ func calculate_damage(attacker: Pawn, defender: Pawn):
 		"CHARACTER":
 			match defender.type:
 				"CHARACTER":
+					# 使用calculate_power函数计算伤害
+					var attacker_power = attacker.calculate_power()
+					var defender_power = defender.calculate_power()
+					
+					# 计算基础伤害
+					var base_damage = 10.0 + (attacker_power / 5.0)
+					
+					# 计算伤害倍率，基于双方战力比
+					var power_ratio = attacker_power / max(defender_power, 1.0)
+					var damage_multiplier = clamp(power_ratio, 0.5, 2.0)
+					
+					# 计算最终伤害，添加随机因素
+					var final_damage = int(round(base_damage * damage_multiplier))
+					final_damage += randi() % int(max(5, final_damage * 0.3))
+					
+					# 辅助角色伤害降低
 					if attacker.lane == "辅助":
-						return randi() % int(round(20 + 10 * ((attacker.money + 0.01) / (defender.money + 0.01) - 1)))
-					else:
-						return randi() % int(round(50 + 20 * ((attacker.money + 0.01) / (defender.money + 0.01) - 1)))
+						final_damage = int(final_damage * 0.7)
+						
+					return final_damage
 				"BUILDING":
 					if defender.has_friend_hero_nearby():
-						return randi() % 5
+						if attacker.is_on_lane:
+							return randi() % int(ceil(min(10.0, 0.01 + round(float(match_time) / 18.0))))
+						else:
+							return randi() % int(ceil(min(5.0, 0.01 + round(float(match_time) / 36.0))))
 					elif attacker.is_on_lane:
-						return randi() % 40
+						return randi() % int(ceil(min(40.0, 0.01 + round(float(match_time) / 4.5))))
 					else:
-						return randi() % 10
+						return randi() % int(ceil(min(5.0, 0.01 + round(float(match_time) / 36.0))))
 				"MINION":
 					if attacker.lane == "辅助":
-						return randi() % int(round(20 + 10 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+						return randi() % int(round(20.0 + 10.0 * ((float(attacker.money) + 0.01) / (6000.0 + 0.01) - 1.0)))
 					else:
-						return randi() % int(round(50 + 20 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+						return randi() % int(round(50.0 + 20.0 * ((float(attacker.money) + 0.01) / (6000.0 + 0.01) - 1.0)))
 				"MONSTER":
 					if attacker.lane == "辅助":
-						return randi() % int(round(20 + 10 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+						return randi() % int(round(20.0 + 10.0 * ((float(attacker.money) + 0.01) / (6000.0 + 0.01) - 1.0)))
 					else:
-						return randi() % int(round(50 + 20 * ((attacker.money + 0.01) / (500 + 0.01) - 1)))
+						return randi() % int(round(50.0 + 20.0 * ((float(attacker.money) + 0.01) / (6000.0 + 0.01) - 1.0)))
 		"BUILDING":
 			match defender.type:
 				"CHARACTER":

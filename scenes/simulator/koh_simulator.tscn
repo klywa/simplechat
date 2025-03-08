@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dxobbxxmlnw5d"]
 
-[ext_resource type="Script" path="res://scripts/simulator/koh_simulator.gd" id="1_8anij"]
+[ext_resource type="Script" uid="uid://brj8hnu3xgf0k" path="res://scripts/simulator/koh_simulator.gd" id="1_8anij"]
 [ext_resource type="PackedScene" uid="uid://d3xruowhlfkd0" path="res://scenes/simulator/koh_map.tscn" id="1_bcon7"]
 [ext_resource type="PackedScene" uid="uid://0k428716fuul" path="res://scenes/simulator/pawn.tscn" id="2_1pue8"]
 
@@ -14,343 +14,213 @@ script = ExtResource("1_8anij")
 [node name="BlueCrystal" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
 position = Vector2(117, 1035)
 pawn_name = "蓝方水晶"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueUT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(71, 891)
 pawn_name = "蓝方上路高地塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueUT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(68, 644)
 pawn_name = "蓝方上路二塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueUT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(69, 305)
 pawn_name = "蓝方上路一塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueMT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(218, 938)
 pawn_name = "蓝方中路高地塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueMT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(311, 840)
 pawn_name = "蓝方中路二塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueMT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(457, 696)
 pawn_name = "蓝方中路一塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueDT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(264, 1082)
 pawn_name = "蓝方下路高地塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueDT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(506, 1079)
 pawn_name = "蓝方下路二塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueDT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(842, 1075)
 pawn_name = "蓝方下路一塔"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="RedCrystal" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
 position = Vector2(1039, 109)
 pawn_name = "红方水晶"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedUT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(888, 69)
 pawn_name = "红方上路高地塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedUT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(646, 73)
 pawn_name = "红方上路二塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedUT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(309, 69)
 pawn_name = "红方上路一塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedMT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(939, 214)
 pawn_name = "红方中路高地塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedMT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(839, 316)
 pawn_name = "红方中路二塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedMT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(695, 460)
 pawn_name = "红方中路一塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedDT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(1085, 265)
 pawn_name = "红方下路高地塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedDT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(1081, 507)
 pawn_name = "红方下路二塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="RedDT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
 position = Vector2(1082, 839)
 pawn_name = "红方下路一塔"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueBlueBuff" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
 position = Vector2(264, 606)
 pawn_name = "蓝方蓝Buff"
-moveable = true
-max_speed = 100.0
-camp = "NEUTRAL"
 type = "MONSTER"
-lane = ""
 
 [node name="BlueRedBuff" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
 position = Vector2(553, 895)
 pawn_name = "蓝方红Buff"
-moveable = true
-max_speed = 100.0
-camp = "NEUTRAL"
 type = "MONSTER"
-lane = ""
 
 [node name="RedBlueBuff" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
 position = Vector2(890, 559)
 pawn_name = "红方蓝Buff"
-moveable = true
-max_speed = 100.0
-camp = "NEUTRAL"
 type = "MONSTER"
-lane = ""
 
 [node name="RedRedBuff" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
 position = Vector2(600, 270)
 pawn_name = "红方红Buff"
-moveable = true
-max_speed = 100.0
-camp = "NEUTRAL"
 type = "MONSTER"
-lane = ""
 
 [node name="Dragon1" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
 position = Vector2(410, 362)
 pawn_name = "主宰"
-moveable = true
-max_speed = 100.0
-camp = "NEUTRAL"
 type = "MONSTER"
-lane = ""
 
 [node name="Dragon2" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
 position = Vector2(745, 793)
 pawn_name = "暴君"
-moveable = true
-max_speed = 100.0
-camp = "NEUTRAL"
 type = "MONSTER"
-lane = ""
 
 [node name="RedFountain" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
 position = Vector2(1122, 32)
 pawn_name = "红方泉水"
-moveable = true
-max_speed = 100.0
 camp = "RED"
 type = "BUILDING"
-lane = ""
 
 [node name="BlueFountain" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
 position = Vector2(24, 1128)
 pawn_name = "蓝方泉水"
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
 type = "BUILDING"
-lane = ""
 
 [node name="Pawns" type="Node" parent="KoHMap"]
 
 [node name="BlueHero1" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(80, 432)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
-type = "CHARACTER"
 lane = "上路"
 
 [node name="BlueHero2" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(208, 693)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
-type = "CHARACTER"
 lane = "打野"
 
 [node name="BlueHero3" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(516, 636)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
-type = "CHARACTER"
 lane = "中路"
 
 [node name="BlueHero4" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(652, 1033)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
-type = "CHARACTER"
 lane = "辅助"
 
 [node name="BlueHero5" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(729, 1080)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "BLUE"
-type = "CHARACTER"
 lane = "下路"
 
 [node name="RedHero1" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(402, 83)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "RED"
-type = "CHARACTER"
 lane = "上路"
 
 [node name="RedHero2" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(914, 466)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "RED"
-type = "CHARACTER"
 lane = "打野"
 
 [node name="RedHero3" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(774, 434)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "RED"
-type = "CHARACTER"
 lane = "中路"
 
 [node name="RedHero4" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(1079, 655)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "RED"
-type = "CHARACTER"
 lane = "辅助"
 
 [node name="RedHero5" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
 position = Vector2(1057, 760)
-pawn_name = ""
-moveable = true
-max_speed = 100.0
 camp = "RED"
-type = "CHARACTER"
 lane = "下路"

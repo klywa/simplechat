@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://c6bidroy5cjdw" path="res://assets/avatars/sample_avatar_01.png" id="1_akc7r"]
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_bcw5s"]
-[ext_resource type="Script" path="res://scripts/ui/chat_item.gd" id="2_1bawu"]
+[ext_resource type="Script" uid="uid://qejsdwgcey2a" path="res://scripts/ui/chat_item.gd" id="2_1bawu"]
 
 [node name="ChatItem" type="Button"]
 custom_minimum_size = Vector2(160, 160)

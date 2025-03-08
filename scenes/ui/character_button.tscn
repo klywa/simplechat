@@ -2,8 +2,8 @@
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_wwfwj"]
 [ext_resource type="Texture2D" uid="uid://c6bidroy5cjdw" path="res://assets/avatars/sample_avatar_01.png" id="2_o1fq8"]
-[ext_resource type="Script" path="res://scripts/ui/character_button.gd" id="2_tgjb7"]
-[ext_resource type="Texture2D" uid="uid://dnia7iona2jyc" path="res://assets/avatars/hero_avatar/上官婉儿.webp" id="4_g5cw8"]
+[ext_resource type="Script" uid="uid://gji3sov7xoy2" path="res://scripts/ui/character_button.gd" id="2_tgjb7"]
+[ext_resource type="Texture2D" uid="uid://b1u56ooubo50m" path="res://assets/avatars/hero_avatar/亚瑟.webp" id="3_rn641"]
 
 [node name="CharacterButton" type="MarginContainer"]
 custom_minimum_size = Vector2(120, 120)
@@ -27,7 +27,7 @@ custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
-texture = ExtResource("4_g5cw8")
+texture = ExtResource("3_rn641")
 stretch_mode = 2
 
 [node name="HeroAvatarButton" type="Button" parent="VBoxContainer/HeroAvatar"]
@@ -96,24 +96,24 @@ theme_type_variation = &"InvisibleButton"
 
 [node name="CharacterInfoPanel" type="PopupPanel" parent="."]
 initial_position = 2
-size = Vector2i(632, 832)
+size = Vector2i(656, 856)
 theme = ExtResource("1_wwfwj")
 
 [node name="PanelContainer" type="PanelContainer" parent="CharacterInfoPanel"]
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 628.0
-offset_bottom = 828.0
+offset_right = 652.0
+offset_bottom = 852.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("1_wwfwj")
 
 [node name="MarginContainer" type="MarginContainer" parent="CharacterInfoPanel/PanelContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
 
 [node name="ScrollContainer" type="ScrollContainer" parent="CharacterInfoPanel/PanelContainer/MarginContainer"]
 custom_minimum_size = Vector2(600, 800)
@@ -122,6 +122,18 @@ layout_mode = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer"]
 layout_mode = 2
 theme_override_constants/separation = 24
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "状态技巧值"
+
+[node name="SkillEditor" type="LineEdit" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+placeholder_text = "状态值"
 
 [node name="SettingLabel" type="Label" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -163,7 +175,9 @@ text = "盘面信息"
 [node name="InGame" type="RichTextLabel" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
 custom_minimum_size = Vector2(600, 0)
 layout_mode = 2
+focus_mode = 2
 fit_content = true
+selection_enabled = true
 
 [node name="HeroPanel" type="PopupPanel" parent="."]
 initial_position = 2

@@ -26,6 +26,8 @@ var hero_lane: String
 var scenario: String
 var alias : Array = []
 
+var skill_level : int = 1
+
 var knowledge: String = ""
 
 var hero_id: int
@@ -98,7 +100,7 @@ func update_alias():
 					alias.append(a)
 			break
 
-func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null, instructions: String="") -> Dictionary:
+func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null, instructions: String="", knowledge: String="") -> Dictionary:
 	print("generate_response", str(npc_type))
 	if npc_type in [NPCType.ENV, NPCType.SYSTEM]:
 		print("in env")
@@ -154,7 +156,8 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 	elif npc_type == NPCType.NPC:
 		scenario = get_scenario(chat)
 		npc_status = pawn.get_self_status()
-		knowledge = GameManager.get_knowledge(chat, self)
+		if knowledge == "":
+			knowledge = GameManager.get_knowledge(chat, self)
 
 		ingame_info =  npc_status + "\n\n" + scenario + "\n\n" + "[相关知识]\n" + knowledge
 

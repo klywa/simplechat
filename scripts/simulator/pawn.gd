@@ -76,6 +76,11 @@ var force_move : bool = false
 
 @onready var popup_panel_title := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/Title
 
+@onready var skill_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Skill
+@onready var kda_info := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/KDA
+
+
+
 var npc : NPC
 var hp : int = 100
 var level : int = 1
@@ -84,6 +89,7 @@ var revive_count_down : int = 0
 var visible_to_blue : bool = true
 var nearby_pawns : Array[Pawn] = []
 var is_on_lane : bool = false
+var tower_nearby_last_frame : bool = false
 
 var origin_color
 
@@ -130,6 +136,7 @@ func _ready() -> void:
 	hp_editor.text_submitted.connect(_on_hp_editor_changed)
 	level_editor.text_submitted.connect(_on_level_editor_changed)
 	money_editor.text_submitted.connect(_on_money_editor_changed)
+	skill_editor.text_submitted.connect(_on_skill_editor_changed)
 
 	revive_button.pressed.connect(_on_revive_button_pressed)
 
@@ -455,8 +462,13 @@ func _on_button_pressed(force_open: bool = false):
 		hp_editor.text = str(hp)
 		level_editor.text = str(level)
 		money_editor.text = str(money)
+		if npc != null:
+			skill_editor.text = str(npc.skill_level)
+		else:
+			skill_editor.text = "0"
 
 		nearby_text.text = get_nearby_string()
+		kda_info.text = "击杀：%d 死亡：%d 助攻：%d" % [kill_number, death_number, assist_number]
 
 func is_alive():
 	return hp > 0
@@ -475,7 +487,7 @@ func _on_detect_area_entered(area: Area2D) -> void:
 		var other_pawn = area.get_parent() as Pawn
 		if other_pawn != self and not nearby_pawns.has(other_pawn):
 			nearby_pawns.append(other_pawn)
-			print("%s检测到%s进入范围" % [pawn_name, other_pawn.pawn_name])
+			# print("%s检测到%s进入范围" % [pawn_name, other_pawn.pawn_name])
 			
 			# 如果自己是RED阵营，且进入的pawn是BLUE阵营
 			if camp == "RED" and other_pawn.camp == "BLUE":
@@ -484,7 +496,7 @@ func _on_detect_area_entered(area: Area2D) -> void:
 					# 更新可见性
 					minion_sprite.modulate.a = 1.0
 					camp_color_flag.modulate.a = 1.0
-					print("%s被BLUE阵营发现，变为可见" % pawn_name)
+					# print("%s被BLUE阵营发现，变为可见" % pawn_name)
 
 # 当其他pawn离开检测区域时调用
 func _on_detect_area_exited(area: Area2D) -> void:
@@ -493,7 +505,7 @@ func _on_detect_area_exited(area: Area2D) -> void:
 		var other_pawn = area.get_parent() as Pawn
 		if nearby_pawns.has(other_pawn):
 			nearby_pawns.erase(other_pawn)
-			print("%s检测到%s离开范围" % [pawn_name, other_pawn.pawn_name])
+			# print("%s检测到%s离开范围" % [pawn_name, other_pawn.pawn_name])
 			
 			# 如果自己是RED阵营，且离开的pawn是BLUE阵营
 			if camp == "RED" and other_pawn.camp == "BLUE":
@@ -510,10 +522,16 @@ func _on_detect_area_exited(area: Area2D) -> void:
 					# 立即更新可见性
 					minion_sprite.modulate.a = 0.5
 					camp_color_flag.modulate.a = 0.5
-					print("%s附近没有BLUE阵营单位，变为不可见" % pawn_name)
+					# print("%s附近没有BLUE阵营单位，变为不可见" % pawn_name)
 
 func send_message(message: String):
 	simulator.chat.add_message(GameManager.system, message)
+
+func has_monster_nearby():
+	for p in nearby_pawns:
+		if p.type == "MONSTER" and p.is_alive():
+			return true
+	return false
 
 func killed_by(pawn: Pawn, assist_pawns: Array = []):
 
@@ -521,7 +539,14 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 
 	match type:
 		"CHARACTER":
-			max_money = 200
+			if level <= 3:
+				max_money = 225
+			elif level <= 7:
+				max_money = 250
+			elif level <= 15:
+				max_money = 275
+			elif level <= 20:
+				max_money = 300
 		"BUILDING":
 			max_money = 200
 		"MONSTER":
@@ -531,9 +556,9 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 		"MINION":
 			max_money = 200
 
-	pawn.money += randi() % max_money
+	pawn.money += max_money
 	for p in assist_pawns:
-		p.money += randi() % int(round(max_money * 0.5))
+		p.money += max_money * 0.3
 
 	if type == "BUILDING":
 		for p in simulator.name_pawn_dict.values():
@@ -608,9 +633,9 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 		"CHARACTER":
 			match camp:
 				"RED":
-					msg = "%s击杀了%s。%s" % [killer_name, self_name, assist_msg]
+					msg = "%s击杀了%s%s" % [killer_name, self_name, assist_msg]
 				"BLUE":
-					msg = "%s被%s击杀。%s" % [self_name, killer_name, assist_msg]
+					msg = "%s被%s击杀%s" % [self_name, killer_name, assist_msg]
 				"NEUTRAL":
 					if pawn.camp == "RED":
 						msg = "%s击杀了%s。" % [killer_name, self_name]
@@ -668,6 +693,9 @@ func heal(heal: int):
 func reselect_move_target():
 	force_move = false
 
+	# select_move_target()
+	# return
+
 	move_target = null
 	if type != "CHARACTER":
 		return 
@@ -704,15 +732,15 @@ func select_target_by_distance(targets: Array):
 	# 调试信息
 	# print("选择目标，当前位置：", position)
 	
-	var debug_str = pawn_name + "距离："
+	# var debug_str = pawn_name + "距离："
 	for target in targets:
 		var distance = position.distance_to(target.position)
 		# 距离越近，权重越大，使用更强的距离惩罚
 		var weight = 1.0 / pow(max(distance/1000, 0.1), 2) # 使用三次方权重，更强调近距离目标
 		weights.append(weight)
 		total_weight += weight
-		debug_str += "目标:%s 距离:%.2f 权重:%.4f | " % [target.pawn_name, distance, weight]
-	print(debug_str + "总权重:%.4f" % total_weight)
+		# debug_str += "目标:%s 距离:%.2f 权重:%.4f | " % [target.pawn_name, distance, weight]
+	# print(debug_str + "总权重:%.4f" % total_weight)
 	
 	# 如果总权重为0（极端情况），直接选择最近的目标
 	if total_weight <= 0.0001:
@@ -725,7 +753,7 @@ func select_target_by_distance(targets: Array):
 				min_distance = distance
 				closest_target = target
 		
-		print("使用最近目标：", closest_target.pawn_name)
+		# print("使用最近目标：", closest_target.pawn_name)
 		return closest_target
 	
 	# 根据权重随机选择目标
@@ -735,11 +763,11 @@ func select_target_by_distance(targets: Array):
 	for i in range(targets.size()):
 		current_sum += weights[i]
 		if random_value <= current_sum:
-			print("选择了目标：", targets[i].pawn_name)
+			# print("选择了目标：", targets[i].pawn_name)
 			return targets[i]
 	
 	# 保险起见，如果没有选中任何目标，返回第一个
-	print("未选中任何目标，返回第一个")
+	# print("未选中任何目标，返回第一个")
 	return targets[0] if targets.size() > 0 else null
 
 func _on_submit_kill_button_pressed():
@@ -769,6 +797,9 @@ func _on_level_editor_changed(value: String):
 
 func _on_money_editor_changed(value: String):
 	money = int(value)
+
+func _on_skill_editor_changed(value: String):
+	npc.skill_level = int(value)
 
 func _on_revive_button_pressed():
 	revive()
@@ -971,9 +1002,9 @@ func get_money():
 	if type == "CHARACTER":
 		return "当前经济：" + str(money)
 	elif type == "BUILDING":
-		return 0
+		return ""
 	elif type == "MONSTER":
-		return 0
+		return ""
 
 func set_on_lane():
 
@@ -989,12 +1020,28 @@ func set_on_lane():
 	# 如果附近有可攻击的建筑物，50%概率返回"正在和小兵交战"
 	if nearby_buildings.size() > 0:
 		if is_on_lane:
-			is_on_lane = true
-		else:
-			if randf() < 0.5:
+			# 如果有敌方英雄或建筑在附近，则不处于线上
+			var enemy_nearby = false
+			for p in nearby_pawns:
+				if p.type in ["CHARACTER", "BUILDING"] and p.camp != camp:
+					enemy_nearby = true
+					break
+			if enemy_nearby:
+				if randf() < 0.5:
+					is_on_lane = false
+		elif not tower_nearby_last_frame:
+			if randf() < 0.7 + (npc.skill_level / 10.0) * 0.3:
 				is_on_lane = true
+		else:
+			if randf() < 0.2:
+				is_on_lane = true
+		tower_nearby_last_frame = true		
 	else:
-		is_on_lane = false
+		if move_target.type == "BUILDING" and move_target.camp != camp:
+			pass
+		else:
+			is_on_lane = false
+		tower_nearby_last_frame = false
 
 
 func get_on_lane():
@@ -1103,8 +1150,6 @@ func get_status():
 		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += get_on_lane() + "。"
-		else:
-			status += ""
 		status += get_money() + "。"
 
 	elif camp == "RED":
@@ -1127,7 +1172,7 @@ func get_player_status():
 	var status = player_pawn.get_status()
 
 	# if player_pawn in nearby_pawns:
-	# 	status += "“玩家”在" + "”" + npc.npc_name + "”" + "附近。"
+	# 	status += "“玩家" + "在" + "”" + npc.npc_name + "”" + "附近。"
 
 	return status
 
@@ -1150,7 +1195,7 @@ func get_builing_status():
 	var remaining_status = "未被摧毁的防御塔："
 
 	for p in simulator.name_poi_dict.values():
-		print(p.pawn_name)
+		# print(p.pawn_name)
 		if p.type == "BUILDING" and p.pawn_name.contains("塔"):
 			if p.is_alive():
 				remaining_status += p.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "，"
@@ -1305,3 +1350,345 @@ func custom_draw_dashed_line(from, to, color, width, dash_length):
 		# 确保不会超出总长度
 		if drawn >= length:
 			break
+
+# 计算pawn的战斗强度，仅适用于CHARACTER类型的pawn
+# 强度取值范围说明：
+# - 理论最小值：0（新角色，无经济，无击杀，技能水平为0）
+# - 理论最大值：约45-50（满级，满经济，高KDA，最高技能水平，团队加成）
+# - 一般范围：10-30（普通游戏中的常见取值范围）
+func calculate_power() -> float:
+	# 如果不是CHARACTER类型，返回0
+	if type != "CHARACTER":
+		return 0.0
+	
+	# 基础分数
+	var power_score: float = 0.0
+	
+	# 1. 考虑英雄等级 (权重: 20%)
+	# 等级越高，强度越大，呈线性关系
+	var level_factor: float = level * 3.0  # 每级提供3点强度
+	power_score += level_factor * 0.20     # 最高贡献：约12点(假设最高20级)
+	
+	# 2. 考虑经济 (权重: 25%)
+	# 经济越高，装备越好，强度越大
+	var money_factor: float = min(money / 12000.0, 1.0)  # 将经济归一化，最高12000
+	power_score += money_factor * 40.0 * 0.25  # 满经济提供10点强度
+	
+	# 3. 考虑KDA (权重: 15%)
+	# KDA越高，玩家越强
+	var kda: float = (kill_number + assist_number * 0.5) / max(death_number, 1.0)
+	var kda_factor: float = min(kda / 5.0, 1.0)  # 将KDA归一化，最高5.0
+	power_score += kda_factor * 30.0 * 0.15  # 满KDA提供4.5点强度
+	
+	# 4. 考虑NPC技能水平 (权重: 40%)
+	# NPC技能水平是最重要的因素
+	var skill_level_factor: float = 0.0
+	if npc != null:
+		skill_level_factor = npc.skill_level / 10.0  # 假设skill_level是0-10的值
+	else:
+		skill_level_factor = 0.5  # 如果没有NPC，给一个中等水平
+	power_score += skill_level_factor * 50.0 * 0.40  # 满技能水平提供20点强度
+	
+	# 额外因素：如果在战斗中，不考虑血量因素，只考虑是否有战斗加成
+	if get_in_battle() != "":
+		# 战斗状态下可能有战术优势
+		power_score *= 1.05  # 增加5%的战斗意识加成
+	
+	# 额外因素：如果有友方英雄在附近，增加强度
+	var nearby_friends = 0
+	for p in nearby_pawns:
+		if p.type == "CHARACTER" and p.camp == camp and p != self:
+			nearby_friends += 1
+	
+	# 每个友方英雄提供10%的额外强度，最多30%
+	if nearby_friends > 0:
+		power_score *= (1.0 + min(nearby_friends * 0.1, 0.3))
+	
+	# 返回最终计算的强度值，四舍五入到一位小数
+	return round(power_score * 10) / 10.0
+
+
+# 智能选择移动目标函数
+func select_move_target() -> Pawn:
+	# 如果不是CHARACTER类型，不需要选择移动目标
+	if type != "CHARACTER":
+		return null
+		
+	# 获取自身战力
+	var self_power = calculate_power()
+	
+	# 获取所有可能的目标
+	var all_pawns = simulator.name_pawn_dict.values()
+	var potential_targets = []
+	
+	# 根据当前状态决定行为策略
+	var strategy = "ATTACK"  # 默认策略是进攻
+	
+	# 1. 健康状态评估
+	if hp < 30:  # 血量低于30%，优先撤退
+		strategy = "RETREAT"
+	elif hp < 50:  # 血量低于50%，根据战力决定
+		# 如果附近有敌方英雄且我方战力不足，选择撤退
+		var nearby_enemies = []
+		for p in nearby_pawns:
+			if p.type == "CHARACTER" and p.camp != camp and p.is_alive() and p.is_attackable():
+				nearby_enemies.append(p)
+				
+		if nearby_enemies.size() > 0:
+			var total_enemy_power = 0.0
+			for enemy in nearby_enemies:
+				total_enemy_power += enemy.calculate_power()
+				
+			if self_power < total_enemy_power:
+				strategy = "RETREAT"
+	
+	# 2. 特殊角色策略
+	if lane == "辅助":
+		# 辅助优先跟随己方ADC（下路）
+		strategy = "SUPPORT"
+	
+	# 3. 目标筛选
+	match strategy:
+		"ATTACK":
+			# 进攻策略：选择敌方目标
+			# 优先级：血量低的敌方英雄 > 附近的敌方建筑 > 其他敌方单位
+			
+			# 3.1 寻找血量低的敌方英雄
+			var low_hp_enemies = []
+			for p in all_pawns:
+				if p.camp != camp and p.type == "CHARACTER" and p.is_alive() and p.is_attackable() and p.hp < 40:
+					low_hp_enemies.append(p)
+			
+			if low_hp_enemies.size() > 0:
+				# 为低血量敌人分配权重
+				var target_weights = {}
+				for enemy in low_hp_enemies:
+					# 基础权重：血量越低权重越高
+					var base_weight = (100 - enemy.hp) / 100.0
+					
+					# 距离因子：距离越近权重越高
+					var distance = position.distance_to(enemy.position)
+					var distance_factor = 1000.0 / max(distance, 100.0)
+					
+					# 战力因子：如果我方战力高于敌方，增加权重
+					var power_factor = self_power / max(enemy.calculate_power(), 1.0)
+					power_factor = clamp(power_factor, 0.5, 2.0)
+					
+					# 计算总权重
+					var total_weight = base_weight * 0.4 + distance_factor * 0.4 + power_factor * 0.2
+					target_weights[enemy] = total_weight
+				
+				# 根据权重选择目标
+				var best_target = null
+				var highest_weight = 0
+				
+				for target in target_weights:
+					if target_weights[target] > highest_weight:
+						highest_weight = target_weights[target]
+						best_target = target
+				
+				if best_target != null:
+					# print("%s选择攻击低血量敌人：%s" % [pawn_name, best_target.pawn_name])
+					return best_target
+			
+			# 3.2 如果在兵线上，考虑攻击敌方建筑
+			if is_on_lane:
+				var enemy_buildings = []
+				for p in all_pawns:
+					if p.camp != camp and p.type == "BUILDING" and p.is_alive() and p.is_attackable():
+						enemy_buildings.append(p)
+				
+				if enemy_buildings.size() > 0:
+					# 按照建筑物类型和距离排序
+					var building_priorities = {
+						"一塔": 3,
+						"二塔": 2,
+						"高地塔": 1,
+						"水晶": 0
+					}
+					
+					var best_building = null
+					var best_priority = -1
+					var best_distance = 999999
+					
+					for building in enemy_buildings:
+						var priority = -1
+						for key in building_priorities:
+							if building.pawn_name.contains(key):
+								if building.is_attackable() and building.is_alive():
+									priority = building_priorities[key]
+									break
+								else:
+									priority = 10000
+									break
+						
+						if priority > best_priority:
+							best_priority = priority
+							best_building = building
+							best_distance = position.distance_to(building.position)
+						elif priority == best_priority:
+							var distance = position.distance_to(building.position)
+							if distance < best_distance:
+								best_building = building
+								best_distance = distance
+					
+					if best_building != null:
+						print("%s选择攻击敌方建筑：%s" % [pawn_name, best_building.pawn_name])
+						return best_building
+			
+			# 3.3 选择附近的敌方单位
+			var nearby_enemies = []
+			for p in nearby_pawns:
+				if p.camp != camp and p.is_alive() and p.is_attackable():
+					nearby_enemies.append(p)
+			
+			if nearby_enemies.size() > 0:
+				# 按照类型和战力排序
+				var type_priorities = {
+					"CHARACTER": 3,
+					"MINION": 2,
+					"MONSTER": 1,
+					"BUILDING": 0
+				}
+				
+				var best_enemy = null
+				var best_priority = -1
+				var best_power_ratio = 0
+				
+				for enemy in nearby_enemies:
+					var priority = type_priorities.get(enemy.type, 0)
+					
+					if priority > best_priority:
+						best_priority = priority
+						best_enemy = enemy
+						if enemy.type == "CHARACTER":
+							best_power_ratio = self_power / max(enemy.calculate_power(), 1.0)
+						else:
+							best_power_ratio = 999
+					elif priority == best_priority and enemy.type == "CHARACTER":
+						var power_ratio = self_power / max(enemy.calculate_power(), 1.0)
+						if power_ratio > best_power_ratio:
+							best_enemy = enemy
+							best_power_ratio = power_ratio
+				
+				if best_enemy != null:
+					print("%s选择攻击附近敌人：%s" % [pawn_name, best_enemy.pawn_name])
+					return best_enemy
+			
+			# 3.4 如果没有找到合适的目标，选择敌方水晶
+			var enemy_crystal_name = "红方水晶" if camp == "BLUE" else "蓝方水晶"
+			var enemy_crystal = simulator.name_poi_dict.get(enemy_crystal_name)
+			
+			if enemy_crystal != null and enemy_crystal.is_alive() and enemy_crystal.is_attackable():
+				print("%s选择攻击敌方水晶" % pawn_name)
+				return enemy_crystal
+				
+		"RETREAT":
+			# 撤退策略：选择己方目标
+			# 优先级：己方泉水 > 己方塔 > 己方英雄
+			
+			# 4.1 如果血量很低，直接撤回泉水
+			if hp < 20:
+				var fountain_name = "蓝方泉水" if camp == "BLUE" else "红方泉水"
+				var fountain = simulator.name_poi_dict.get(fountain_name)
+				
+				if fountain != null:
+					print("%s血量过低，撤回泉水" % pawn_name)
+					return fountain
+			
+			# 4.2 寻找附近的己方防御塔
+			var friendly_towers = []
+			for p in all_pawns:
+				if p.camp == camp and p.type == "BUILDING" and p.is_alive() and p.pawn_name.contains("塔"):
+					friendly_towers.append(p)
+			
+			if friendly_towers.size() > 0:
+				# 选择最近的防御塔
+				var closest_tower = friendly_towers[0]
+				var min_distance = position.distance_to(closest_tower.position)
+				
+				for tower in friendly_towers:
+					var distance = position.distance_to(tower.position)
+					if distance < min_distance:
+						min_distance = distance
+						closest_tower = tower
+				
+				print("%s撤退到己方防御塔：%s" % [pawn_name, closest_tower.pawn_name])
+				return closest_tower
+			
+			# 4.3 寻找附近的己方英雄
+			var friendly_heroes = []
+			for p in all_pawns:
+				if p.camp == camp and p.type == "CHARACTER" and p.is_alive() and p != self:
+					# 优先选择血量高的英雄
+					if p.hp > 50:
+						friendly_heroes.append(p)
+			
+			if friendly_heroes.size() > 0:
+				# 选择最近的友方英雄
+				var closest_hero = friendly_heroes[0]
+				var min_distance = position.distance_to(closest_hero.position)
+				
+				for hero in friendly_heroes:
+					var distance = position.distance_to(hero.position)
+					if distance < min_distance:
+						min_distance = distance
+						closest_hero = hero
+				
+				print("%s撤退到己方英雄：%s" % [pawn_name, closest_hero.pawn_name])
+				return closest_hero
+				
+		"SUPPORT":
+			# 支援策略：跟随己方ADC或需要帮助的队友
+			
+			# 5.1 寻找己方ADC（下路）
+			var adc_heroes = []
+			for p in all_pawns:
+				if p.camp == camp and p.type == "CHARACTER" and p.is_alive() and p.lane == "下路":
+					adc_heroes.append(p)
+			
+			if adc_heroes.size() > 0:
+				# 选择最近的ADC
+				var closest_adc = adc_heroes[0]
+				var min_distance = position.distance_to(closest_adc.position)
+				
+				for adc in adc_heroes:
+					var distance = position.distance_to(adc.position)
+					if distance < min_distance:
+						min_distance = distance
+						closest_adc = adc
+				
+				print("%s支援己方ADC：%s" % [pawn_name, closest_adc.pawn_name])
+				return closest_adc
+			
+			# 5.2 寻找血量低的队友
+			var low_hp_allies = []
+			for p in all_pawns:
+				if p.camp == camp and p.type == "CHARACTER" and p.is_alive() and p != self and p.hp < 50:
+					low_hp_allies.append(p)
+			
+			if low_hp_allies.size() > 0:
+				# 选择血量最低的队友
+				var lowest_hp_ally = low_hp_allies[0]
+				
+				for ally in low_hp_allies:
+					if ally.hp < lowest_hp_ally.hp:
+						lowest_hp_ally = ally
+				
+				print("%s支援低血量队友：%s" % [pawn_name, lowest_hp_ally.pawn_name])
+				return lowest_hp_ally
+	
+	# 如果以上策略都没有找到目标，使用原有的select_target_by_distance方法
+	var fallback_targets = []
+	
+	if hp > 50:  # 血量健康，选择敌方目标
+		for p in all_pawns:
+			if p.camp != camp and p.is_alive() and p.is_attackable():
+				fallback_targets.append(p)
+	else:  # 血量不健康，选择友方目标
+		for p in all_pawns:
+			if p.camp == camp and p.is_alive() and p != self:
+				fallback_targets.append(p)
+	
+	print("%s使用默认目标选择方法" % pawn_name)
+	return select_target_by_distance(fallback_targets)

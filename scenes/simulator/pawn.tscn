@@ -1,7 +1,7 @@
 [gd_scene load_steps=20 format=3 uid="uid://0k428716fuul"]
 
 [ext_resource type="Texture2D" uid="uid://yljchi6a0dk7" path="res://assets/tileset/miniworld.png" id="1_742q4"]
-[ext_resource type="Script" path="res://scripts/simulator/pawn.gd" id="1_t3l22"]
+[ext_resource type="Script" uid="uid://bmlv4grwj1w6u" path="res://scripts/simulator/pawn.gd" id="1_t3l22"]
 [ext_resource type="Texture2D" uid="uid://b1u56ooubo50m" path="res://assets/avatars/hero_avatar/亚瑟.webp" id="2_5m6ed"]
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="2_da0j3"]
 
@@ -170,14 +170,14 @@ shape = SubResource("CapsuleShape2D_emxjd")
 
 [node name="PopupPanel" type="PopupPanel" parent="."]
 initial_position = 1
-size = Vector2i(880, 620)
+size = Vector2i(880, 652)
 theme = ExtResource("2_da0j3")
 
 [node name="PanelContainer" type="PanelContainer" parent="PopupPanel"]
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 876.0
-offset_bottom = 616.0
+offset_bottom = 648.0
 
 [node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer"]
 layout_mode = 2
@@ -193,6 +193,11 @@ theme_override_constants/separation = 12
 [node name="Title" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "英雄名"
+horizontal_alignment = 1
+
+[node name="KDA" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "战绩：0：0：0"
 horizontal_alignment = 1
 
 [node name="HBoxContainer4" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
@@ -239,8 +244,18 @@ layout_mode = 2
 text = "经济"
 
 [node name="Money" type="LineEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 placeholder_text = "经济"
+max_length = 6
+
+[node name="Label3" type="Label" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "技巧"
+
+[node name="Skill" type="LineEdit" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+placeholder_text = "技巧"
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -263,6 +278,7 @@ layout_mode = 2
 allow_reselect = true
 item_count = 1
 popup/item_0/text = "无"
+popup/item_0/id = 0
 
 [node name="KillSubmit" type="Button" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2

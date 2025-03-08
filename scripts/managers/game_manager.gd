@@ -192,7 +192,7 @@ func get_knowledge(chat : Chat, npc : NPC) -> String:
 	# 从聊天记录中获取最后五条消息
 	var recent_messages = []
 	var messages_count = chat.messages.size()
-	var start_index = max(0, messages_count - 5)
+	var start_index = max(0, messages_count - 3)
 	
 	for i in range(start_index, messages_count):
 		if i < chat.messages.size():

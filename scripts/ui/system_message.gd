@@ -47,7 +47,7 @@ func _ready() -> void:
 	button.pressed.connect(on_button_pressed)
 	
 	revise_panel.revise_button.pressed.connect(on_revise_button_pressed)
-	revise_panel.revise_content.text_submitted.connect(on_revise_content_submitted)
+	#revise_panel.revise_content.text_submitted.connect(on_revise_content_submitted)
 	revise_panel.delete_button.pressed.connect(on_delete_button_pressed)
 	revise_panel.replay_button.pressed.connect(on_replay_button_pressed)
 

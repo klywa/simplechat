@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dlgopi2re43x5" path="res://scenes/ui/chat_item.tscn" id="1_j540d"]
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_vy8db"]
-[ext_resource type="Script" path="res://scripts/ui/chat_list.gd" id="2_6qdnd"]
+[ext_resource type="Script" uid="uid://dxb002ws16hmu" path="res://scripts/ui/chat_list.gd" id="2_6qdnd"]
 
 [node name="ChatList" type="PanelContainer"]
 anchors_preset = 15

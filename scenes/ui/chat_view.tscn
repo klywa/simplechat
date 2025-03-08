@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://1hsdrtjegx44"]
 
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_55lbm"]
-[ext_resource type="Script" path="res://scripts/ui/chat_view.gd" id="2_6qdrt"]
+[ext_resource type="Script" uid="uid://c2k5r6nyfbyop" path="res://scripts/ui/chat_view.gd" id="2_6qdrt"]
 [ext_resource type="PackedScene" uid="uid://cmmwsp3qeepka" path="res://scenes/ui/message.tscn" id="2_ik8f6"]
 [ext_resource type="Texture2D" uid="uid://by11bpcposyau" path="res://assets/avatars/sample_location_01.png" id="3_2onjx"]
 [ext_resource type="PackedScene" uid="uid://cd768pmken2pn" path="res://scenes/ui/character_button.tscn" id="3_jfl15"]
@@ -250,13 +250,14 @@ layout_mode = 2
 theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
 selected = 0
 item_count = 1
 popup/item_0/text = "自言自语"
+popup/item_0/id = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ChatContainer/MessagePanel/MarginContainer3/VBoxContainer"]
 layout_mode = 2

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cii5k315pgshr"]
 
-[ext_resource type="Script" path="res://scripts/ui/message_space_holder.gd" id="1_kapmy"]
+[ext_resource type="Script" uid="uid://b7t6hmcqc60tp" path="res://scripts/ui/message_space_holder.gd" id="1_kapmy"]
 
 [node name="MessgeSpaceHolder" type="MarginContainer"]
 custom_minimum_size = Vector2(0, 32)

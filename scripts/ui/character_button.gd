@@ -23,6 +23,8 @@ var chat : Chat
 @onready var confirm_hero_change_button := $HeroPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Confirm
 @onready var cancel_hero_change_button := $HeroPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Cancel
 
+@onready var skill_editor := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/SkillEditor
+
 @onready var exchange_button := $ExchangeButton
 @onready var hero_avatar := $VBoxContainer/HeroAvatar
 @onready var hero_avatar_button := $VBoxContainer/HeroAvatar/HeroAvatarButton
@@ -42,6 +44,7 @@ func _ready() -> void:
 	cancel_hero_change_button.pressed.connect(on_cancel_hero_change_button_pressed)
 	exchange_button.pressed.connect(on_exchange_button_pressed)
 	hero_avatar_button.pressed.connect(on_hero_avatar_button_pressed)
+	skill_editor.text_submitted.connect(on_skill_editor_text_submitted)
 
 	new_hero_label.text_changed.connect(on_new_hero_label_text_changed)
 
@@ -100,6 +103,7 @@ func on_pressed() -> void:
 	character_left_clicked.emit(character)
 
 func on_name_button_pressed() -> void:
+	skill_editor.text = str(character.skill_level)
 	setting_info.text = character.npc_setting
 	style_info.text = character.npc_style
 	example_info.text = character.npc_example
@@ -162,10 +166,12 @@ func on_exchange_button_pressed() -> void:
 		chat.add_message(GameManager.env, "【交换英雄】")
 	elif GameManager.mode == "single":
 		var message = "玩家与" + character.npc_name + "交换了英雄。当前英雄使用情况："
-		for n in chat.members.values():
-			if n.npc_type in [NPC.NPCType.PLAYER, NPC.NPCType.NPC]:
-				message += n.npc_name + "使用" + n.hero_name + "（" + n.hero_lane + "），"
-		message = message.substr(0, message.length()-1) + "。"
+		message += GameManager.player.npc_name + "使用" + GameManager.player.hero_name + "（" + GameManager.player.hero_lane + "），"
+		message += character.npc_name + "使用" + character.hero_name + "（" + character.hero_lane + "）。"
+		# for n in chat.members.values():
+		# 	if n.npc_type in [NPC.NPCType.PLAYER, NPC.NPCType.NPC]:
+		# 		message += n.npc_name + "使用" + n.hero_name + "（" + n.hero_lane + "），"
+		# message = message.substr(0, message.length()-1) + "。"
 		chat.add_message(GameManager.system, message)
 
 func on_confirm_hero_change_button_pressed() -> void:
@@ -186,3 +192,7 @@ func on_new_hero_label_text_changed(new_hero_str : String) -> void:
 
 func on_hero_avatar_button_pressed() -> void:
 	character.pawn._on_button_pressed(true)
+
+func on_skill_editor_text_submitted(new_text : String) -> void:
+	character.skill_level = int(new_text)
+	
