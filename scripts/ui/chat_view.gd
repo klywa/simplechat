@@ -176,11 +176,15 @@ func init(chat_in : Chat) -> void:
 			tmp_button.init(character, chat)
 			tmp_button.character_left_clicked.connect(on_character_left_clicked)
 			tmp_button.avatar.flip_h = true
+			if character.pawn != null and chat.is_koh:
+				tmp_button.set_hero_avatar()
 		elif character.npc_type == NPC.NPCType.PLAYER:
 			var tmp_button = CHARACTER_BUTTON_SCENE.instantiate()
 			player_slot.add_child(tmp_button)
 			tmp_button.init(character, chat)
 			tmp_button.character_left_clicked.connect(on_character_left_clicked)
+			if character.pawn != null and chat.is_koh:
+				tmp_button.set_hero_avatar()
 	refresh()
 	chat.message_added.connect(add_message)
 	# chat.message_added.connect(refresh)
@@ -617,3 +621,55 @@ func set_current_time_from_string(input_time_string: String) -> void:
 		"second": second
 	}
 
+func random_generate_time() -> String:
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	
+	# 生成随机年份（2025年及以后）
+	var year = rng.randi_range(2025, 2030)
+	# 生成随机月份（1-12）
+	var month = rng.randi_range(1, 12)
+	# 根据月份确定天数上限
+	var max_day = 31
+	if month in [4, 6, 9, 11]:
+		max_day = 30
+	elif month == 2:
+		# 处理闰年
+		if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+			max_day = 29
+		else:
+			max_day = 28
+	# 生成随机天数
+	var day = rng.randi_range(1, max_day)
+	
+	# 生成随机时间
+	var hour = rng.randi_range(0, 23)
+	var minute = rng.randi_range(0, 59)
+	var second = rng.randi_range(0, 59)
+	
+	# 计算星期几 (Zeller公式)
+	var weekday = 0
+	if month < 3:
+		month += 12
+		year -= 1
+	var century = year / 100
+	var year_of_century = year % 100
+	weekday = (day + 13 * (month + 1) / 5 + year_of_century + year_of_century / 4 + century / 4 - 2 * century) % 7
+	weekday = (weekday + 6) % 7
+	
+	# 设置随机生成的日期和时间
+	current_date = {
+		"year": year,
+		"month": month,
+		"day": day,
+		"weekday": weekday
+	}
+	
+	current_time = {
+		"hour": hour,
+		"minute": minute,
+		"second": second
+	}
+		
+	# 调用设置时间函数
+	return get_current_time_string()

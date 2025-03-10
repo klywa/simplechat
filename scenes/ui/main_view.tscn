@@ -148,7 +148,7 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="Time" type="LineEdit" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(400, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "时间时间"
@@ -156,6 +156,10 @@ placeholder_text = "时间时间"
 [node name="SetTimeButton" type="Button" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
 text = "修改"
+
+[node name="RandomTimeButton" type="Button" parent="Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "随机"
 
 [node name="MarginContainer" type="MarginContainer" parent="Setting/MarginContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2

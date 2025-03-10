@@ -26,6 +26,8 @@ var lane_hero_dict : Dictionary
 
 var tmp_save_file_path : String = "res://data/tmp_save.json"
 
+var koh_chat_initialized : bool = false
+
 var id_lane_dict := {
 	 "1":"上路", 
 	 "2":"打野", 
@@ -173,14 +175,18 @@ func init(main, config_path: String, knowledge_path: String, simulator_in: KoHSi
 			knowledge_file.close()
 		else:
 			print("无法打开知识库文件: ", knowledge_path)
+
+	
+	koh_chat_initialized = false
 	
 
 func activate_chat(chat_in : Chat) -> void:
 
 	main_view.chat_view.init(chat_in)
 	main_view.chat_view.refresh()
-	if chat_in.chat_type == Chat.ChatType.GROUP and chat_in.is_koh:
+	if chat_in.chat_type == Chat.ChatType.GROUP and chat_in.is_koh and not koh_chat_initialized:
 		main_view.chat_view.on_new_button_pressed()
+		koh_chat_initialized = true
 
 
 func get_knowledge(chat : Chat, npc : NPC) -> String:

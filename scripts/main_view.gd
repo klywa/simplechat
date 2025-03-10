@@ -15,6 +15,7 @@ extends Control
 @onready var setting_button := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/MarginContainer/SettingButton
 @onready var set_time_button := $Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer/SetTimeButton
 @onready var set_time_editor := $Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer/Time
+@onready var random_time_button := $Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer/RandomTimeButton
 
 
 var simulator
@@ -33,6 +34,7 @@ func _ready() -> void:
 		
 	set_time_button.pressed.connect(on_set_time_button_pressed)
 	setting_button.pressed.connect(on_setting_button_pressed)
+	random_time_button.pressed.connect(on_random_time_button_pressed)
 
 func on_setting_button_pressed() -> void:
 	setting_panel.visible = true
@@ -42,5 +44,6 @@ func on_set_time_button_pressed() -> void:
 	setting_panel.visible = false
 	GameManager.main_view.chat_view.set_current_time_from_string(set_time_editor.text)
 	setting_panel.visible = false
-	
-	
+
+func on_random_time_button_pressed() -> void:
+	set_time_editor.text = GameManager.main_view.chat_view.random_generate_time()
