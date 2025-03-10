@@ -508,6 +508,8 @@ func on_confirm_save_button_pressed(file_path: String) -> void:
 
 func on_cancel_save_button_pressed() -> void:
 	save_file_panel.visible = false
+	load_file_path = ""
+	load_file_name = ""
 
 func on_load_button_pressed() -> void:
 	load_file_panel.visible = true
@@ -547,3 +549,71 @@ func on_new_button_pressed() -> void:
 	on_member_button_pressed()
 	on_random_member_button_pressed()
 	on_accept_member_button_pressed()
+
+
+func get_current_time_string() -> String:
+	# 从当前日期和时间获取格式化的时间字符串
+	if current_time == null:
+		current_time = Time.get_time_dict_from_system()
+	if current_date == null:
+		current_date = Time.get_date_dict_from_system()
+	
+	# 格式化为 "YYYY-MM-DD_HH:MM:SS" 格式
+	var time_string = "%04d-%02d-%02d_%02d:%02d:%02d" % [
+		current_date["year"],
+		current_date["month"],
+		current_date["day"],
+		current_time["hour"],
+		current_time["minute"],
+		current_time["second"]
+	]
+	
+	return time_string
+
+
+func set_current_time_from_string(input_time_string: String) -> void:
+	# 从input_time_string中获取日期和时间，格式与Time.get_date_dict_from_system()和Time.get_time_dict_from_system()的格式相同
+	# 预期格式: "YYYY-MM-DD_HH:MM:SS"
+	var result = {}
+	
+	# 检查输入字符串格式是否正确
+	if input_time_string.length() != 19 or input_time_string[4] != '-' or input_time_string[7] != '-' or input_time_string[10] != '_' or input_time_string[13] != ':' or input_time_string[16] != ':':
+		push_error("时间字符串格式错误，应为 YYYY-MM-DD_HH:MM:SS")
+		return
+	
+	# 解析日期部分
+	var year = input_time_string.substr(0, 4).to_int()
+	var month = input_time_string.substr(5, 2).to_int()
+	var day = input_time_string.substr(8, 2).to_int()
+	
+	# 解析时间部分
+	var hour = input_time_string.substr(11, 2).to_int()
+	var minute = input_time_string.substr(14, 2).to_int()
+	var second = input_time_string.substr(17, 2).to_int()
+	
+	# 计算星期几 (Zeller公式)
+	var weekday = 0
+	if month < 3:
+		month += 12
+		year -= 1
+	var century = year / 100
+	var year_of_century = year % 100
+	weekday = (day + 13 * (month + 1) / 5 + year_of_century + year_of_century / 4 + century / 4 - 2 * century) % 7
+	# 调整为Godot的星期格式（0是周日，1是周一，以此类推）
+	# 确保weekday在0-6的范围内，避免访问数组越界
+	weekday = (weekday + 6) % 7
+	
+	# 更新当前日期和时间
+	current_date = {
+		"year": year,
+		"month": month,
+		"day": day,
+		"weekday": weekday
+	}
+	
+	current_time = {
+		"hour": hour,
+		"minute": minute,
+		"second": second
+	}
+

@@ -967,7 +967,7 @@ func get_region():
 			closest = p
 	if closest.type == "MONSTER":
 		if closest.pawn_name.contains("Buff"):
-			return closest.pawn_name + "野区"
+			return closest.pawn_name.replace("红方", "敌方").replace("蓝方", "我方") + "野区"
 		else:
 			return closest.pawn_name + "区域"
 	else:
@@ -982,21 +982,24 @@ func get_health():
 			return "已阵亡"
 	elif hp < 20:
 		return "血量低"
-	elif hp < 40:
+	elif hp < 80:
 		return "血量中等"
-	else:
+	elif hp < 100:
 		return "血量健康"
+	else:
+		return "血量全满"
 
 func get_kda():
 	var kda = (kill_number + assist_number + 0.01) / (death_number + 0.01)
+	var kda_string = "（击杀：" + str(kill_number) + "，助攻：" + str(assist_number) + "，死亡：" + str(death_number) + "）"
 	if kda < 0.8:
-		return "战绩很差"
+		return "战绩很差" + kda_string
 	elif kda < 1.2:
-		return "战绩一般"
+		return "战绩一般" + kda_string
 	elif kda < 1.5:
-		return "战绩不错"
+		return "战绩不错" + kda_string
 	else:
-		return "战绩超神"
+		return "战绩超神" + kda_string
 
 func get_money():
 	if type == "CHARACTER":
@@ -1055,7 +1058,7 @@ func get_on_lane():
 			return "附近有野怪"
 
 	# 默认返回空字符串
-	return ""
+	return "附近没有兵线"
 
 func is_attackable():
 	if type == "BUILDING":
@@ -1146,7 +1149,7 @@ func get_status():
 		status += name_string + "是我方" + lane + "，"
 		status += get_health() + "，"
 		status += get_kda() + "，"
-		status += "在" + get_region() + "附近"
+		status += "在" + get_region() + "附近。"
 		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += get_on_lane() + "。"
@@ -1157,7 +1160,7 @@ func get_status():
 		status += name_string + "是" + lane + "，"
 		status += get_health() + "，"
 		status += get_kda() + "，"
-		status += "在" + get_region() + "附近"
+		status += "在" + get_region() + "附近。"
 		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += get_on_lane() + "。"

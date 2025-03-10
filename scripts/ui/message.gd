@@ -134,4 +134,5 @@ func on_revise_content_submitted(text: String):
 	on_revise_button_pressed()
 
 func on_name_button_pressed():
-	sender.character_button.on_name_button_pressed()
+	var tmp_scenario = "[角色状态]\n" + npc_status + "\n\n" + scenario + "\n\n[相关知识]\n" + knowledge
+	sender.character_button.on_name_button_pressed(tmp_scenario)

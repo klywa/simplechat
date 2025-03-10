@@ -102,12 +102,15 @@ func set_hero_avatar():
 func on_pressed() -> void:
 	character_left_clicked.emit(character)
 
-func on_name_button_pressed() -> void:
+func on_name_button_pressed(scenario: String = "") -> void:
 	skill_editor.text = str(character.skill_level)
 	setting_info.text = character.npc_setting
 	style_info.text = character.npc_style
 	example_info.text = character.npc_example
-	ingame_info.text = character.ingame_info
+	if scenario != "":
+		ingame_info.text = scenario
+	else:
+		ingame_info.text = character.ingame_info
 	character_info_panel.visible = true
 
 func on_hero_button_pressed() -> void:

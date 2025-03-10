@@ -170,6 +170,9 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 		tmp_message.instructions = auxiliary.get("instructions", "")
 	else:
 		tmp_message.instructions = GameManager.ai_instructions
+
+	if auxiliary.get("negative_message", "") != "":
+		tmp_message.negative_message = auxiliary.get("negative_message", "")
 	
 	var current_time = Time.get_datetime_string_from_system(false, true)
 	current_time = current_time.replace(" ", "-").replace(":", "-")
@@ -448,6 +451,7 @@ func load_from_json(json_file_path: String):
 			"player_hero_lane": message["player_hero_lane"],
 			"instructions": message["instructions"],
 			"knowledge": message.get("knowledge", ""),
+			"scenario": message.get("scenario", ""),
 		}, false)
 		
 	json_file.close()

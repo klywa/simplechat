@@ -56,8 +56,8 @@ animations = [{
 radius = 100.02
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_emxjd"]
-radius = 18.0
-height = 40.0
+radius = 36.0
+height = 72.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35ei6"]
 bg_color = Color(0.6, 0.6, 0.6, 0)

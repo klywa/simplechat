@@ -11,6 +11,10 @@ extends Control
 @onready var chat_view : ChatView = $HBoxContainer/VBoxContainer/ChatPanel/ChatWindow/ChatView
 @onready var chat_list := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/ChatList
 @onready var minimap := $HBoxContainer/Minimap
+@onready var setting_panel := $Setting
+@onready var setting_button := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/MarginContainer/SettingButton
+@onready var set_time_button := $Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer/SetTimeButton
+@onready var set_time_editor := $Setting/MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer/MarginContainer/HBoxContainer/Time
 
 
 var simulator
@@ -26,4 +30,17 @@ func _ready() -> void:
 		AIManager.init(ai_pipeline_url)
 	else:
 		AIManager.init(ai_server_url)
+		
+	set_time_button.pressed.connect(on_set_time_button_pressed)
+	setting_button.pressed.connect(on_setting_button_pressed)
 
+func on_setting_button_pressed() -> void:
+	setting_panel.visible = true
+	set_time_editor.text = GameManager.main_view.chat_view.get_current_time_string()
+
+func on_set_time_button_pressed() -> void:
+	setting_panel.visible = false
+	GameManager.main_view.chat_view.set_current_time_from_string(set_time_editor.text)
+	setting_panel.visible = false
+	
+	

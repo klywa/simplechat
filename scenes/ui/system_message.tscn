@@ -11,7 +11,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_abikn")
+theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 24
 script = ExtResource("2_02rxg")
 
@@ -19,7 +21,7 @@ script = ExtResource("2_02rxg")
 layout_mode = 2
 
 [node name="Control" type="Control" parent="HBoxContainer"]
-custom_minimum_size = Vector2(64, 0)
+custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -44,7 +46,7 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "—— "
 
 [node name="Control2" type="Control" parent="HBoxContainer"]
-custom_minimum_size = Vector2(64, 0)
+custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
