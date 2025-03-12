@@ -553,6 +553,7 @@ func on_new_button_pressed() -> void:
 	on_member_button_pressed()
 	on_random_member_button_pressed()
 	on_accept_member_button_pressed()
+	on_clear_chat_button_pressed()
 
 
 func get_current_time_string() -> String:
@@ -626,7 +627,7 @@ func random_generate_time() -> String:
 	rng.randomize()
 	
 	# 生成随机年份（2025年及以后）
-	var year = rng.randi_range(2025, 2030)
+	var year = rng.randi_range(2024, 2026)
 	# 生成随机月份（1-12）
 	var month = rng.randi_range(1, 12)
 	# 根据月份确定天数上限

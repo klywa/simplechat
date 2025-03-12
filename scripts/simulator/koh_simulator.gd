@@ -232,7 +232,7 @@ func simulate():
 								assist_pawns.append(potential_assists[i])
 						
 						# 处理击杀
-						if target.type == "CHARACTER":
+						if target.type in ["CHARACTER", "BUILDING"]:
 							target.killed_by(killer, assist_pawns)
 						else:
 							target.killed_by(killer)
@@ -267,7 +267,7 @@ func simulate():
 	blue_team_total_kill = 0
 	red_team_total_kill = 0
 	for pawn in name_pawn_dict.values():
-		if pawn.type == "CHARACTER":
+		if pawn.type in ["CHARACTER", "BUILDING"]:
 			if pawn.camp == "BLUE":
 				blue_team_total_kill += pawn.kill_number
 			elif pawn.camp == "RED":

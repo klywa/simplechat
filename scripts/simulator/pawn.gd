@@ -537,6 +537,11 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 
 	var max_money
 
+	if pawn.type == "BUILDING" and assist_pawns.size() > 0:
+		var random_index = randi() % assist_pawns.size()
+		pawn = assist_pawns[random_index]
+		assist_pawns.remove_at(random_index)
+
 	match type:
 		"CHARACTER":
 			if level <= 3:
@@ -564,6 +569,7 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 		for p in simulator.name_pawn_dict.values():
 			if p.type == "CHARACTER" and p.camp != camp:
 				p.money += randi() % max_money
+			
 	
 	if type == "CHARACTER":
 		death_number += 1
@@ -992,11 +998,11 @@ func get_health():
 func get_kda():
 	var kda = (kill_number + assist_number + 0.01) / (death_number + 0.01)
 	var kda_string = "（击杀：" + str(kill_number) + "，助攻：" + str(assist_number) + "，死亡：" + str(death_number) + "）"
-	if kda < 0.8:
+	if kda < 0.5:
 		return "战绩很差" + kda_string
-	elif kda < 1.2:
+	elif kda < 2:
 		return "战绩一般" + kda_string
-	elif kda < 1.5:
+	elif kda < 4:
 		return "战绩不错" + kda_string
 	else:
 		return "战绩超神" + kda_string
