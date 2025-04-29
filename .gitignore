@@ -53,3 +53,4 @@ config/
 !config/default.json
 
 server/__pycache__
+./DS_Store

@@ -639,9 +639,9 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 		"CHARACTER":
 			match camp:
 				"RED":
-					msg = "%s击杀了%s%s" % [killer_name, self_name, assist_msg]
+					msg = "%s击杀了%s%s（位置：%s）" % [killer_name, self_name, assist_msg, get_region()]
 				"BLUE":
-					msg = "%s被%s击杀%s" % [self_name, killer_name, assist_msg]
+					msg = "%s被%s击杀%s（位置：%s）" % [self_name, killer_name, assist_msg, get_region()]
 				"NEUTRAL":
 					if pawn.camp == "RED":
 						msg = "%s击杀了%s。" % [killer_name, self_name]
@@ -1128,7 +1128,8 @@ func get_self_status():
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
 		status += name_string + "" + get_health() + "。"
 		status += name_string + get_kda() + "。"
-		status += name_string + get_in_battle()
+		if get_in_battle() != "":
+			status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
@@ -1138,7 +1139,8 @@ func get_self_status():
 		status += name_string + "使用的英雄是" + pawn_name + "（" + lane + "）。"
 		status += name_string + "" + get_health() + "。"
 		status += name_string + get_kda() + "。"
-		status += name_string + get_in_battle()
+		if get_in_battle() != "":
+			status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
 		status += name_string + "在" + get_region() + "附近。"
@@ -1163,7 +1165,7 @@ func get_status():
 
 	elif camp == "RED":
 		var name_string = "<敌方-" + npc_name + "-" + pawn_name + ">"
-		status += name_string + "是" + lane + "，"
+		status += name_string + "是敌方" + lane + "，"
 		status += get_health() + "，"
 		status += get_kda() + "，"
 		status += "在" + get_region() + "附近。"

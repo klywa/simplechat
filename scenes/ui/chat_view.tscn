@@ -268,6 +268,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("1_55lbm")
 placeholder_text = "说话内容"
+keep_editing_on_text_submit = true
 
 [node name="MarginContainer" type="MarginContainer" parent="ChatContainer/MessagePanel/MarginContainer3/VBoxContainer/HBoxContainer"]
 layout_mode = 2

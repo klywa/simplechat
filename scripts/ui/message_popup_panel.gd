@@ -19,6 +19,7 @@ extends PopupPanel
 
 @onready var instruction_editor := $PanelContainer/VBoxContainer/MarginContainer6/Instructions
 @onready var knowledge_editor := $PanelContainer/VBoxContainer/MarginContainer5/Knowledge
+@onready var memory_editor := $PanelContainer/VBoxContainer/MarginContainer7/Memory
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -40,6 +41,7 @@ func _show() -> void:
 		origin_response.text = get_parent().sender.npc_name + "：" + get_parent().message
 	instruction_editor.text = get_parent().instructions
 	knowledge_editor.text = get_parent().knowledge
+	memory_editor.text = get_parent().memory
 
 func on_more_button_pressed() -> void:
 	more_panel.visible = true
@@ -68,8 +70,9 @@ func on_regenerate_button_pressed() -> void:
 	var chat = message.chat
 
 	if GameManager.mode == "single":
-		var response : Dictionary = await npc.generate_response(chat, true, message, instruction_editor.text, knowledge_editor.text)
+		var response : Dictionary = await npc.generate_response(chat, true, message, instruction_editor.text, knowledge_editor.text, memory_editor.text)
 		revise_content.text = response.get("response", "")
+		
 	else:
 		return
 

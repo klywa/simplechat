@@ -35,6 +35,7 @@ var player_hero_name : String = ""
 var player_hero_lane : String = ""
 var instructions : String = ""
 var knowledge : String = ""
+var memory : String = ""
 
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
@@ -108,6 +109,8 @@ func on_revise_button_pressed():
 	if message != revise_panel.revise_content.text:
 		negative_message = message
 		message = revise_panel.revise_content.text
+		knowledge = revise_panel.knowledge_editor.text
+		memory = revise_panel.memory_editor.text
 	revise_panel.revise_content.text = ""
 	revise_panel.visible = false
 

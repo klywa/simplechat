@@ -29,6 +29,7 @@ var alias : Array = []
 var skill_level : int = 1
 
 var knowledge: String = ""
+var memory: String = ""
 
 var hero_id: int
 var lane_id: int
@@ -89,7 +90,7 @@ func load_from_dict(data: Dictionary):
 		pass
 
 func update_alias():
-	alias = [hero_name, hero_lane]
+	alias = [npc_name, hero_name, hero_lane]
 	for a in GameManager.hero_alias_dict.get(hero_name, []):
 		if a not in alias:
 			alias.append(a)
@@ -100,7 +101,7 @@ func update_alias():
 					alias.append(a)
 			break
 
-func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null, instructions: String="", knowledge: String="") -> Dictionary:
+func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null, instructions: String="", _knowledge: String="", _memory: String="") -> Dictionary:
 	print("generate_response", str(npc_type))
 	if npc_type in [NPCType.ENV, NPCType.SYSTEM]:
 		print("in env")
@@ -160,10 +161,16 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 	elif npc_type == NPCType.NPC:
 		scenario = get_scenario(chat)
 		npc_status = pawn.get_self_status()
-		if knowledge == "":
-			knowledge = GameManager.get_knowledge(chat, self)
 
-		ingame_info =  npc_status + "\n\n" + scenario + "\n\n" + "[相关知识]\n" + knowledge
+		if _knowledge == "":
+			_knowledge = GameManager.get_knowledge(chat, self)
+
+		if _memory == "":
+			_memory = self.memory
+		else:
+			self.memory = _memory
+
+		ingame_info =  npc_status + "\n\n" + scenario + "\n\n" + "[相关知识]\n" + _knowledge + "\n\n" + "[记忆]\n" + _memory
 
 		# print("knowledge: ", knowledge)
 
@@ -181,7 +188,8 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			"npc_hero_name": hero_name,
 			"npc_hero_lane": hero_lane,
 			"scenario": scenario,
-			"knowledge": knowledge,
+			"knowledge": _knowledge,
+			"memory": _memory,
 			"player_hero_name": GameManager.player.hero_name,
 			"player_hero_lane": GameManager.player.hero_lane,
 			"instructions": instructions if instructions != "" else GameManager.ai_instructions
@@ -210,7 +218,8 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"player_hero_lane": GameManager.player.hero_lane,
 				"instructions": instructions if instructions != "" else GameManager.ai_instructions,
 				"scenario": scenario,
-				"knowledge": knowledge
+				"knowledge": _knowledge,
+				"memory": _memory
 			}
 		else:
 			return {
@@ -232,7 +241,8 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"player_hero_lane": GameManager.player.hero_lane,
 				"instructions": instructions if instructions != "" else GameManager.ai_instructions,
 				"scenario": scenario,
-				"knowledge": knowledge
+				"knowledge": _knowledge,
+				"memory": _memory
 			}
 	else:
 		return {"response": "", "prompt": "", "query": "", "model_version": ""}
