@@ -56,6 +56,10 @@ layout_mode = 2
 size_flags_horizontal = 8
 theme_override_constants/separation = 12
 
+[node name="ConvertToText" type="Button" parent="ChatContainer/NamePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "T"
+
 [node name="LoadButton" type="Button" parent="ChatContainer/NamePanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "载入"
@@ -304,6 +308,7 @@ theme_override_font_sizes/font_size = 24
 text = "请选择聊天"
 
 [node name="MemberPanel" type="PopupPanel" parent="."]
+oversampling_override = 1.0
 title = "添加成员"
 initial_position = 2
 size = Vector2i(316, 384)
@@ -351,6 +356,7 @@ text = "随机
 "
 
 [node name="SavePanel" type="PopupPanel" parent="."]
+oversampling_override = 1.0
 initial_position = 2
 size = Vector2i(532, 188)
 
@@ -410,6 +416,48 @@ initial_position = 1
 size = Vector2i(800, 600)
 dialog_autowrap = true
 access = 2
+
+[node name="TextHistoryPanel" type="PopupPanel" parent="."]
+oversampling_override = 1.0
+initial_position = 2
+size = Vector2i(608, 1408)
+
+[node name="Panel" type="PanelContainer" parent="TextHistoryPanel"]
+custom_minimum_size = Vector2(600, 1400)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -700.0
+offset_right = 300.0
+offset_bottom = 700.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_55lbm")
+
+[node name="MarginContainer" type="MarginContainer" parent="TextHistoryPanel/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TextHistoryPanel/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="ModelVersion" type="Label" parent="TextHistoryPanel/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TextHistory" type="RichTextLabel" parent="TextHistoryPanel/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 2
+theme_override_constants/line_separation = 12
+bbcode_enabled = true
+selection_enabled = true
 
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message"]
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message6"]

@@ -70,6 +70,11 @@ func init(chat_in: Chat):
 	for pawn in name_pawn_dict.values():
 		pawn.revive()
 
+	blue_team_total_money = 0
+	red_team_total_money = 0
+	blue_team_total_kill = 0
+	red_team_total_kill = 0
+
 	for npc_name in chat.members:
 		var npc = chat.members[npc_name]
 		if npc.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:

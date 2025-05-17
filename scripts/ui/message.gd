@@ -111,6 +111,10 @@ func on_revise_button_pressed():
 		message = revise_panel.revise_content.text
 		knowledge = revise_panel.knowledge_editor.text
 		memory = revise_panel.memory_editor.text
+		sender.memory = memory
+	elif revise_panel.memory_editor.text != memory:
+		memory = revise_panel.memory_editor.text
+		sender.memory = memory
 	revise_panel.revise_content.text = ""
 	revise_panel.visible = false
 

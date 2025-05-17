@@ -299,3 +299,7 @@ func get_scenario(chat: Chat) -> String:
 	scenario += "\n\n" + pawn.get_scenario_stirng()
 
 	return scenario
+
+
+func clear():
+	memory = ""

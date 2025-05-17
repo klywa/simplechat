@@ -24,6 +24,7 @@ var chat : Chat
 @onready var cancel_hero_change_button := $HeroPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Cancel
 
 @onready var skill_editor := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/SkillEditor
+@onready var memory_editor := $CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Memory
 
 @onready var exchange_button := $ExchangeButton
 @onready var hero_avatar := $VBoxContainer/HeroAvatar
@@ -45,6 +46,7 @@ func _ready() -> void:
 	exchange_button.pressed.connect(on_exchange_button_pressed)
 	hero_avatar_button.pressed.connect(on_hero_avatar_button_pressed)
 	skill_editor.text_submitted.connect(on_skill_editor_text_submitted)
+	memory_editor.text_changed.connect(on_memory_editor_text_changed)
 
 	new_hero_label.text_changed.connect(on_new_hero_label_text_changed)
 
@@ -199,3 +201,5 @@ func on_hero_avatar_button_pressed() -> void:
 func on_skill_editor_text_submitted(new_text : String) -> void:
 	character.skill_level = int(new_text)
 	
+func on_memory_editor_text_changed() -> void:
+	character.memory = memory_editor.text

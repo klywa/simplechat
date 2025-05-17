@@ -466,6 +466,8 @@ func load_from_json(json_file_path: String):
 
 func clear():
 	messages.clear()
+	for member in members.values():
+		member.clear()
 
 
 func get_pipeline_messages() -> Array:
@@ -500,3 +502,17 @@ func get_pipeline_messages() -> Array:
 				}
 			)
 	return pipeline_messages
+
+func get_text_history() -> String:
+	var text_history = ""
+	for message in messages:
+		var color = "#FF0000" if message.sender.npc_type == NPC.NPCType.PLAYER else "#0000FF" if message.sender.npc_type == NPC.NPCType.NPC else "#000000"
+		text_history += "[color=" + color + "]" + message.sender.npc_name + "[/color]：" + message.message + "\n"
+	return text_history.strip_edges()
+
+func get_model_version() -> String:
+	var versions = []
+	for message in messages:
+		if message.model_version not in versions:
+			versions.append(message.model_version)
+	return ",".join(versions)

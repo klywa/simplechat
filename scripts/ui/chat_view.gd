@@ -39,6 +39,11 @@ enum ChatType {
 @onready var left_corner_button_list := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList
 @onready var expand_button := $ChatContainer/ScenePanel/MarginContainer2/LeftCornerButtonList/ExpandButton
 
+@onready var convert_to_text_button := $ChatContainer/NamePanel/MarginContainer/VBoxContainer/ConvertToText
+@onready var text_history_panel := $TextHistoryPanel
+@onready var text_history_model_verstion := $TextHistoryPanel/Panel/MarginContainer/VBoxContainer/ModelVersion
+@onready var text_history := $TextHistoryPanel/Panel/MarginContainer/VBoxContainer/TextHistory
+
 @onready var load_file_panel := $LoadFilePanel
 @onready var save_file_panel := $SaveFilePanel
 
@@ -55,6 +60,8 @@ var current_date = null
 
 var load_file_path : String = ""
 var load_file_name : String = ""
+
+var autosave_file_name : String = ""
 
 signal refreshed
 
@@ -86,6 +93,8 @@ func _ready() -> void:
 	load_file_panel.file_selected.connect(on_load_file_selected)
 	save_file_panel.canceled.connect(on_cancel_save_button_pressed)
 	save_file_panel.file_selected.connect(on_confirm_save_button_pressed)
+
+	convert_to_text_button.pressed.connect(on_convert_to_text_button_pressed)
 
 	clear_chat_button.pressed.connect(on_clear_chat_button_pressed)
 
@@ -254,6 +263,13 @@ func add_message(message: Variant) -> void:
 
 	await scroll_container.get_v_scroll_bar().changed
 	scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
+
+	autosave_chat()
+
+func autosave_chat() -> void:
+	if autosave_file_name == "":
+		set_autosave_filename()
+	chat.save_to_json(autosave_file_name)
 
 func save_chat() -> void:
 	chat.messages = []
@@ -525,6 +541,8 @@ func on_load_file_selected(file_path: String) -> void:
 	load_file_panel.visible = false
 	chat.load_from_json(file_path)
 	init(chat)
+
+	set_autosave_filename()
 	
 	load_file_path = load_file_panel.current_dir
 	load_file_name = load_file_panel.current_file
@@ -554,6 +572,39 @@ func on_new_button_pressed() -> void:
 	on_random_member_button_pressed()
 	on_accept_member_button_pressed()
 	on_clear_chat_button_pressed()
+	set_autosave_filename()
+
+
+func set_autosave_filename() -> void:
+	clean_autosave_files()
+	autosave_file_name = "data/autosave_" + get_current_time_string() + ".json"
+
+func clean_autosave_files() -> void:
+	# 检查并清理自动保存文件，保留最新的19个
+	var dir = DirAccess.open("data")
+	if dir:
+		var files = []
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		
+		# 收集所有以autosave_开头的文件
+		while file_name != "":
+			if not dir.current_is_dir() and file_name.begins_with("autosave_"):
+				files.append(file_name)
+			file_name = dir.get_next()
+		dir.list_dir_end()
+		
+		# 按字母顺序排序（由于文件名格式为autosave_YYYY-MM-DD_HH:MM:SS.json，
+		# 所以按字母顺序排序即为按时间排序）
+		files.sort()
+		
+		# 如果文件数超过19个，删除最旧的文件
+		while files.size() > 19:
+			var oldest_file = files[0]
+			var file_path = "data/" + oldest_file
+			if FileAccess.file_exists(file_path):
+				DirAccess.remove_absolute(file_path)
+			files.remove_at(0)
 
 
 func get_current_time_string() -> String:
@@ -674,3 +725,10 @@ func random_generate_time() -> String:
 		
 	# 调用设置时间函数
 	return get_current_time_string()
+
+
+func on_convert_to_text_button_pressed() -> void:
+	text_history_panel.visible = true
+	text_history_model_verstion.text = "模型版本：" + chat.get_model_version()
+	text_history.text = chat.get_text_history()
+

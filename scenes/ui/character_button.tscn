@@ -95,6 +95,7 @@ theme = ExtResource("1_wwfwj")
 theme_type_variation = &"InvisibleButton"
 
 [node name="CharacterInfoPanel" type="PopupPanel" parent="."]
+oversampling_override = 1.0
 initial_position = 2
 size = Vector2i(656, 856)
 theme = ExtResource("1_wwfwj")
@@ -134,6 +135,12 @@ text = "状态技巧值"
 [node name="SkillEditor" type="LineEdit" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 placeholder_text = "状态值"
+
+[node name="Memory" type="TextEdit" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+placeholder_text = "记忆"
+wrap_mode = 1
 
 [node name="SettingLabel" type="Label" parent="CharacterInfoPanel/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer"]
 layout_mode = 2
