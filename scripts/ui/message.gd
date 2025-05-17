@@ -46,7 +46,8 @@ var memory : String = ""
 @onready var name_left_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/LeftSpace
 @onready var name_right_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace
 @onready var revise_panel := $MessagePopupPanel
-@onready var abandon_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/AbandonToggle
+@onready var badcase_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/HBoxContainer/BadcaseToggle
+@onready var abandon_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/HBoxContainer/AbandonToggle
 @onready var name_button := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel/NameButton
 # @onready var revise_content := $PopupPanel/PanelContainer/VBoxContainer/MarginContainer/ReviseContent
 # @onready var revise_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
@@ -67,10 +68,17 @@ func _ready():
 
 	name_button.pressed.connect(on_name_button_pressed)
 
+	badcase_toggle.toggled.connect(on_badcase_toggled)
 	abandon_toggle.toggled.connect(on_abandon_toggled)
 
 func on_abandon_toggled(button_pressed: bool):
 	abandon = button_pressed
+
+func on_badcase_toggled(button_pressed: bool):
+	if button_pressed:
+		score = "0"
+	else:
+		score = ""
 
 func _show():
 	name_label.text = sender.npc_name
@@ -88,6 +96,7 @@ func _show():
 		name_left_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		name_right_space.size_flags_horizontal = SIZE_SHRINK_END
 	else:
+		badcase_toggle.visible = true
 		abandon_toggle.visible = true
 		message_left_space.size_flags_horizontal = SIZE_SHRINK_END
 		message_right_space.size_flags_horizontal = SIZE_EXPAND_FILL

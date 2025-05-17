@@ -64,6 +64,14 @@ func on_save_problem_button_pressed() -> void:
 	message.problem_tags = problem_tags.text
 	# on_close_more_button_pressed()
 
+	if int(score.text) == 0:
+		await get_tree().process_frame
+		message.badcase_toggle.button_pressed = true
+	else:
+		await get_tree().process_frame
+		message.badcase_toggle.button_pressed = false
+
+
 func on_regenerate_button_pressed() -> void:
 	var message = get_parent()
 	var npc = message.sender
