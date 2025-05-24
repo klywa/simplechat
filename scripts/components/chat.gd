@@ -86,13 +86,16 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 	tmp_message.sender = sender
 	tmp_message.sender_type = sender.npc_type
 	tmp_message.message = content
+	tmp_message.score = auxiliary.get("score", "")
+	tmp_message.problem_tags = auxiliary.get("problem_tags", "")
 	tmp_message.prompt = auxiliary.get("prompt", "")
 	tmp_message.query = auxiliary.get("query", "")
 	tmp_message.model_version = auxiliary.get("model_version", "")
 	tmp_message.abandon = auxiliary.get("abandon", false)
+	tmp_message.is_consecutive = auxiliary.get("is_consecutive", false)
 	tmp_message.elapsed_time = auxiliary.get("elapsed_time", "")
 	tmp_message.char_count = auxiliary.get("char_count", 0)
-	
+
 	if auxiliary.get("scenario", "") != "":
 		tmp_message.scenario = auxiliary.get("scenario", "")
 	else:
@@ -340,6 +343,7 @@ func save_to_json(json_file_path: String):
 			"problem_tags": message.problem_tags,
 			"skip_save": message.skip_save,
 			"abandon": message.abandon,
+			"is_consecutive": message.is_consecutive,
 			"query": message.query,
 			"model_version": message.model_version,
 			"npc_type": "",
@@ -443,6 +447,8 @@ func load_from_json(json_file_path: String):
 			"query": message["query"],
 			"model_version": message["model_version"],
 			"abandon": message.get("abandon", false),
+			"score": message.get("score", ""),
+			"is_consecutive": message.get("is_consecutive", false),
 			"npc_name": message["npc_name"],
 			"npc_setting": message["npc_setting"],
 			"npc_style": message["npc_style"],

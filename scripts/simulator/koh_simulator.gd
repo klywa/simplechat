@@ -267,6 +267,11 @@ func simulate():
 				
 				if not has_other_camp_nearby:
 					pawn.heal(randi() % 20 + 10)
+
+				for nearby in pawn.nearby_pawns:
+					if nearby.camp == pawn.camp and nearby.type == "CHARACTER" and nearby.lane == "辅助":
+						nearby.heal(randi() % 20 + 20)
+				
 		else:
 			if pawn.type in ["CHARACTER", "MONSTER"]:
 				pawn.revive_count_down -= 1

@@ -78,11 +78,18 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 32
+theme_override_constants/separation = 8
 alignment = 2
+
+[node name="ConsecutiveToggle" type="CheckBox" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/HBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "连续"
 
 [node name="BadcaseToggle" type="CheckBox" parent="MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/HBoxContainer"]
 visible = false
+custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 text = "0分"
 
@@ -122,4 +129,5 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="MessagePopupPanel" parent="." instance=ExtResource("3_bmg06")]
+oversampling_override = 1.0
 visible = false

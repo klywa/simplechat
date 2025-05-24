@@ -293,6 +293,15 @@ func _on_button_up():
 		show_target_line = false
 	queue_redraw()  # 触发重绘以更新显示
 
+func get_command_name_string():
+	if type == "CHARACTER":
+		if camp == "BLUE":
+			return "我方"+ pawn_name
+		else:
+			return "地方" + pawn_name
+	else:
+		return pawn_name
+
 func _process(delta):
 
 	if dragging:

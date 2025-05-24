@@ -259,6 +259,11 @@ func add_message(message: Variant) -> void:
 	message_list.add_child(message)
 	message._show()
 
+	# if message is Message:
+	# 	message.consecutive_toggle.button_pressed = message.is_consecutive
+	# 	message.abandon_toggle.button_pressed = message.abandon
+	# 	message.badcase_toggle.button_pressed = message.score == "0"
+
 	message_list.add_child(MESSAGE_SPACE_HOLDER.instantiate())
 
 	await scroll_container.get_v_scroll_bar().changed

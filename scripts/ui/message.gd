@@ -19,6 +19,7 @@ var time : String = ""
 var elapsed_time : String = ""
 var char_count : int = 0
 var skip_save : bool = false
+var is_consecutive: bool = false
 
 var npc_name : String = ""
 var npc_setting : String = ""
@@ -46,6 +47,7 @@ var memory : String = ""
 @onready var name_left_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/LeftSpace
 @onready var name_right_space : Control = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace
 @onready var revise_panel := $MessagePopupPanel
+@onready var consecutive_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/HBoxContainer/ConsecutiveToggle
 @onready var badcase_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/HBoxContainer/BadcaseToggle
 @onready var abandon_toggle := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSpace/HBoxContainer/AbandonToggle
 @onready var name_button := $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel/NameButton
@@ -59,6 +61,7 @@ var memory : String = ""
 func _ready():
 	revise_panel.visible = false
 	abandon_toggle.visible = false
+	consecutive_toggle.visible = false
 	button.pressed.connect(on_button_pressed)
 
 	revise_panel.revise_button.pressed.connect(on_revise_button_pressed)
@@ -70,6 +73,7 @@ func _ready():
 
 	badcase_toggle.toggled.connect(on_badcase_toggled)
 	abandon_toggle.toggled.connect(on_abandon_toggled)
+	consecutive_toggle.toggled.connect(on_consecutive_toggled)
 
 func on_abandon_toggled(button_pressed: bool):
 	abandon = button_pressed
@@ -79,6 +83,9 @@ func on_badcase_toggled(button_pressed: bool):
 		score = "0"
 	else:
 		score = ""
+
+func on_consecutive_toggled(button_pressed: bool):
+	is_consecutive = button_pressed
 
 func _show():
 	name_label.text = sender.npc_name
@@ -98,12 +105,17 @@ func _show():
 	else:
 		badcase_toggle.visible = true
 		abandon_toggle.visible = true
+		consecutive_toggle.visible = true
 		message_left_space.size_flags_horizontal = SIZE_SHRINK_END
 		message_right_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		name_left_space.size_flags_horizontal = SIZE_SHRINK_END
 		name_right_space.size_flags_horizontal = SIZE_EXPAND_FILL
 		if abandon:
 			abandon_toggle.button_pressed = true
+		if is_consecutive:
+			consecutive_toggle.button_pressed = true
+		if score == "0":
+			badcase_toggle.button_pressed = true
 
 	# 如果message中包含"[]"，则将[]中的内容发送给send_command_to_pawn()
 	var regex = RegEx.new()

@@ -63,7 +63,7 @@ height = 72.0
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cu4u1"]
-bg_color = Color(0.6, 0.14, 0, 1)
+bg_color = Color(1, 0.0392157, 0.0196078, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
@@ -135,6 +135,7 @@ offset_right = 17.0
 offset_bottom = 21.0
 theme = ExtResource("2_da0j3")
 theme_type_variation = &"InvisibleButton"
+button_mask = 3
 
 [node name="Name" type="Label" parent="."]
 anchors_preset = 10

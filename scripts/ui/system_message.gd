@@ -26,6 +26,7 @@ var time : String = ""
 var elapsed_time : String = ""
 var char_count : int = 0
 var skip_save : bool = false
+var is_consecutive: bool = false
 
 var npc_name : String = ""
 var npc_setting : String = ""
