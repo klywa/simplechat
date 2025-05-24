@@ -29,6 +29,7 @@ var red_pawns: Array[Pawn] = []
 var name_poi_dict : Dictionary = {}
 
 var name_pawn_dict : Dictionary = {}
+var camp_name_pawn_dict : Dictionary = {}
 
 var init_random_range : int = 30
 var chat: Chat
@@ -58,11 +59,10 @@ func _ready() -> void:
 func init(chat_in: Chat):
 	chat = chat_in
 
-	print(get_map_info_string())
-
 	name_pawn_dict.clear()
 	for p_name in name_poi_dict:
 		name_pawn_dict[p_name] = name_poi_dict[p_name]
+		camp_name_pawn_dict[p_name.replace("蓝方", "我方").replace("红方", "敌方")] = name_poi_dict[p_name]
 
 	# 清除所有pawn的子节点
 	for child in pawns.get_children():
@@ -97,6 +97,10 @@ func init(chat_in: Chat):
 			new_pawn.add_to_group("hero")
 
 			name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
+			if new_pawn.camp == "BLUE":
+				camp_name_pawn_dict["我方" + new_pawn.pawn_name] = new_pawn
+			else:
+				camp_name_pawn_dict["敌方" + new_pawn.pawn_name] = new_pawn
 			
 			print("movable: ", new_pawn.moveable)
 
@@ -144,6 +148,10 @@ func init(chat_in: Chat):
 			new_pawn.add_to_group("hero")
 
 			name_pawn_dict[new_pawn.get_unique_name()] = new_pawn
+			if new_pawn.camp == "BLUE":
+				camp_name_pawn_dict["我方" + new_pawn.pawn_name] = new_pawn
+			else:
+				camp_name_pawn_dict["敌方" + new_pawn.pawn_name] = new_pawn
 
 			match new_pawn.lane:
 				"上路":
@@ -174,6 +182,9 @@ func init(chat_in: Chat):
 			pawn.set_init_move_target()
 			
 	match_time = 0
+
+	print(get_map_info_string())
+	print(camp_name_pawn_dict)
 
 func simulate():
 

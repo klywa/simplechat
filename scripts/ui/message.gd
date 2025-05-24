@@ -105,7 +105,31 @@ func _show():
 		if abandon:
 			abandon_toggle.button_pressed = true
 
+	# 如果message中包含"[]"，则将[]中的内容发送给send_command_to_pawn()
+	var regex = RegEx.new()
+	regex.compile("^（(.*?)）")
+	var matches = regex.search_all(message)
+	if matches:
+		for m in matches:
+			var command = m.get_string(1)
+			send_command_to_pawn(command)
+
 	chat.save_to_json(GameManager.tmp_save_file_path)
+
+func send_command_to_pawn(command : String):
+	print("send_command_to_pawn: ", command)
+	var pawn = sender.pawn
+	var target_pawn = null
+
+	for p_name in GameManager.simulator.camp_name_pawn_dict:
+		if p_name in command:
+			target_pawn = GameManager.simulator.camp_name_pawn_dict[p_name]
+			break
+	
+	if target_pawn != null:
+		print("command send to pawn: ", pawn.pawn_name, " -> ", target_pawn.pawn_name)
+		pawn.move_target = target_pawn
+
 
 func on_button_pressed():
 	if GameManager.mode == "pipeline" and GameManager.safe_export:
