@@ -258,6 +258,7 @@ func set_hero_avatar():
 		hero_avatar.texture = new_texture
 
 func _on_button_down():
+	print("pawn_name: ", pawn_name, " corrdinate: ", get_corrdinate())
 	if moveable:
 		if not dragging:
 			drag_start_position = position
@@ -1066,6 +1067,26 @@ func get_on_lane():
 	# 默认返回空字符串
 	return "附近没有兵线"
 
+func get_corrdinate():
+	# 假定map的左下角坐标为(-60.0, -60.0)，右上角坐标为(60.0, 60.0)，将自己相对于map的坐标映射到该坐标体系下，输出(x,y)
+	var map_width = map_size.x * map.scale.x
+	var map_height = map_size.y * map.scale.y
+	
+	# 将当前位置映射到[-60, 60]的范围
+	var mapped_x = (position.x / map_width) * 120.0 - 60.0
+	# 修改y轴映射，使其从下到上增加
+	var mapped_y = 60.0 - (position.y / map_height) * 120.0
+
+	if type == "BUILDING":
+		mapped_x += randf_range(-0.5, 0.5)
+		mapped_y += randf_range(-0.5, 0.5)
+	
+	return "(%.1f, %.1f)" % [mapped_x, mapped_y]
+	
+
+
+	
+
 func is_attackable():
 	if type == "BUILDING":
 		match pawn_name:
@@ -1157,7 +1178,7 @@ func get_status():
 		status += name_string + "是我方" + lane + "，"
 		status += get_health() + "，"
 		status += get_kda() + "，"
-		status += "在" + get_region() + "附近。"
+		status += "在" + get_region() + "附近，坐标" + get_corrdinate() + "。"
 		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += get_on_lane() + "。"
@@ -1168,7 +1189,7 @@ func get_status():
 		status += name_string + "是敌方" + lane + "，"
 		status += get_health() + "，"
 		status += get_kda() + "，"
-		status += "在" + get_region() + "附近。"
+		status += "在" + get_region() + "附近，坐标" + get_corrdinate() + "。"
 		status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += get_on_lane() + "。"
@@ -1183,7 +1204,7 @@ func get_player_status():
 	var status = player_pawn.get_status()
 
 	# if player_pawn in nearby_pawns:
-	# 	status += "“玩家" + "在" + "”" + npc.npc_name + "”" + "附近。"
+	# 	status += ""玩家" + "在" + "" + npc.npc_name + "" + "附近。"
 
 	return status
 
@@ -1231,8 +1252,10 @@ func get_dead_pawns():
 	return dead_heros + "\n" + opponent_dead_heros
 
 func get_scenario_stirng():
+	var scenario = "[地图信息]\n"
+	scenario += simulator.get_map_info_string() + "\n"
 
-	var scenario = "[总体态势]\n"
+	scenario += "\n[总体态势]\n"
 	scenario += "我方人头数：" + str(simulator.blue_team_total_kill) + "，敌方人头数：" + str(simulator.red_team_total_kill) + "。\n"
 	scenario += "我方总经济：" + str(simulator.blue_team_total_money) + "，敌方总经济：" + str(simulator.red_team_total_money) + "。\n"
 	

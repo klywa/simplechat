@@ -58,6 +58,8 @@ func _ready() -> void:
 func init(chat_in: Chat):
 	chat = chat_in
 
+	print(get_map_info_string())
+
 	name_pawn_dict.clear()
 	for p_name in name_poi_dict:
 		name_pawn_dict[p_name] = name_poi_dict[p_name]
@@ -348,3 +350,31 @@ func calculate_damage(attacker: Pawn, defender: Pawn):
 			return randi() % 10
 		"MONSTER":
 			return randi() % 10
+
+
+func get_map_info_string():
+	var info = "王者荣耀地图范围为120*120，"
+	
+	# 获取水晶坐标
+	var blue_crystal_pos = name_poi_dict["蓝方水晶"].get_corrdinate()
+	var red_crystal_pos = name_poi_dict["红方水晶"].get_corrdinate()
+	info += "我方水晶位于" + blue_crystal_pos + "，敌方水晶位于" + red_crystal_pos + "。"
+	
+	# 获取防御塔坐标
+	info += "我方防御塔坐标为："
+	for tower_name in ["蓝方上路一塔", "蓝方上路二塔", "蓝方上路高地塔", 
+					  "蓝方中路一塔", "蓝方中路二塔", "蓝方中路高地塔",
+					  "蓝方下路一塔", "蓝方下路二塔", "蓝方下路高地塔"]:
+		if name_poi_dict[tower_name].is_alive():
+			info += tower_name + name_poi_dict[tower_name].get_corrdinate() + "、"
+	info = info.rstrip("、") + "。"
+	
+	info += "敌方防御塔坐标为："
+	for tower_name in ["红方上路一塔", "红方上路二塔", "红方上路高地塔",
+					  "红方中路一塔", "红方中路二塔", "红方中路高地塔", 
+					  "红方下路一塔", "红方下路二塔", "红方下路高地塔"]:
+		if name_poi_dict[tower_name].is_alive():
+			info += tower_name + name_poi_dict[tower_name].get_corrdinate() + "、"
+	info = info.rstrip("、") + "。"
+	
+	return info
