@@ -138,7 +138,7 @@ func send_command_to_pawn(command : String):
 			target_pawn = GameManager.simulator.camp_name_pawn_dict[p_name]
 			break
 	
-	if target_pawn != null:
+	if target_pawn != null and pawn != null:
 		print("command send to pawn: ", pawn.pawn_name, " -> ", target_pawn.pawn_name)
 		pawn.move_target = target_pawn
 
