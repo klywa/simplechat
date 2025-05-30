@@ -58,12 +58,15 @@ var memory : String = ""
 @onready var button := $MessageContainer/VBoxContainer/ContentContainer/Button
 # @onready var replay_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3/ReplayButton
 
+@onready var revised_flag := $MessageContainer/VBoxContainer/ContentContainer/Button/MarginContainer/RevisedFlag
+
 
 func _ready():
 	revise_panel.visible = false
 	abandon_toggle.visible = false
 	consecutive_toggle.visible = false
 	button.pressed.connect(on_button_pressed)
+	revised_flag.visible = false
 
 	revise_panel.revise_button.pressed.connect(on_revise_button_pressed)
 	#revise_panel.revise_content.text_submitted.connect(on_revise_content_submitted)
@@ -117,6 +120,9 @@ func _show():
 			consecutive_toggle.button_pressed = true
 		if score == "0":
 			badcase_toggle.button_pressed = true
+
+	if better_response.length() > 0:
+		revised_flag.visible = true
 
 	# 如果message中包含"[]"，则将[]中的内容发送给send_command_to_pawn()
 	var regex = RegEx.new()

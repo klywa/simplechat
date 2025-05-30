@@ -447,7 +447,7 @@ func load_from_json(json_file_path: String):
 		sender.memory = message["memory"]
 		add_message(sender, message["message"], {
 			"negative_message": message["negative_message"],
-			"better_response": message.get("better_response"),
+			"better_response": message.get("better_response", ""),
 			"problem_tags": message["problem_tags"],
 			"query": message["query"],
 			"model_version": message["model_version"],

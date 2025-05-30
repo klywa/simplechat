@@ -90,3 +90,4 @@ func on_regenerate_button_pressed() -> void:
 func on_better_resposne_text_changed() -> void:
 	var message = get_parent()
 	message.better_response = better_resposne.text
+	message._show()
