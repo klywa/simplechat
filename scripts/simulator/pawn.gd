@@ -206,7 +206,6 @@ func _show():
 	name_label.text = pawn_name
 	set_hero_avatar()
 
-
 func load_npc(npc: NPC):
 	self.npc = npc
 	pawn_name = npc.hero_name
@@ -226,6 +225,56 @@ func load_npc(npc: NPC):
 		hero_icon.scale = Vector2(1.0, 1.0)
 
 	_show()
+
+func init_pawn(pawn_info: Dictionary):
+	pawn_name = pawn_info.get("pawn_name", "")
+	camp = pawn_info.get("camp", "NEUTRAL")
+	lane = pawn_info.get("lane", "")
+	type = pawn_info.get("type", "CHARACTER")
+	hp = pawn_info.get("hp", 100)
+	level = pawn_info.get("level", 1)
+	money = pawn_info.get("money", 0)
+	kill_number = pawn_info.get("kill_number", 0)
+	death_number = pawn_info.get("death_number", 0)
+	assist_number = pawn_info.get("assist_number", 0)
+	var npc_name = pawn_info.get("npc_name", "")
+	if type == "CHARACTER":
+		npc = GameManager.npc_dict[npc_name]
+		load_npc(npc)
+	set_hero_avatar()
+	global_position = Vector2(pawn_info.get("position_x", 0), pawn_info.get("position_y", 0))
+	
+func get_pawn_info() -> Dictionary:
+	var n_name : String
+	if npc != null:
+		n_name = npc.npc_name
+	else:
+		n_name = "无"
+	
+	return {
+		"npc_name": n_name,
+		"pawn_name": pawn_name,
+		"camp": camp,
+		"lane": lane,
+		"type": type,
+		"hp": hp,
+		"level": level,
+		"money": money,
+		"kill_number": kill_number,
+		"death_number": death_number,
+		"assist_number": assist_number,
+		"position_x": global_position.x,
+		"position_y": global_position.y,
+	}
+
+func set_pawn_info(pawn_info: Dictionary):
+	hp = pawn_info.get("hp", 100)
+	level = pawn_info.get("level", 1)
+	money = pawn_info.get("money", 0)
+	kill_number = pawn_info.get("kill_number", 0)
+	death_number = pawn_info.get("death_number", 0)
+	assist_number = pawn_info.get("assist_number", 0)
+	global_position = Vector2(pawn_info.get("position_x", 0), pawn_info.get("position_y", 0))
 
 func set_hero_avatar():
 	# 尝试根据pawn_name加载英雄头像

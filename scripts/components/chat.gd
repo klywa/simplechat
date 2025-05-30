@@ -310,7 +310,8 @@ func save_to_json(json_file_path: String):
 		"chat_name": chat_name,
 		"chat_type": "PRIVATE" if chat_type == ChatType.PRIVATE else "GROUP",
 		"members": [],
-		"messages": []
+		"messages": [],
+		"simulation": GameManager.simulator.replay_info,
 	}
 	for member in members.values():
 		var tmp_member = {

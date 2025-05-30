@@ -7,6 +7,7 @@ const LOCATION_SCENE = preload("res://scenes/components/location.tscn") as Packe
 var mode : String = "single"	# pipeline, single
 var safe_export : bool = false
 var main_view
+var chat_view
 var chat_dict: Dictionary
 var npc_dict: Dictionary
 var location_dict: Dictionary
@@ -60,6 +61,7 @@ func init(main, config_path: String, knowledge_path: String, simulator_in: KoHSi
 	}
 
 	main_view = main
+	chat_view = main_view.chat_view
 	mode = main.mode
 
 	simulator = simulator_in
