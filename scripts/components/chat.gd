@@ -181,6 +181,9 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 
 	if auxiliary.get("negative_message", "") != "":
 		tmp_message.negative_message = auxiliary.get("negative_message", "")
+
+	if auxiliary.get("better_response", "") != "":
+		tmp_message.better_response = auxiliary.get("better_response", "")
 	
 	var current_time = Time.get_datetime_string_from_system(false, true)
 	current_time = current_time.replace(" ", "-").replace(":", "-")
@@ -339,6 +342,7 @@ func save_to_json(json_file_path: String):
 			"knowledge": message.knowledge,
 			"memory": message.memory,
 			"negative_message": message.negative_message,
+			"better_response": message.better_response,
 			"score": message.score,
 			"problem_tags": message.problem_tags,
 			"skip_save": message.skip_save,
@@ -443,6 +447,7 @@ func load_from_json(json_file_path: String):
 		sender.memory = message["memory"]
 		add_message(sender, message["message"], {
 			"negative_message": message["negative_message"],
+			"better_response": message.get("better_response"),
 			"problem_tags": message["problem_tags"],
 			"query": message["query"],
 			"model_version": message["model_version"],

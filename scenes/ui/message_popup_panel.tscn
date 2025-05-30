@@ -5,8 +5,9 @@
 
 [node name="MessagePopupPanel" type="PopupPanel"]
 auto_translate_mode = 1
+oversampling_override = 1.0
 initial_position = 1
-size = Vector2i(608, 1352)
+size = Vector2i(608, 1355)
 visible = true
 theme = ExtResource("1_0uvfs")
 script = ExtResource("2_xhaq2")
@@ -15,7 +16,7 @@ script = ExtResource("2_xhaq2")
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 604.0
-offset_bottom = 1348.0
+offset_bottom = 1351.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
 layout_mode = 2
@@ -122,6 +123,20 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 placeholder_text = "示例示例示例示例示例示例示例示例"
 editable = false
+wrap_mode = 1
+
+[node name="MarginContainer8" type="MarginContainer" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="BetterResponse" type="TextEdit" parent="PanelContainer/VBoxContainer/MarginContainer8"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+placeholder_text = "更好的回复"
 wrap_mode = 1
 
 [node name="MarginContainer2" type="MarginContainer" parent="PanelContainer/VBoxContainer"]

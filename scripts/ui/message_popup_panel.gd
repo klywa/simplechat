@@ -10,6 +10,7 @@ extends PopupPanel
 
 @onready var more_panel := $MorePanel
 @onready var origin_response := $PanelContainer/VBoxContainer/MarginContainer3/OriginResponse
+@onready var better_resposne := $PanelContainer/VBoxContainer/MarginContainer8/BetterResponse
 @onready var score := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/Score
 @onready var problem_tags := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/ProblemTags
 @onready var save_problem_button := $PanelContainer/VBoxContainer/MarginContainer2/HBoxContainer/SaveProblem
@@ -27,6 +28,7 @@ func _ready() -> void:
 	save_problem_button.pressed.connect(on_save_problem_button_pressed)
 	close_more_button.pressed.connect(on_close_more_button_pressed)
 	regenerate_button.pressed.connect(on_regenerate_button_pressed)
+	better_resposne.text_changed.connect(on_better_resposne_text_changed)
 
 func _show() -> void:
 	time_message.text = str(get_parent().char_count) + "字/" + get_parent().elapsed_time
@@ -42,6 +44,7 @@ func _show() -> void:
 	instruction_editor.text = get_parent().instructions
 	knowledge_editor.text = get_parent().knowledge
 	memory_editor.text = get_parent().memory
+	better_resposne.text = get_parent().better_response
 
 func on_more_button_pressed() -> void:
 	more_panel.visible = true
@@ -84,3 +87,6 @@ func on_regenerate_button_pressed() -> void:
 	else:
 		return
 
+func on_better_resposne_text_changed() -> void:
+	var message = get_parent()
+	message.better_response = better_resposne.text

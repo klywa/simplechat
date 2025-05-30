@@ -16,6 +16,7 @@ var sender: NPC
 var sender_type: NPC.NPCType
 var save_message: bool = true
 var negative_message: String
+var better_response: String = ""
 var prompt : String = ""
 var query : String = ""
 var model_version : String = ""
