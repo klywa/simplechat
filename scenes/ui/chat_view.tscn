@@ -417,10 +417,11 @@ size = Vector2i(800, 600)
 dialog_autowrap = true
 access = 2
 
-[node name="TextHistoryPanel" type="PopupPanel" parent="."]
+[node name="TextHistoryPanel" type="Window" parent="."]
 oversampling_override = 1.0
 initial_position = 2
 size = Vector2i(608, 1408)
+visible = false
 
 [node name="Panel" type="PanelContainer" parent="TextHistoryPanel"]
 custom_minimum_size = Vector2(600, 1400)

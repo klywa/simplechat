@@ -96,6 +96,8 @@ func _ready() -> void:
 
 	convert_to_text_button.pressed.connect(on_convert_to_text_button_pressed)
 
+	text_history_panel.close_requested.connect(on_text_history_close_requested)
+
 	clear_chat_button.pressed.connect(on_clear_chat_button_pressed)
 
 	expand_button.pressed.connect(on_expand_button_pressed)
@@ -737,3 +739,6 @@ func on_convert_to_text_button_pressed() -> void:
 	text_history_model_verstion.text = "模型版本：" + chat.get_model_version()
 	text_history.text = chat.get_text_history()
 
+
+func on_text_history_close_requested() -> void:
+	text_history_panel.hide()
