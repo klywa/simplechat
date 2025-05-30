@@ -16,6 +16,7 @@ var system : NPC
 var ai_instructions : String
 
 var simulator : KoHSimulator
+var game_index : int = 0
 
 var hero_alias_dict: Dictionary
 var lane_alias_dict
@@ -228,3 +229,10 @@ func get_knowledge(chat : Chat, npc : NPC) -> String:
 		return "\n".join(knowledge_list)
 	else:
 		return ""
+
+func new_chat() -> void:
+	game_index = 0
+
+func get_game_index() -> int:
+	game_index += 1
+	return game_index

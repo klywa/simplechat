@@ -38,6 +38,7 @@ var player_hero_lane : String = ""
 var instructions : String = ""
 var knowledge : String = ""
 var memory : String = ""
+var game_index : int
 
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
@@ -123,6 +124,8 @@ func _show():
 
 	if better_response.length() > 0:
 		revised_flag.visible = true
+	else:
+		revised_flag.visible = false
 
 	# 如果message中包含"[]"，则将[]中的内容发送给send_command_to_pawn()
 	var regex = RegEx.new()

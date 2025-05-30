@@ -410,6 +410,7 @@ func on_accept_member_button_pressed() -> void:
 	print("simulator: ", GameManager.simulator)
 	print("chat simulator", GameManager.main_view.simulator)
 	print("chat opponent_members: ", chat.opponent_members.keys())
+	GameManager.new_chat()
 	GameManager.simulator.init(chat)
 
 	# for npc_name in add_list:
@@ -584,7 +585,7 @@ func on_new_button_pressed() -> void:
 
 func set_autosave_filename() -> void:
 	clean_autosave_files()
-	autosave_file_name = "data/autosave_" + get_current_time_string() + ".json"
+	autosave_file_name = "data/autosave_" + get_current_time_string().replace(" ", "_").replace(":", "-") + ".json"
 
 func clean_autosave_files() -> void:
 	# 检查并清理自动保存文件，保留最新的19个

@@ -45,6 +45,7 @@ var player_hero_lane : String = ""
 var instructions : String = ""
 var knowledge : String = ""
 var memory : String = ""
+var game_index : int
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

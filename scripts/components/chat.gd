@@ -81,6 +81,10 @@ func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_
 		tmp_message = SYSTEM_MESSAGE_SCENE.instantiate()
 	elif sender.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
 		tmp_message = MESSAGE_SCENE.instantiate()
+	if auxiliary.get("game_index", -1) == -1:
+		tmp_message.game_index = GameManager.get_game_index()
+	else:
+		tmp_message.game_index = auxiliary.get("game_index", 0)
 	tmp_message.chat = self
 	tmp_message.message_id = UUIDGenerator.generate_uuid()
 	tmp_message.sender = sender
@@ -337,6 +341,7 @@ func save_to_json(json_file_path: String):
 	for message in messages:
 		# print("scenario", message.sender.scenario)
 		var tmp_message = {
+			"game_index": message.game_index,
 			"npc_name": message.npc_name,
 			"message": message.message,
 			"knowledge": message.knowledge,
@@ -446,6 +451,7 @@ func load_from_json(json_file_path: String):
 		sender.hero_lane = message["npc_hero_lane"]
 		sender.memory = message["memory"]
 		add_message(sender, message["message"], {
+			"game_index": message.get("game_index", -1),
 			"negative_message": message["negative_message"],
 			"better_response": message.get("better_response", ""),
 			"problem_tags": message["problem_tags"],
