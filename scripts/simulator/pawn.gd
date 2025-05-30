@@ -208,6 +208,7 @@ func _show():
 
 func load_npc(npc: NPC):
 	self.npc = npc
+	npc.pawn = self
 	pawn_name = npc.hero_name
 	lane = npc.hero_lane
 
@@ -227,7 +228,18 @@ func load_npc(npc: NPC):
 	_show()
 
 func init_pawn(pawn_info: Dictionary):
+	var npc_name = pawn_info.get("npc_name", "")
+	if type == "CHARACTER":
+		if npc_name in GameManager.simulator.chat.members:
+			npc = GameManager.simulator.chat.members[npc_name]
+			load_npc(npc)
+		elif npc_name in GameManager.simulator.chat.opponent_members:
+			npc = GameManager.simulator.chat.opponent_members[npc_name]
+			load_npc(npc)
+		else:
+			print("npc_name: ", npc_name, " not found")
 	pawn_name = pawn_info.get("pawn_name", "")
+	print("pawn_name: ", pawn_name, " pawn_info: ", pawn_info.get("pawn_name", ""))
 	camp = pawn_info.get("camp", "NEUTRAL")
 	lane = pawn_info.get("lane", "")
 	type = pawn_info.get("type", "CHARACTER")
@@ -237,10 +249,6 @@ func init_pawn(pawn_info: Dictionary):
 	kill_number = pawn_info.get("kill_number", 0)
 	death_number = pawn_info.get("death_number", 0)
 	assist_number = pawn_info.get("assist_number", 0)
-	var npc_name = pawn_info.get("npc_name", "")
-	if type == "CHARACTER":
-		npc = GameManager.npc_dict[npc_name]
-		load_npc(npc)
 	set_hero_avatar()
 	global_position = Vector2(pawn_info.get("position_x", 0), pawn_info.get("position_y", 0))
 	

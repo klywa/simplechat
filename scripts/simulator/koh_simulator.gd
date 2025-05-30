@@ -39,7 +39,7 @@ var red_team_total_money : int = 0
 var blue_team_total_kill : int = 0
 var red_team_total_kill : int = 0
 
-var replay_info : Array[Dictionary] = []
+var replay_info : Array
 
 var match_time : int = 0
 
@@ -413,9 +413,10 @@ func get_frame_info(game_index: int) -> Dictionary:
 	frame_info["red_team_total_money"] = red_team_total_money
 	frame_info["blue_team_total_kill"] = blue_team_total_kill
 	frame_info["red_team_total_kill"] = red_team_total_kill
-
+	frame_info["pawns"] = {}
+	
 	for pawn in name_pawn_dict.values():
-		frame_info[pawn.get_unique_name()] = pawn.get_pawn_info()
+		frame_info["pawns"][pawn.get_unique_name()] = pawn.get_pawn_info()
 
 	return frame_info
 
@@ -427,13 +428,13 @@ func set_frame_info(frame_info: Dictionary):
 	red_team_total_kill = frame_info.get("red_team_total_kill", 0)
 
 	for pawn in name_pawn_dict.values():
-		pawn.set_pawn_info(frame_info[pawn.get_unique_name()])
+		pawn.set_pawn_info(frame_info["pawns"][pawn.get_unique_name()])
 
 func init_pawns(frame_info: Dictionary):
 	var character_pawns = []
 	var character_pawn_info = []
 
-	for p_info in frame_info.values():
+	for p_info in frame_info["pawns"].values():
 		if p_info.get("type") == "CHARACTER":
 			character_pawn_info.append(p_info)
 	
@@ -441,8 +442,10 @@ func init_pawns(frame_info: Dictionary):
 		if pawn.type == "CHARACTER":
 			character_pawns.append(pawn)
 		else:
-			pawn.init_pawn(frame_info[pawn.get_unique_name()])
+			pawn.init_pawn(frame_info["pawns"][pawn.get_unique_name()])
 	
 	for i in range(character_pawns.size()):
+		print(i, " | ", character_pawn_info[i])
 		character_pawns[i].init_pawn(character_pawn_info[i])
-		character_pawns[i].set_pawn_info(character_pawn_info[i])
+
+	set_frame_info(frame_info)

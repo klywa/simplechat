@@ -478,6 +478,11 @@ func load_from_json(json_file_path: String):
 			"memory": message.get("memory", ""),
 			"scenario": message.get("scenario", ""),
 		}, false)
+
+	# 加载模拟数据
+	print(json_dict.get("simulation", []))
+	GameManager.simulator.replay_info = json_dict.get("simulation", [])
+	GameManager.simulator.init_pawns(GameManager.simulator.replay_info[-1])
 		
 	json_file.close()
 
