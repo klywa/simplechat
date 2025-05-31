@@ -275,14 +275,19 @@ func get_pawn_info() -> Dictionary:
 		"position_y": global_position.y,
 	}
 
-func set_pawn_info(pawn_info: Dictionary):
-	hp = pawn_info.get("hp", 100)
+func set_pawn_info(pawn_info: Dictionary, tween_time = 0):
+	if tween_time > 0:
+		var tween = create_tween()
+		tween.tween_property(self, "hp", pawn_info.get("hp", 100), tween_time)
+		tween.parallel().tween_property(self, "global_position", Vector2(pawn_info.get("position_x", 0), pawn_info.get("position_y", 0)), tween_time)
+	else:
+		hp = pawn_info.get("hp", 100)
+		global_position = Vector2(pawn_info.get("position_x", 0), pawn_info.get("position_y", 0))
 	level = pawn_info.get("level", 1)
 	money = pawn_info.get("money", 0)
 	kill_number = pawn_info.get("kill_number", 0)
 	death_number = pawn_info.get("death_number", 0)
 	assist_number = pawn_info.get("assist_number", 0)
-	global_position = Vector2(pawn_info.get("position_x", 0), pawn_info.get("position_y", 0))
 
 func set_hero_avatar():
 	# 尝试根据pawn_name加载英雄头像
