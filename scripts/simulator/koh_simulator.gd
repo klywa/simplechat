@@ -189,6 +189,9 @@ func init(chat_in: Chat):
 	print(get_map_info_string())
 	print(camp_name_pawn_dict)
 
+	await get_tree().process_frame
+	chat.add_message(GameManager.system, "比赛开始。")
+
 func simulate():
 
 	match_time += 1

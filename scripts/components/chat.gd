@@ -75,14 +75,17 @@ func remove_member(npc_name: String):
 func get_member(npc_name: String):
 	return members.get(npc_name, null)
 
-func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_up: bool = true):
+func add_message(sender: NPC, content: String, auxiliary: Dictionary={}, follow_up: bool = true, not_increase_game_index: bool = false):
 	var tmp_message
 	if sender.npc_type in [NPC.NPCType.ENV, NPC.NPCType.SYSTEM]:
 		tmp_message = SYSTEM_MESSAGE_SCENE.instantiate()
 	elif sender.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
 		tmp_message = MESSAGE_SCENE.instantiate()
 	if auxiliary.get("game_index", -1) == -1:
-		tmp_message.game_index = GameManager.get_game_index()
+		if not_increase_game_index:
+			tmp_message.game_index = GameManager.game_index + 1
+		else:
+			tmp_message.game_index = GameManager.get_game_index()
 	else:
 		tmp_message.game_index = auxiliary.get("game_index", 0)
 	tmp_message.chat = self

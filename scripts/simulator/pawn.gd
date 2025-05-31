@@ -592,7 +592,7 @@ func _on_detect_area_exited(area: Area2D) -> void:
 					# print("%s附近没有BLUE阵营单位，变为不可见" % pawn_name)
 
 func send_message(message: String):
-	simulator.chat.add_message(GameManager.system, message)
+	simulator.chat.add_message(GameManager.system, message, {}, true, true)
 
 func has_monster_nearby():
 	for p in nearby_pawns:
