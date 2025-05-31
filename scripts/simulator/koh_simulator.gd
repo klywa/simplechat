@@ -192,6 +192,8 @@ func init(chat_in: Chat):
 	await get_tree().process_frame
 	chat.add_message(GameManager.system, "比赛开始。")
 
+	update_replay_info()
+
 func simulate():
 
 	match_time += 1
@@ -306,6 +308,27 @@ func simulate():
 
 	update_replay_info()
 	GameManager.chat_view.autosave_chat()
+
+func back_to_last_frame():
+	if replay_info.size() <= 1:
+		return
+	var last_game_index = replay_info[-1].get("game_index", 0)
+	var last_last_game_index = replay_info[-2].get("game_index", 0)
+
+	replay_info.pop_back()
+
+	print("back to last frame: ", last_last_game_index)
+	set_frame_info(replay_info[-1], 0.3)
+
+	for child in GameManager.chat_view.message_list.get_children():
+		if child is Message or child is SystemMessage:
+			if child.game_index > last_last_game_index:
+				chat.messages.erase(child)
+				child.queue_free()
+	
+	# for message in chat.messages:
+	# 	if message.game_index > last_last_game_index:
+	# 		chat.messages.erase(message)
 
 func calculate_damage(attacker: Pawn, defender: Pawn):
 	if attacker.camp == defender.camp:
@@ -423,7 +446,7 @@ func get_frame_info(game_index: int) -> Dictionary:
 
 	return frame_info
 
-func set_frame_info(frame_info: Dictionary):
+func set_frame_info(frame_info: Dictionary, tween_time: float = 0.0):
 	match_time = frame_info.get("match_time", 0)
 	blue_team_total_money = frame_info.get("blue_team_total_money", 0)
 	red_team_total_money = frame_info.get("red_team_total_money", 0)
@@ -431,7 +454,9 @@ func set_frame_info(frame_info: Dictionary):
 	red_team_total_kill = frame_info.get("red_team_total_kill", 0)
 
 	for pawn in name_pawn_dict.values():
-		pawn.set_pawn_info(frame_info["pawns"][pawn.get_unique_name()])
+		print("setting ...")
+		print(pawn.get_unique_name(), " | ", frame_info["pawns"][pawn.get_unique_name()])
+		pawn.set_pawn_info(frame_info["pawns"][pawn.get_unique_name()], tween_time)
 
 func init_pawns(frame_info: Dictionary):
 	var character_pawns = []

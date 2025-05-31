@@ -47,6 +47,16 @@ visible = false
 layout_mode = 2
 text = "模拟3步"
 
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="BackButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/HBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "撤销"
+
 [node name="CenterContainer2" type="CenterContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 

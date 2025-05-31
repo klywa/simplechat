@@ -5,6 +5,7 @@ extends MarginContainer
 
 @onready var simulate_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/HBoxContainer/SimulateButton
 @onready var simulate_3x_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/HBoxContainer/Simulate3xButton
+@onready var back_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/HBoxContainer/HBoxContainer/BackButton
 
 @onready var blue_money := $PanelContainer/VBoxContainer/CenterContainer2/HBoxContainer/BlueMoney
 @onready var red_money := $PanelContainer/VBoxContainer/CenterContainer2/HBoxContainer/RedMoney
@@ -16,6 +17,7 @@ extends MarginContainer
 func _ready() -> void:
 	simulate_button.pressed.connect(_on_simulate_button_pressed)
 	simulate_3x_button.pressed.connect(_on_simulate_3x_button_pressed)
+	back_button.pressed.connect(_on_back_button_pressed)
 
 func _on_simulate_button_pressed():
 	simulator.simulate()
@@ -35,3 +37,7 @@ func _process(delta: float) -> void:
 	red_money.text = str(simulator.red_team_total_money)
 	kill_ratio.text = str(simulator.blue_team_total_kill) + " : " + str(simulator.red_team_total_kill)
 	time_label.text = str(simulator.match_time)
+
+
+func _on_back_button_pressed():
+	simulator.back_to_last_frame()
