@@ -6,6 +6,9 @@ extends Control
 @export var ai_pipeline_url : String = "http://30.50.188.179:8080/api/smartnpc"
 @export var knowledge_path : String = "res://config/knowledge.json"
 @export var safe_export : bool = false
+@export var simulation_delay : float = 0.5
+@export var simulation_replay_delay : float = 0.5
+@export var message_replay_delay : float = 1.0
 
 @onready var player_icon := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
 @onready var chat_view : ChatView = $HBoxContainer/VBoxContainer/ChatPanel/ChatWindow/ChatView

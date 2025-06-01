@@ -271,7 +271,8 @@ func add_message(message: Variant) -> void:
 	await scroll_container.get_v_scroll_bar().changed
 	scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
 
-	autosave_chat()
+	if message.sender.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
+		autosave_chat()
 
 func autosave_chat() -> void:
 	if autosave_file_name == "":
@@ -483,7 +484,14 @@ func on_character_left_clicked(character: NPC) -> void:
 
 func replay_from_message(message: Variant) -> void:
 	if not (message is Message or message is SystemMessage):
-		return 
+		return
+
+	var first_index = message.game_index
+	var max_index = max(chat.messages[-1].game_index, GameManager.simulator.replay_info[-1].get("game_index", 0))
+
+	var simulation_replay_delay = GameManager.main_view.simulation_replay_delay
+	var message_replay_delay = GameManager.main_view.message_replay_delay
+	
 	# remove message below the given message (include the given message) and then show the removed messages
 	# one by one, with time delay of 1 second between each message
 	var removed_messages = []
@@ -492,18 +500,68 @@ func replay_from_message(message: Variant) -> void:
 			removed_messages.append(child)
 	for child in removed_messages:
 		message_list.remove_child(child)
+
+	# 找到第一个小于first_index的帧
+	var target_frame = null
+	for frame in GameManager.simulator.replay_info:
+		if frame.get("game_index", 0) < first_index:
+			target_frame = frame
+		else:
+			break
+	
+	if target_frame:
+		GameManager.simulator.set_frame_info(target_frame, 0.0)
 	
 	await get_tree().create_timer(1.0).timeout
 	
-	for child in removed_messages:
-		message_list.add_child(child)
-		if child is Message or child is SystemMessage:
-			child._show()
+	# for child in removed_messages:
+	# 	message_list.add_child(child)
+	# 	if child is Message or child is SystemMessage:
+	# 		child._show()
 
-		await scroll_container.get_v_scroll_bar().changed
-		scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
+	# 	await scroll_container.get_v_scroll_bar().changed
+	# 	scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
 
-		await get_tree().create_timer(1.0).timeout
+	# 	await get_tree().create_timer(1.0).timeout
+
+	for i in range(first_index, max_index+1):
+		var skip_message = true
+		var skip_simulation = true
+
+		for frame in GameManager.simulator.replay_info:
+			if frame.get("game_index", 0) == i:
+				skip_simulation = false
+				print("simulate frame: ", i)
+				GameManager.simulator.set_frame_info(frame, simulation_replay_delay)
+
+				for child in removed_messages:
+					if child is Message or child is SystemMessage:
+						if child.game_index == i:
+							skip_message = false
+							message_list.add_child(child)
+							child.show()
+				if not skip_message:
+					await scroll_container.get_v_scroll_bar().changed
+					scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
+		
+		if not skip_simulation:
+			await get_tree().create_timer(simulation_replay_delay).timeout
+
+		if skip_simulation:
+			for child in removed_messages:
+				if child is Message or child is SystemMessage:
+					if child.game_index == i:
+						print("message frame: ", i)
+						skip_message = false
+						message_list.add_child(child)
+						child.show()
+
+			if not skip_message:
+				await scroll_container.get_v_scroll_bar().changed
+				scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
+				await get_tree().create_timer(message_replay_delay).timeout
+
+
 
 func on_save_button_pressed() -> void:
 	# save_panel.visible = true

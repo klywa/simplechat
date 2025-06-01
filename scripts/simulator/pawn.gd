@@ -34,7 +34,7 @@ var is_moving : bool = false
 var move_start_position : Vector2 = Vector2()
 var move_target_position : Vector2 = Vector2()
 var move_progress : float = 0.0
-var move_duration : float = 1.0  # 移动持续时间为1秒
+# var move_duration : float = 0.5  # 移动持续时间为1秒
 
 # var is_on_lane : bool = false
 
@@ -239,7 +239,7 @@ func init_pawn(pawn_info: Dictionary):
 		else:
 			print("npc_name: ", npc_name, " not found")
 	pawn_name = pawn_info.get("pawn_name", "")
-	print("pawn_name: ", pawn_name, " pawn_info: ", pawn_info.get("pawn_name", ""))
+	# print("pawn_name: ", pawn_name, " pawn_info: ", pawn_info.get("pawn_name", ""))
 	camp = pawn_info.get("camp", "NEUTRAL")
 	lane = pawn_info.get("lane", "")
 	type = pawn_info.get("type", "CHARACTER")
@@ -276,7 +276,7 @@ func get_pawn_info() -> Dictionary:
 	}
 
 func set_pawn_info(pawn_info: Dictionary, tween_time = 0):
-	if tween_time > 0:
+	if tween_time > 0 and pawn_info.get("hp", 100) > 0:
 		var tween = create_tween()
 		tween.tween_property(self, "hp", pawn_info.get("hp", 100), tween_time)
 		tween.parallel().tween_property(self, "global_position", Vector2(pawn_info.get("position_x", 0), pawn_info.get("position_y", 0)), tween_time)
@@ -388,7 +388,7 @@ func _process(delta):
 	
 	# 处理平滑移动
 	if is_moving:
-		move_progress += delta / move_duration
+		move_progress += delta / GameManager.main_view.simulation_delay
 		if move_progress >= 1.0:
 			# 移动完成
 			position = move_target_position

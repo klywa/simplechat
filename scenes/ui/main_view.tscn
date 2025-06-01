@@ -17,6 +17,7 @@ grow_vertical = 2
 theme = ExtResource("2_yy0rm")
 script = ExtResource("2_h3wjv")
 ai_server_url = "http://127.0.0.1:8000"
+simulation_replay_delay = 0.7
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1

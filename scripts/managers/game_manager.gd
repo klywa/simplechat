@@ -181,6 +181,9 @@ func init(main, config_path: String, knowledge_path: String, simulator_in: KoHSi
 
 	
 	koh_chat_initialized = false
+
+	if main_view.chat_list.chat_list.get_child_count() > 0:
+		activate_chat(main_view.chat_list.chat_list.get_child(0).chat)
 	
 
 func activate_chat(chat_in : Chat) -> void:

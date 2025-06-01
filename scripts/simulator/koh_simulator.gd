@@ -190,9 +190,9 @@ func init(chat_in: Chat):
 	print(camp_name_pawn_dict)
 
 	await get_tree().process_frame
-	chat.add_message(GameManager.system, "比赛开始。")
 
 	update_replay_info()
+	chat.add_message(GameManager.system, "比赛开始。")
 
 func simulate():
 
@@ -307,7 +307,7 @@ func simulate():
 	simulate_finished.emit()
 
 	update_replay_info()
-	GameManager.chat_view.autosave_chat()
+	# GameManager.chat_view.autosave_chat()
 
 func back_to_last_frame():
 	if replay_info.size() <= 1:
@@ -454,8 +454,8 @@ func set_frame_info(frame_info: Dictionary, tween_time: float = 0.0):
 	red_team_total_kill = frame_info.get("red_team_total_kill", 0)
 
 	for pawn in name_pawn_dict.values():
-		print("setting ...")
-		print(pawn.get_unique_name(), " | ", frame_info["pawns"][pawn.get_unique_name()])
+		# print("setting ...")
+		# print(pawn.get_unique_name(), " | ", frame_info["pawns"][pawn.get_unique_name()])
 		pawn.set_pawn_info(frame_info["pawns"][pawn.get_unique_name()], tween_time)
 
 func init_pawns(frame_info: Dictionary):
