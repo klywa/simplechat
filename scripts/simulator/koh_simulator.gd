@@ -43,6 +43,8 @@ var replay_info : Array
 
 var match_time : int = 0
 
+var frame_synced : bool = false
+
 signal simulate_finished
 
 const PAWN_SCENE = preload("res://scenes/simulator/pawn.tscn")
@@ -477,3 +479,7 @@ func init_pawns(frame_info: Dictionary):
 		character_pawns[i].init_pawn(character_pawn_info[i])
 
 	set_frame_info(frame_info)
+
+func reset_frame():
+	frame_synced = false
+	set_frame_info(GameManager.simulator.replay_info[-1], 0.0)

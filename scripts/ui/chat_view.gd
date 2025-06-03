@@ -75,6 +75,9 @@ func _ready() -> void:
 	action_input.text_submitted.connect(_on_action_submitted)
 	dialogue_input.text_submitted.connect(_on_dialogue_submitted)
 
+	action_input.focus_entered.connect(on_input_focus_entered)
+	dialogue_input.focus_entered.connect(on_input_focus_entered)
+
 	member_button.pressed.connect(on_member_button_pressed)
 	accept_member_button.pressed.connect(on_accept_member_button_pressed)
 	cancel_member_button.pressed.connect(on_cancel_member_button_pressed)
@@ -483,6 +486,8 @@ func on_character_left_clicked(character: NPC) -> void:
 		chat.speaker_index = chat.members.values().find(character)
 
 func replay_from_message(message: Variant) -> void:
+	GameManager.main_view.minimap.simulate_button.disabled = true
+
 	if not (message is Message or message is SystemMessage):
 		return
 
@@ -525,6 +530,7 @@ func replay_from_message(message: Variant) -> void:
 	# 	await get_tree().create_timer(1.0).timeout
 
 	for i in range(first_index, max_index+1):
+
 		var skip_message = true
 		var skip_simulation = true
 
@@ -561,6 +567,7 @@ func replay_from_message(message: Variant) -> void:
 				scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
 				await get_tree().create_timer(message_replay_delay).timeout
 
+	GameManager.main_view.minimap.simulate_button.disabled = false
 
 
 func on_save_button_pressed() -> void:
@@ -801,3 +808,6 @@ func on_convert_to_text_button_pressed() -> void:
 
 func on_text_history_close_requested() -> void:
 	text_history_panel.hide()
+
+func on_input_focus_entered() -> void:
+	GameManager.simulator.reset_frame()

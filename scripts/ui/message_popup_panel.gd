@@ -7,6 +7,7 @@ extends PopupPanel
 @onready var replay_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3/ReplayButton
 @onready var regenerate_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer5/RegenerateButton
 @onready var more_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer4/MoreButton
+@onready var sync_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer6/SyncSimulation
 
 @onready var more_panel := $MorePanel
 @onready var origin_response := $PanelContainer/VBoxContainer/MarginContainer3/OriginResponse
@@ -22,6 +23,8 @@ extends PopupPanel
 @onready var knowledge_editor := $PanelContainer/VBoxContainer/MarginContainer5/Knowledge
 @onready var memory_editor := $PanelContainer/VBoxContainer/MarginContainer7/Memory
 
+var current_message
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	more_button.pressed.connect(on_more_button_pressed)
@@ -29,8 +32,19 @@ func _ready() -> void:
 	close_more_button.pressed.connect(on_close_more_button_pressed)
 	regenerate_button.pressed.connect(on_regenerate_button_pressed)
 	better_resposne.text_changed.connect(on_better_resposne_text_changed)
+	sync_button.toggled.connect(on_sync_button_pressed)
 
 func _show() -> void:
+
+	if current_message != get_parent():
+		sync_button.button_pressed = false
+		on_sync_button_pressed(false)
+	
+	if not GameManager.simulator.frame_synced:
+		sync_button.button_pressed = false
+
+	current_message = get_parent()
+
 	time_message.text = str(get_parent().char_count) + "字/" + get_parent().elapsed_time
 	revise_content.text = get_parent().content_label.text
 	revise_content.grab_focus()
@@ -79,9 +93,11 @@ func on_regenerate_button_pressed() -> void:
 	var message = get_parent()
 	var npc = message.sender
 	var chat = message.chat
+	var status = message.npc_status
+	var scenario = message.scenario
 
 	if GameManager.mode == "single":
-		var response : Dictionary = await npc.generate_response(chat, true, message, instruction_editor.text, knowledge_editor.text, memory_editor.text)
+		var response : Dictionary = await npc.generate_response(chat, true, message, instruction_editor.text, knowledge_editor.text, memory_editor.text, status, scenario)
 		revise_content.text = response.get("response", "")
 		
 	else:
@@ -91,3 +107,23 @@ func on_better_resposne_text_changed() -> void:
 	var message = get_parent()
 	message.better_response = better_resposne.text
 	message._show()
+
+
+func on_sync_button_pressed(toggled_on: bool) -> void:
+	if not toggled_on:
+		GameManager.simulator.reset_frame()
+	else:
+		GameManager.simulator.frame_synced = true
+		var message = get_parent()
+		var first_index = message.game_index
+		
+		# 找到最后一个小于first_index的帧
+		var target_frame = null
+		for frame in GameManager.simulator.replay_info:
+			if frame.get("game_index", 0) <= first_index:
+				target_frame = frame
+			else:
+				break
+		
+		if target_frame:
+			GameManager.simulator.set_frame_info(target_frame, 0.0)

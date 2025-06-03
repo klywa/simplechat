@@ -24,6 +24,10 @@ func _on_simulate_button_pressed():
 		return
 
 	simulate_button.disabled = true
+
+	if simulator.frame_synced:
+		simulator.reset_frame()
+
 	simulator.simulate()
 	await get_tree().create_timer(GameManager.main_view.simulation_delay).timeout
 	simulate_button.disabled = false

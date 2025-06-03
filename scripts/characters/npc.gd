@@ -101,7 +101,7 @@ func update_alias():
 					alias.append(a)
 			break
 
-func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null, instructions: String="", _knowledge: String="", _memory: String="") -> Dictionary:
+func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=null, instructions: String="", _knowledge: String="", _memory: String="", _status: String="", _scenario: String="") -> Dictionary:
 	print("generate_response", str(npc_type))
 	if npc_type in [NPCType.ENV, NPCType.SYSTEM]:
 		print("in env")
@@ -170,6 +170,14 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 		else:
 			self.memory = _memory
 
+		if _status == "":
+			_status = npc_status
+		else:
+			npc_status = _status
+
+		if _scenario == "":
+			_scenario = scenario
+
 		ingame_info =  npc_status + "\n\n" + scenario + "\n\n" + "[相关知识]\n" + _knowledge + "\n\n" + "[记忆]\n" + _memory
 
 		# print("knowledge: ", knowledge)
@@ -183,11 +191,11 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			"npc_setting": npc_setting,
 			"npc_style": npc_style,
 			"npc_example": npc_example,
-			"npc_status": npc_status,
+			"npc_status": _status,
 			"npc_story": npc_story,
 			"npc_hero_name": hero_name,
 			"npc_hero_lane": hero_lane,
-			"scenario": scenario,
+			"scenario": _scenario,
 			"knowledge": _knowledge,
 			"memory": _memory,
 			"player_hero_name": GameManager.player.hero_name,
@@ -208,7 +216,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"npc_setting": npc_setting,
 				"npc_style": npc_style,
 				"npc_example": npc_example,
-				"npc_status": npc_status,
+				"npc_status": _status,
 				"npc_story": npc_story,
 				"npc_inventory": npc_inventory,
 				"npc_skill": npc_skill,
@@ -217,7 +225,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"player_hero_name": GameManager.player.hero_name,
 				"player_hero_lane": GameManager.player.hero_lane,
 				"instructions": instructions if instructions != "" else GameManager.ai_instructions,
-				"scenario": scenario,
+				"scenario": _scenario,
 				"knowledge": _knowledge,
 				"memory": _memory
 			}
@@ -231,7 +239,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"npc_setting": npc_setting,
 				"npc_style": npc_style,
 				"npc_example": npc_example,
-				"npc_status": npc_status,
+				"npc_status": _status,
 				"npc_story": npc_story,
 				"npc_inventory": npc_inventory,
 				"npc_skill": npc_skill,
@@ -240,7 +248,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"player_hero_name": GameManager.player.hero_name,
 				"player_hero_lane": GameManager.player.hero_lane,
 				"instructions": instructions if instructions != "" else GameManager.ai_instructions,
-				"scenario": scenario,
+				"scenario": _scenario,
 				"knowledge": _knowledge,
 				"memory": _memory
 			}
