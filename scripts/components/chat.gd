@@ -313,6 +313,7 @@ func save_to_json(json_file_path: String):
 		"chat_name": chat_name,
 		"chat_type": "PRIVATE" if chat_type == ChatType.PRIVATE else "GROUP",
 		"members": [],
+		"opponent_members": [],
 		"messages": [],
 		"simulation": GameManager.simulator.replay_info,
 	}
@@ -341,6 +342,32 @@ func save_to_json(json_file_path: String):
 			NPC.NPCType.SYSTEM:
 				tmp_member["npc_type"] = "SYSTEM"
 		json_dict["members"].append(tmp_member)
+
+	for member in opponent_members.values():
+		var tmp_member = {
+			"npc_name": member.npc_name,
+			"npc_type": member.npc_type,
+			"npc_setting": member.npc_setting,
+			"npc_style": member.npc_style,
+			"npc_example": member.npc_example,
+			"npc_status": member.npc_status,
+			"npc_inventory": member.npc_inventory,
+			"npc_skill": member.npc_skill,
+			"npc_story": member.npc_story,
+			"hero_name": member.hero_name,
+			"hero_lane": member.hero_lane,
+			"alias": member.alias,
+		}
+		match member.npc_type:
+			NPC.NPCType.NPC:
+				tmp_member["npc_type"] = "NPC"
+			NPC.NPCType.PLAYER:
+				tmp_member["npc_type"] = "PLAYER"
+			NPC.NPCType.ENV:
+				tmp_member["npc_type"] = "ENV"
+			NPC.NPCType.SYSTEM:
+				tmp_member["npc_type"] = "SYSTEM"
+		json_dict["opponent_members"].append(tmp_member)
 
 	for message in messages:
 		# print("scenario", message.sender.scenario)
@@ -400,7 +427,46 @@ func load_from_json(json_file_path: String):
 	if json_dict == null:
 		print("json解析失败")
 		return
-		
+
+	# if GameManager.simulator.replay_info.size() > 0:
+	# 	members.clear()
+	# 	opponent_members.clear()
+
+	# 	var blue_team_members = []
+	# 	var red_team_members = []
+
+	# 	for p in GameManager.simulator.replay_info[-1]["pawns"]:
+	# 		if p.get("type", "") == "CHARACTER":
+	# 			if p.get("camp", "") == "BLUE":
+	# 				blue_team_members.append(p)
+	# 			elif p.get("camp", "") == "RED":
+	# 				red_team_members.append(p)
+
+	# 	for p in blue_team_members:
+	# 		if p.get("npc_type", "") == "PLAYER":
+	# 			members[p.get("npc_name", "")] = GameManager.player
+	# 			members[p.get("npc_name", "")].hero_name = p.get("pawn_name", "")
+	# 			members[p.get("npc_name", "")].hero_lane = p.get("lane", "")
+	# 		elif p.get("npc_type", "") == "NPC":
+	# 			members[p.get("npc_name", "")] = GameManager.npc_dict[p.get("npc_name", "")]
+	# 			members[p.get("npc_name", "")].hero_name = p.get("pawn_name", "")
+	# 			members[p.get("npc_name", "")].hero_lane = p.get("lane", "")
+	# 			members[p.get("npc_name", "")].alias = json_dict["members"][json_dict["members"].find(p.get("npc_name", ""))].get("alias", [])
+
+	# 	for p in red_team_members:
+	# 		if p.get("npc_type", "") == "PLAYER":
+	# 			opponent_members[p.get("npc_name", "")] = GameManager.player
+	# 		elif p.get("npc_type", "") == "NPC":
+	# 			opponent_members[p.get("npc_name", "")] = GameManager.npc_dict[p.get("npc_name", "")]
+	# 		elif p.get("npc_type", "") == "ENV":
+	# 			opponent_members[p.get("npc_name", "")] = GameManager.env
+
+	# 	for member in json_dict["members"]:
+	# 		if member["npc_type"] == "ENV":
+	# 			members[member["npc_name"]] = GameManager.env
+	# 		elif member["npc_type"] == "SYSTEM":
+	# 			members[member["npc_name"]] = GameManager.system
+	# else:
 	# 替换成员
 	members.clear()
 	for member in json_dict["members"]:
@@ -427,6 +493,33 @@ func load_from_json(json_file_path: String):
 			members[member["npc_name"]] = GameManager.env
 		elif member["npc_type"] == "SYSTEM":
 			members[member["npc_name"]] = GameManager.system
+
+	opponent_members.clear()
+	for member in json_dict["opponent_members"]:
+		if member["npc_type"] == "NPC":
+			if member["npc_name"] not in GameManager.npc_dict:
+				print("成员不存在", member["npc_name"])
+				return
+			opponent_members[member["npc_name"]] = GameManager.npc_dict[member["npc_name"]]
+			if "hero_name" in member:
+				opponent_members[member["npc_name"]].hero_name = member["hero_name"]
+			if "hero_lane" in member:
+				opponent_members[member["npc_name"]].hero_lane = member["hero_lane"]
+			if "alias" in member:
+				opponent_members[member["npc_name"]].alias = member["alias"]
+		elif member["npc_type"] == "PLAYER":
+			opponent_members[member["npc_name"]] = GameManager.player
+			if "hero_name" in member:
+				opponent_members[member["npc_name"]].hero_name = member["hero_name"]
+			if "hero_lane" in member:
+				opponent_members[member["npc_name"]].hero_lane = member["hero_lane"]
+			if "alias" in member:
+				opponent_members[member["npc_name"]].alias = member["alias"]
+		elif member["npc_type"] == "ENV":
+			opponent_members[member["npc_name"]] = GameManager.env
+		elif member["npc_type"] == "SYSTEM":
+			opponent_members[member["npc_name"]] = GameManager.system
+	
 			
 	# 清空当前消息
 	messages.clear()
@@ -485,7 +578,9 @@ func load_from_json(json_file_path: String):
 	# 加载模拟数据
 	print(json_dict.get("simulation", []))
 	GameManager.simulator.replay_info = json_dict.get("simulation", [])
-	GameManager.simulator.init_pawns(GameManager.simulator.replay_info[-1])
+	if GameManager.simulator.replay_info.size() > 0:
+		GameManager.simulator.init_pawns(GameManager.simulator.replay_info[-1])
+		GameManager.game_index = GameManager.simulator.replay_info[-1].get("game_index", 0)
 		
 	json_file.close()
 

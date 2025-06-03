@@ -36,14 +36,14 @@ func _ready() -> void:
 
 func _show() -> void:
 
-	if current_message != get_parent():
+	if GameManager.last_message != get_parent():
 		sync_button.button_pressed = false
 		on_sync_button_pressed(false)
 	
 	if not GameManager.simulator.frame_synced:
 		sync_button.button_pressed = false
 
-	current_message = get_parent()
+	GameManager.last_message = get_parent()
 
 	time_message.text = str(get_parent().char_count) + "字/" + get_parent().elapsed_time
 	revise_content.text = get_parent().content_label.text

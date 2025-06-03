@@ -29,7 +29,7 @@ func _on_simulate_button_pressed():
 		simulator.reset_frame()
 
 	simulator.simulate()
-	await get_tree().create_timer(GameManager.main_view.simulation_delay).timeout
+	await get_tree().create_timer(GameManager.main_view.simulation_delay * 1.2).timeout
 	simulate_button.disabled = false
 
 func _on_simulate_3x_button_pressed():

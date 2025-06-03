@@ -167,6 +167,7 @@ func on_revise_button_pressed():
 		knowledge = revise_panel.knowledge_editor.text
 		memory = revise_panel.memory_editor.text
 		sender.memory = memory
+		instructions = revise_panel.instruction_editor.text
 	elif revise_panel.memory_editor.text != memory:
 		memory = revise_panel.memory_editor.text
 		sender.memory = memory

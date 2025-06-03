@@ -141,7 +141,8 @@ func init(chat_in: Chat):
 			var new_pawn = PAWN_SCENE.instantiate()
 			new_pawn.npc = npc
 			var lane_heroes = GameManager.lane_hero_dict[npc.hero_lane]
-			new_pawn.pawn_name = lane_heroes[randi() % lane_heroes.size()] if lane_heroes.size() > 0 else "未知英雄"
+			# new_pawn.pawn_name = lane_heroes[randi() % lane_heroes.size()] if lane_heroes.size() > 0 else "未知英雄"
+			new_pawn.pawn_name = npc.hero_name
 			new_pawn.camp = "RED"
 			new_pawn.lane = npc.hero_lane
 			new_pawn.type = "CHARACTER"
@@ -308,6 +309,7 @@ func simulate():
 	
 	simulate_finished.emit()
 
+	await get_tree().create_timer(GameManager.main_view.simulation_delay * 1.1).timeout
 	update_replay_info()
 	# GameManager.chat_view.autosave_chat()
 

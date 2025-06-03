@@ -16,6 +16,8 @@ var env : NPC
 var system : NPC
 var ai_instructions : String
 
+var last_message : Variant
+
 var simulator : KoHSimulator
 var game_index : int = 0
 

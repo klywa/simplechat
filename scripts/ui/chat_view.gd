@@ -320,6 +320,10 @@ func on_member_button_pressed() -> void:
 	member_panel.visible = true
 
 func on_accept_member_button_pressed() -> void:
+
+	var member_heroes = []
+	var opponent_heroes = []
+
 	if chat.chat_type != Chat.ChatType.GROUP:
 		return
 	var add_list = []
@@ -357,6 +361,7 @@ func on_accept_member_button_pressed() -> void:
 			npc.origin_hero_id = GameManager.hero_id_dict[hero]
 			npc.origin_hero_lane = lane
 			npc.origin_lane_id = GameManager.lane_id_dict[lane]
+			member_heroes.append(hero)
 
 
 		# 在上路、打野、中路、辅助、下路中，选择一个上述NPC没有选择的lane，为GameManager.player指定一个这个lane的英雄
@@ -382,6 +387,7 @@ func on_accept_member_button_pressed() -> void:
 			GameManager.player.origin_hero_id = GameManager.hero_id_dict[hero]
 			GameManager.player.origin_hero_lane = random_lane
 			GameManager.player.origin_lane_id = GameManager.lane_id_dict[random_lane]
+			member_heroes.append(hero)
 
 		# 为上路、打野、中路、辅助、下路的每个分路，选择一个目前不再chat.members中的NPC，作为chat.opponent_members的成员
 		chat.opponent_members.clear()
@@ -396,6 +402,9 @@ func on_accept_member_button_pressed() -> void:
 				var random_npc = lane_npcs[randi() % lane_npcs.size()]
 				# 为对手NPC设置英雄
 				var hero_list = GameManager.lane_hero_dict[lane]
+				# for h in GameManager.lane_hero_dict[lane]:
+				# 	if h not in member_heroes:
+				# 		hero_list.append(h)
 				var hero = hero_list[randi() % hero_list.size()]
 				random_npc.hero_name = hero
 				random_npc.hero_id = GameManager.hero_id_dict[hero]
@@ -409,11 +418,16 @@ func on_accept_member_button_pressed() -> void:
 				
 				chat.opponent_members[random_npc.npc_name] = random_npc
 
+				opponent_heroes.append(hero)
+
+				print("OPPONENT MEMBERS: ", random_npc.npc_name, " ", chat.opponent_members[random_npc.npc_name].hero_name)
+
 	init(chat)
 
 	print("simulator: ", GameManager.simulator)
 	print("chat simulator", GameManager.main_view.simulator)
 	print("chat opponent_members: ", chat.opponent_members.keys())
+	print("chat opponent_heroes: ", opponent_heroes)
 	GameManager.new_chat()
 	GameManager.simulator.init(chat)
 
@@ -810,4 +824,5 @@ func on_text_history_close_requested() -> void:
 	text_history_panel.hide()
 
 func on_input_focus_entered() -> void:
-	GameManager.simulator.reset_frame()
+	if GameManager.simulator.frame_synced:
+		GameManager.simulator.reset_frame()
