@@ -288,12 +288,21 @@ func on_message_added(message: Variant):
 		pass
 
 
-func get_chat_history(until_message: Variant=null) -> String:
+func get_chat_history(until_message: Variant=null, strip_action=true) -> String:
 	var history = ""
 	for message in messages:
 		if message == until_message:
 			break
-		history += message.sender.npc_name + "：" + message.message+ "\n"
+
+		var content = message.message
+
+		if strip_action:
+			if content.begins_with("（"):
+				var right_bracket = content.find("）")
+				if right_bracket != -1:
+					content = content.substr(right_bracket + 1).strip_edges()
+
+		history += message.sender.npc_name + "：" + content+ "\n"
 	return history.strip_edges()
 
 

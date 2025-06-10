@@ -139,6 +139,9 @@ func _show():
 	chat.save_to_json(GameManager.tmp_save_file_path)
 
 func send_command_to_pawn(command : String):
+
+	command = command.replace("buff", "Buff")
+
 	print("send_command_to_pawn: ", command)
 	var pawn = sender.pawn
 	var target_pawn = null

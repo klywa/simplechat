@@ -187,6 +187,7 @@ fit_content = true
 selection_enabled = true
 
 [node name="HeroPanel" type="PopupPanel" parent="."]
+oversampling_override = 1.0
 initial_position = 2
 size = Vector2i(608, 200)
 theme = ExtResource("1_wwfwj")

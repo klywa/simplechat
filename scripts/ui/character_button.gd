@@ -185,8 +185,15 @@ func on_confirm_hero_change_button_pressed() -> void:
 	character.update_alias()
 	hero_panel.visible = false
 	init(character, chat)
+	set_hero_avatar()
 
 	character.pawn.load_npc(character)
+
+	chat.messages.clear()
+	GameManager.chat_view.init(chat)
+	GameManager.new_chat()
+	GameManager.simulator.init(chat)
+	GameManager.chat_view.set_autosave_filename()
 
 func on_cancel_hero_change_button_pressed() -> void:
 	hero_panel.visible = false
