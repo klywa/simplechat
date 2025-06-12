@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://duua23dn31dyt"]
+
+[ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_vv1iq"]
+[ext_resource type="Script" uid="uid://dr6eaj6mosi6q" path="res://scripts/ui/hover_info.gd" id="2_e0bmu"]
+
+[node name="HoverInfo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_vv1iq")
+script = ExtResource("2_e0bmu")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 500.0
+offset_bottom = 200.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 0
+offset_right = 500.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer"]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.868985, 0.868985, 0.868985, 1)
+text = "辅助信息"

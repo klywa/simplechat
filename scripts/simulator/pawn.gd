@@ -1241,7 +1241,7 @@ func get_self_status():
 	return status
 
 
-func get_status():
+func get_status(visible=true):
 	var status = ""
 	var npc_name = npc.npc_name if npc != null else "未知"
 
@@ -1259,14 +1259,16 @@ func get_status():
 	elif camp == "RED":
 		var name_string = "<敌方-" + npc_name + "-" + pawn_name + ">"
 		status += name_string + "是敌方" + lane + "，"
-		status += get_health() + "，"
+		if visible:
+			status += get_health() + "，"
 		status += get_kda() + "，"
-		status += "在" + get_region() + "附近，坐标" + get_corrdinate() + "。"
-		status += name_string + get_in_battle()
-		if get_on_lane() != "":
-			status += get_on_lane() + "。"
-		else:
-			status += ""
+		if visible:
+			status += "在" + get_region() + "附近，坐标" + get_corrdinate() + "。"
+			status += name_string + get_in_battle()
+			if get_on_lane() != "":
+				status += get_on_lane() + "。"
+			else:
+				status += ""
 		status += get_money() + "。"
 	return status
 		
@@ -1346,6 +1348,11 @@ func get_scenario_stirng():
 	for p in simulator.name_pawn_dict.values():
 		if p.type == "CHARACTER" and p not in nearby_pawns and p.visible_to_blue and p != self:
 			scenario += p.get_status() + "\n"
+
+	scenario += "\n[其他英雄]\n"
+	for p in simulator.name_pawn_dict.values():
+		if p.type == "CHARACTER" and p not in nearby_pawns and !p.visible_to_blue and p != self:
+			scenario += p.get_status(false) + "\n"
 
 	scenario += "\n[阵亡英雄]\n"
 	scenario += get_dead_pawns() + "\n"

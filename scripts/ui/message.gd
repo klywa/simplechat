@@ -40,6 +40,8 @@ var knowledge : String = ""
 var memory : String = ""
 var game_index : int
 
+var showing_hover_info : bool = false
+
 
 @onready var name_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/NameLabel
 @onready var right_side_label : Label = $MessageContainer/VBoxContainer/NameContainer/HBoxContainer/RightSideLabel
@@ -60,6 +62,7 @@ var game_index : int
 # @onready var replay_button := $PopupPanel/PanelContainer/VBoxContainer/HBoxContainer/MarginContainer3/ReplayButton
 
 @onready var revised_flag := $MessageContainer/VBoxContainer/ContentContainer/Button/MarginContainer/RevisedFlag
+@onready var hover_info_panel := $HoverInfo
 
 
 func _ready():
@@ -67,6 +70,9 @@ func _ready():
 	abandon_toggle.visible = false
 	consecutive_toggle.visible = false
 	button.pressed.connect(on_button_pressed)
+	button.mouse_entered.connect(on_button_mouse_entered)
+	button.mouse_exited.connect(on_button_mouse_exited)
+
 	revised_flag.visible = false
 
 	revise_panel.revise_button.pressed.connect(on_revise_button_pressed)
@@ -202,3 +208,12 @@ func on_revise_content_submitted(text: String):
 func on_name_button_pressed():
 	var tmp_scenario = "[角色状态]\n" + npc_status + "\n\n" + scenario + "\n\n[相关知识]\n" + knowledge
 	sender.character_button.on_name_button_pressed(tmp_scenario)
+
+func on_button_mouse_entered():
+	print("on_button_mouse_entered")
+	if better_response.length() > 0:
+		hover_info_panel.visible = true
+		hover_info_panel.set_info(better_response)
+
+func on_button_mouse_exited():
+	hover_info_panel.visible = false
