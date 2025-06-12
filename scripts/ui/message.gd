@@ -164,7 +164,7 @@ func on_button_pressed():
 
 
 func on_revise_button_pressed():
-	if message != revise_panel.revise_content.text:
+	if message != revise_panel.revise_content.text or knowledge != revise_panel.knowledge_editor.text or memory != revise_panel.memory_editor.text or instructions != revise_panel.instruction_editor.text:
 		negative_message = message
 		message = revise_panel.revise_content.text
 		knowledge = revise_panel.knowledge_editor.text

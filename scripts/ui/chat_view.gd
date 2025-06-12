@@ -276,6 +276,8 @@ func add_message(message: Variant) -> void:
 
 	if message.sender.npc_type in [NPC.NPCType.NPC, NPC.NPCType.PLAYER]:
 		autosave_chat()
+		if message.game_index >= GameManager.last_reply_index:
+			GameManager.last_reply_index = message.game_index
 
 func autosave_chat() -> void:
 	if autosave_file_name == "":
@@ -826,3 +828,19 @@ func on_text_history_close_requested() -> void:
 func on_input_focus_entered() -> void:
 	if GameManager.simulator.frame_synced:
 		GameManager.simulator.reset_frame()
+
+func random_member_reply() -> void:
+	var candidates = []
+	for member in chat.members.values():
+		if member.npc_type in [NPC.NPCType.NPC]:
+			candidates.append(member)
+
+	if candidates.size() > 0:
+		var random_member = candidates[randi() % candidates.size()]
+		var response: Dictionary = {}
+		
+		if use_ai_toggle.button_pressed:
+			response = await random_member.generate_response(chat, true)
+			chat.add_message(random_member, response.get("response", ""), response)
+			chat.last_speaker = random_member
+			chat.speaker_index = chat.members.values().find(random_member)

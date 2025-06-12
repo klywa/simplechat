@@ -30,6 +30,14 @@ func _on_simulate_button_pressed():
 
 	simulator.simulate()
 	await get_tree().create_timer(GameManager.main_view.simulation_delay * 1.2).timeout
+
+	print("index", GameManager.game_index, GameManager.last_reply_index, GameManager.main_view.proactive_wait_time)
+	if GameManager.main_view.proactive_wait_time > 0:
+		if GameManager.game_index - GameManager.last_reply_index >= GameManager.main_view.proactive_wait_time:
+			print("should reply")
+			GameManager.chat_view.random_member_reply()
+			await GameManager.chat_view.chat.message_added
+	
 	simulate_button.disabled = false
 
 func _on_simulate_3x_button_pressed():

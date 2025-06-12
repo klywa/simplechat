@@ -5,6 +5,7 @@ extends Control
 @export var ai_server_url : String = "http://9.208.245.48:8000/model_chat/koh-0312-t2"
 @export var ai_pipeline_url : String = "http://30.50.188.179:8080/api/smartnpc"
 @export var knowledge_path : String = "res://config/knowledge.json"
+@export var proactive_wait_time: int = 0
 @export var safe_export : bool = false
 @export var simulation_delay : float = 0.5
 @export var simulation_replay_delay : float = 0.5

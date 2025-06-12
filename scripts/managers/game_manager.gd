@@ -20,6 +20,7 @@ var last_message : Variant
 
 var simulator : KoHSimulator
 var game_index : int = 0
+var last_reply_index : int = 0
 
 var hero_alias_dict: Dictionary
 var lane_alias_dict

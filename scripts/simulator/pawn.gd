@@ -862,6 +862,7 @@ func _on_submit_kill_button_pressed():
 
 	if killed_pawn != null:
 		killed_pawn.killed_by(self, assist_pawns)
+		simulator.update_replay_info()
 
 	popup_panel.visible = false
 
