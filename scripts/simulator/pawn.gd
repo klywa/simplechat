@@ -44,6 +44,9 @@ var assist_number : int = 0
 
 var move_target : Pawn = null
 var force_move : bool = false
+var under_command : bool = false
+var command_game_index : int = 0
+
 @onready var move_target_label := $MoveTarget
 
 @onready var camp_color_flag := $CampColor
@@ -273,6 +276,8 @@ func get_pawn_info() -> Dictionary:
 		"assist_number": assist_number,
 		"position_x": global_position.x,
 		"position_y": global_position.y,
+		"move_target_name": move_target.get_unique_name() if move_target != null else "",
+		"under_command": under_command,
 	}
 
 func set_pawn_info(pawn_info: Dictionary, tween_time = 0):
@@ -288,6 +293,15 @@ func set_pawn_info(pawn_info: Dictionary, tween_time = 0):
 	kill_number = pawn_info.get("kill_number", 0)
 	death_number = pawn_info.get("death_number", 0)
 	assist_number = pawn_info.get("assist_number", 0)
+
+	var move_target_name = pawn_info.get("move_target_name", "")
+	if move_target_name != "":
+		for pawn in simulator.name_pawn_dict.values():
+			if pawn.get_unique_name() == move_target_name:
+				move_target = pawn
+				break
+
+	under_command = pawn_info.get("under_command", false)
 
 func set_hero_avatar():
 	# 尝试根据pawn_name加载英雄头像
@@ -425,8 +439,8 @@ func _process(delta):
 		lane_flag.visible = false
 
 	# 如果正在拖动且有悬停目标，或者有移动目标且显示目标线，则触发重绘
-	if (dragging and hover_target != null) or (show_target_line and move_target != null):
-		queue_redraw()
+	# if (dragging and hover_target != null) or (show_target_line and move_target != null):
+	queue_redraw()
 
 func random_move():
 	if dragging or is_moving:
@@ -769,6 +783,10 @@ func heal(heal: int):
 		reselect_move_target()
 
 func reselect_move_target():
+
+	if under_command:
+		return
+
 	force_move = false
 
 	# select_move_target()
@@ -1440,6 +1458,23 @@ func _draw():
 		# 绘制虚线
 		custom_draw_dashed_line(Vector2.ZERO, target_pos, line_color, 2.0, 5.0)
 
+	elif under_command and move_target != null and move_target.is_alive():
+		# 获取目标位置（相对于当前pawn的局部坐标）
+		var target_pos = to_local(move_target.global_position)
+		
+		# 根据阵营选择颜色
+		var line_color
+		match camp:
+			"BLUE":
+				line_color = Color.BLUE
+			"RED":
+				line_color = Color.RED
+			"NEUTRAL":
+				line_color = Color.GRAY
+		
+		# 绘制虚线
+		custom_draw_dashed_line(Vector2.ZERO, target_pos, line_color, 2.0, 5.0)
+
 # 绘制虚线的辅助方法
 func custom_draw_dashed_line(from, to, color, width, dash_length):
 	var length = from.distance_to(to)
@@ -1805,3 +1840,30 @@ func select_move_target() -> Pawn:
 	
 	print("%s使用默认目标选择方法" % pawn_name)
 	return select_target_by_distance(fallback_targets)
+
+
+func refresh_command():
+	# if under_command and move_target != null and move_target.is_alive():
+	# 	# 获取目标位置（相对于当前pawn的局部坐标）
+	# 	var target_pos = to_local(move_target.global_position)
+		
+	# 	# 根据阵营选择颜色
+	# 	var line_color
+	# 	match camp:
+	# 		"BLUE":
+	# 			line_color = Color.BLUE
+	# 		"RED":
+	# 			line_color = Color.RED
+	# 		"NEUTRAL":
+	# 			line_color = Color.GRAY
+		
+	# 	# 绘制虚线
+	# 	custom_draw_dashed_line(Vector2.ZERO, target_pos, line_color, 2.0, 5.0)
+
+	if under_command:
+		if GameManager.game_index >= command_game_index + GameManager.main_view.command_durration:
+			under_command = false
+		elif not is_alive():
+			under_command = false
+		elif move_target == null or not move_target.is_alive():
+			under_command = false

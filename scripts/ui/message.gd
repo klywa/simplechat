@@ -156,10 +156,17 @@ func send_command_to_pawn(command : String):
 		if p_name in command:
 			target_pawn = GameManager.simulator.camp_name_pawn_dict[p_name]
 			break
+
+	if target_pawn == null:
+		if command.contains("玩家"):
+			target_pawn = GameManager.player.pawn
 	
-	if target_pawn != null and pawn != null:
+	if target_pawn != null and pawn != null and game_index >= GameManager.last_reply_index:
 		print("command send to pawn: ", pawn.pawn_name, " -> ", target_pawn.pawn_name)
 		pawn.move_target = target_pawn
+		
+		pawn.under_command = true
+		pawn.command_game_index = game_index
 
 
 func on_button_pressed():

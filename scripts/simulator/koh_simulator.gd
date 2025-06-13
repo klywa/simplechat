@@ -206,6 +206,8 @@ func simulate():
 
 	for pawn in pawn_list:
 
+		pawn.refresh_command()
+
 		if pawn.is_alive():
 			if pawn.type == "CHARACTER":
 
