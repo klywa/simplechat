@@ -10,7 +10,7 @@ extends Control
 @export var simulation_delay : float = 0.5
 @export var simulation_replay_delay : float = 0.5
 @export var message_replay_delay : float = 1.0
-@export var command_durration: int = 10
+@export var command_duration: int = 10
 @export var message_animation_time : float = 0.3
 
 @onready var player_icon := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon

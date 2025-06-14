@@ -274,6 +274,11 @@ func add_message(message: Variant) -> void:
 		autosave_chat()
 		if message.game_index >= GameManager.last_reply_index:
 			GameManager.last_reply_index = message.game_index
+	
+	# if message.game_index >= GameManager.game_index:
+	# 	GameManager.simulator.update_replay_info(true)
+	# 	print("========================= frame saved along with message =========================")
+	# 	print(GameManager.simulator.replay_info[-1])
 
 func autosave_chat() -> void:
 	if autosave_file_name == "":

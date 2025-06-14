@@ -307,6 +307,8 @@ func set_pawn_info(pawn_info: Dictionary, tween_time = 0):
 				move_target = pawn
 				break
 
+	if under_command and pawn_info.get("under_command", false) == false:
+		print("=========== unset under_command: ", get_unique_name(), " ", under_command)
 	under_command = pawn_info.get("under_command", false)
 
 func set_hero_avatar():
@@ -386,6 +388,9 @@ func get_command_name_string():
 
 func _process(delta):
 
+	# if under_command:
+	# 	print("under_command: ", get_unique_name(), " ", move_target.get_unique_name())
+
 	if dragging:
 		var new_pos = get_global_mouse_position() - drag_start
 		
@@ -417,7 +422,7 @@ func _process(delta):
 			# 线性插值计算当前位置
 			position = move_start_position.lerp(move_target_position, move_progress)
 
-	if move_target == null or not move_target.is_alive():
+	if (move_target == null or not move_target.is_alive()) and type not in ["BUILDING", "MONSTER", "RESOURCE"]:
 		reselect_move_target()
 
 	# 根据可见性状态更新显示
@@ -789,6 +794,8 @@ func heal(heal: int):
 		reselect_move_target()
 
 func reselect_move_target():
+
+	# print("reselect_move_target: ", get_unique_name(), " ", under_command)
 
 	if under_command:
 		return
@@ -1866,10 +1873,16 @@ func refresh_command():
 	# 	# 绘制虚线
 	# 	custom_draw_dashed_line(Vector2.ZERO, target_pos, line_color, 2.0, 5.0)
 
+	# print("under_command: ", get_unique_name(), " ", under_command, " ", GameManager.game_index, " ", command_game_index, " ", GameManager.main_view.command_duration)
 	if under_command:
-		if GameManager.game_index >= command_game_index + GameManager.main_view.command_durration:
+		if GameManager.game_index >= command_game_index + GameManager.main_view.command_duration:
+			print("unset because of duration")
 			under_command = false
 		elif not is_alive():
+			print("unset because not alive")
 			under_command = false
 		elif move_target == null or not move_target.is_alive():
+			print("unset because move_target is null or not alive")
 			under_command = false
+		else:
+			print("keep under_command")

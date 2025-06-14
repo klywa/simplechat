@@ -433,8 +433,12 @@ func get_map_info_string():
 	
 	return info
 
-func update_replay_info():
-	replay_info.append(get_frame_info(GameManager.get_game_index()))
+func update_replay_info(keep_index = false):
+	if not keep_index:
+		replay_info.append(get_frame_info(GameManager.get_game_index()))
+	else:
+		replay_info.append(get_frame_info(GameManager.game_index))
+		print("simulation frame saved along with message")
 
 func get_frame_info(game_index: int) -> Dictionary:
 	var frame_info = {}

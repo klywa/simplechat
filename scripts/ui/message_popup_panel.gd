@@ -121,7 +121,7 @@ func on_sync_button_pressed(toggled_on: bool) -> void:
 		# 找到最后一个小于first_index的帧
 		var target_frame = null
 		for frame in GameManager.simulator.replay_info:
-			if frame.get("game_index", 0) <= first_index:
+			if frame.get("game_index", 0) < first_index:
 				target_frame = frame
 			else:
 				break

@@ -210,13 +210,35 @@ func send_command_to_pawn(command : String):
 		if command.contains("玩家"):
 			target_pawn = GameManager.player.pawn
 	
-	if target_pawn != null and pawn != null and game_index >= GameManager.last_reply_index:
+	if target_pawn != null and pawn != null and game_index >= GameManager.last_reply_index and game_index >= GameManager.game_index:
 		print("command send to pawn: ", pawn.pawn_name, " -> ", target_pawn.pawn_name)
+
 		pawn.move_target = target_pawn
 		
 		pawn.under_command = true
 		pawn.command_game_index = game_index
 
+		print("game_index: ", game_index, " last_reply_index: ", GameManager.last_reply_index, " pawn: ", pawn.pawn_name, " target_pawn: ", target_pawn.pawn_name, " under_command: ", pawn.under_command)
+
+	if target_pawn != null and pawn != null:
+		
+		var frame_index = -1
+		for i in range(GameManager.simulator.replay_info.size()):
+			if GameManager.simulator.replay_info[i]["game_index"] == game_index:
+				frame_index = i
+				break
+		if frame_index >= 0:
+			GameManager.simulator.replay_info[frame_index]["pawns"][sender.pawn.get_unique_name()]["under_command"] = true
+			GameManager.simulator.replay_info[frame_index]["pawns"][sender.pawn.get_unique_name()]["move_target_name"] = target_pawn.get_unique_name()
+			print("========================= frame updated along with message =========================")
+			print(GameManager.simulator.replay_info[frame_index]["pawns"][sender.pawn.get_unique_name()])
+		else:
+			if game_index >= GameManager.game_index:
+				GameManager.simulator.update_replay_info(true)
+				print("========================= frame saved along with message =========================")
+				print(GameManager.simulator.replay_info[-1]["pawns"][sender.pawn.get_unique_name()], " ", GameManager.simulator.replay_info[-1]["game_index"], " | ", game_index)
+			else:
+				print("========================= frame not found along with message ========================= ", game_index)
 
 func on_button_pressed():
 	if GameManager.mode == "pipeline" and GameManager.safe_export:
@@ -225,6 +247,8 @@ func on_button_pressed():
 	revise_panel._show()
 	revise_panel.sync_button.button_pressed = true
 	revise_panel.sync_button.emit_signal("pressed")
+		
+	print(sender.pawn.get_unique_name(), " ", sender.pawn.under_command)
 
 
 func on_revise_button_pressed():
