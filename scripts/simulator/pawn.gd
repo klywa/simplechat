@@ -294,6 +294,12 @@ func set_pawn_info(pawn_info: Dictionary, tween_time = 0):
 	death_number = pawn_info.get("death_number", 0)
 	assist_number = pawn_info.get("assist_number", 0)
 
+	if type in ["BUILDING"]:
+		if hp <= 0:
+			camp_color_flag.color = Color.BLACK
+		else:
+			camp_color_flag.color = Color.BLUE if camp == "BLUE" else Color.RED
+
 	var move_target_name = pawn_info.get("move_target_name", "")
 	if move_target_name != "":
 		for pawn in simulator.name_pawn_dict.values():

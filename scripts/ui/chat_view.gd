@@ -557,7 +557,7 @@ func replay_from_message(message: Variant) -> void:
 						if child.game_index == i:
 							skip_message = false
 							message_list.add_child(child)
-							child.show()
+							child._show()
 				if not skip_message:
 					await scroll_container.get_v_scroll_bar().changed
 					scroll_container.scroll_vertical =  scroll_container.get_v_scroll_bar().max_value
@@ -572,7 +572,7 @@ func replay_from_message(message: Variant) -> void:
 						print("message frame: ", i)
 						skip_message = false
 						message_list.add_child(child)
-						child.show()
+						child._show()
 
 			if not skip_message:
 				await scroll_container.get_v_scroll_bar().changed

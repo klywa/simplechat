@@ -183,6 +183,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 		# print("knowledge: ", knowledge)
 
 		if not use_ai:
+			await GameManager.get_tree().create_timer(0.5).timeout
 			return {"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), "prompt": "", "query": "", "model_version": ""}
 		var request = {
 			"request_type": "npc",
@@ -230,6 +231,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 				"memory": _memory
 			}
 		else:
+			await GameManager.get_tree().create_timer(0.5).timeout
 			return {
 				"response": "你好！我是" + npc_name + "，很高兴见到你！" + chat.get_last_message(), 
 				"prompt": "", 
@@ -311,3 +313,5 @@ func get_scenario(chat: Chat) -> String:
 
 func clear():
 	memory = ""
+	ingame_info = ""
+	npc_status = ""

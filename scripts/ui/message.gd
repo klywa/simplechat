@@ -64,6 +64,8 @@ var showing_hover_info : bool = false
 @onready var revised_flag := $MessageContainer/VBoxContainer/ContentContainer/Button/MarginContainer/RevisedFlag
 @onready var hover_info_panel := $HoverInfo
 
+signal show_finished
+
 
 func _ready():
 	revise_panel.visible = false
@@ -86,6 +88,11 @@ func _ready():
 	abandon_toggle.toggled.connect(on_abandon_toggled)
 	consecutive_toggle.toggled.connect(on_consecutive_toggled)
 
+	modulate.a = 0.0
+	badcase_toggle.modulate.a = 0.0
+	abandon_toggle.modulate.a = 0.0
+	consecutive_toggle.modulate.a = 0.0
+
 func on_abandon_toggled(button_pressed: bool):
 	abandon = button_pressed
 
@@ -98,7 +105,14 @@ func on_badcase_toggled(button_pressed: bool):
 func on_consecutive_toggled(button_pressed: bool):
 	is_consecutive = button_pressed
 
-func _show():
+func _show(animate: bool = true):
+	if animate:
+		modulate.a = 0.0
+		badcase_toggle.modulate.a = 0.0
+		abandon_toggle.modulate.a = 0.0
+		consecutive_toggle.modulate.a = 0.0
+
+
 	name_label.text = sender.npc_name
 	content_label.text = message
 	if right_side_label_text.length() > 0:
@@ -144,6 +158,41 @@ func _show():
 
 	chat.save_to_json(GameManager.tmp_save_file_path)
 
+	if not animate:
+		modulate.a = 1.0
+		badcase_toggle.modulate.a = 1.0
+		abandon_toggle.modulate.a = 1.0
+		consecutive_toggle.modulate.a = 1.0
+	else:
+		await get_tree().process_frame
+
+		var original_position_x = position.x
+
+		if sender_type == NPC.NPCType.PLAYER:
+			position.x = position.x + size.x * 2
+		else:
+			position.x = position.x - size.x
+
+		var tween = create_tween()
+		tween.set_ease(Tween.EASE_OUT)
+		tween.set_trans(Tween.TRANS_SINE)
+		tween.parallel().tween_property(self, "modulate:a", 1.0, GameManager.main_view.message_animation_time)
+		tween.parallel().tween_property(self, "position:x", original_position_x, GameManager.main_view.message_animation_time)
+
+		await tween.finished
+
+		var tween2 = create_tween()
+		tween2.set_ease(Tween.EASE_OUT)
+		tween2.set_trans(Tween.TRANS_SINE)
+		tween2.parallel().tween_property(badcase_toggle, "modulate:a", 1.0, 0.5)
+		tween2.parallel().tween_property(abandon_toggle, "modulate:a", 1.0, 0.5)
+		tween2.parallel().tween_property(consecutive_toggle, "modulate:a", 1.0, 0.5)
+
+		await tween2.finished
+
+		show_finished.emit()
+
+
 func send_command_to_pawn(command : String):
 
 	command = command.replace("buff", "Buff")
@@ -174,6 +223,8 @@ func on_button_pressed():
 		return
 	revise_panel.visible = true
 	revise_panel._show()
+	revise_panel.sync_button.button_pressed = true
+	revise_panel.sync_button.emit_signal("pressed")
 
 
 func on_revise_button_pressed():
@@ -193,7 +244,7 @@ func on_revise_button_pressed():
 	if revise_panel.score.text.length() > 0:
 		revise_panel.on_save_problem_button_pressed()
 
-	_show()
+	_show(false)
 
 	# print(self)
 	# print(GameManager.main_view.chat_view.chat.messages)

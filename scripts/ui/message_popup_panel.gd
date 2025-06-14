@@ -1,5 +1,5 @@
 class_name MessagePopupPanel
-extends PopupPanel
+extends Window
 
 @onready var revise_content := $PanelContainer/VBoxContainer/MarginContainer/ReviseContent
 @onready var revise_button := $PanelContainer/VBoxContainer/HBoxContainer/MarginContainer/Revise
@@ -33,6 +33,7 @@ func _ready() -> void:
 	regenerate_button.pressed.connect(on_regenerate_button_pressed)
 	better_resposne.text_changed.connect(on_better_resposne_text_changed)
 	sync_button.toggled.connect(on_sync_button_pressed)
+	close_requested.connect(on_close_request)
 
 func _show() -> void:
 
@@ -106,7 +107,7 @@ func on_regenerate_button_pressed() -> void:
 func on_better_resposne_text_changed() -> void:
 	var message = get_parent()
 	message.better_response = better_resposne.text
-	message._show()
+	message._show(false)
 
 
 func on_sync_button_pressed(toggled_on: bool) -> void:
@@ -127,3 +128,7 @@ func on_sync_button_pressed(toggled_on: bool) -> void:
 		
 		if target_frame:
 			GameManager.simulator.set_frame_info(target_frame, 0.0)
+
+func on_close_request() -> void:
+	visible = false
+	# queue_free()

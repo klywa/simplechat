@@ -56,14 +56,37 @@ func _ready() -> void:
 	revise_panel.delete_button.pressed.connect(on_delete_button_pressed)
 	revise_panel.replay_button.pressed.connect(on_replay_button_pressed)
 
+	modulate.a = 0.0
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
 
-func _show() -> void:
+func _show(animate: bool = true) -> void:
+
+	if animate:
+		modulate.a = 0.0
+
 	content_label.text = message
 	chat.save_to_json(GameManager.tmp_save_file_path)
+
+	if not animate:
+		modulate.a = 1.0
+	else:
+		await get_tree().process_frame
+
+		var original_position_x = position.x
+		position.x = position.x - size.x
+
+		var tween = create_tween()
+		tween.set_ease(Tween.EASE_OUT)
+		tween.set_trans(Tween.TRANS_SINE)
+		tween.parallel().tween_property(self, "modulate:a", 1.0, GameManager.main_view.message_animation_time)
+		tween.parallel().tween_property(self, "position:x", original_position_x, GameManager.main_view.message_animation_time)
+
+		await tween.finished
+
 
 func on_button_pressed() -> void:
 	revise_panel.visible = true

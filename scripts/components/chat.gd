@@ -589,7 +589,7 @@ func load_from_json(json_file_path: String):
 	GameManager.simulator.replay_info = json_dict.get("simulation", [])
 	if GameManager.simulator.replay_info.size() > 0:
 		GameManager.simulator.init_pawns(GameManager.simulator.replay_info[-1])
-		GameManager.game_index = GameManager.simulator.replay_info[-1].get("game_index", 0)
+		GameManager.game_index = max(GameManager.simulator.replay_info[-1].get("game_index", 0), json_dict["messages"][-1].get("game_index", 0))
 		
 	json_file.close()
 
@@ -597,6 +597,8 @@ func load_from_json(json_file_path: String):
 func clear():
 	messages.clear()
 	for member in members.values():
+		member.clear()
+	for member in opponent_members.values():
 		member.clear()
 
 

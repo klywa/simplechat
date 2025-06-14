@@ -3,12 +3,11 @@
 [ext_resource type="Theme" uid="uid://exgmmsg3rnfw" path="res://resources/default_theme.tres" id="1_0uvfs"]
 [ext_resource type="Script" uid="uid://ogtbgtj0yt5h" path="res://scripts/ui/message_popup_panel.gd" id="2_xhaq2"]
 
-[node name="MessagePopupPanel" type="PopupPanel"]
+[node name="MessagePopupPanel" type="Window"]
 auto_translate_mode = 1
 oversampling_override = 1.0
 initial_position = 1
 size = Vector2i(784, 1359)
-visible = true
 theme = ExtResource("1_0uvfs")
 script = ExtResource("2_xhaq2")
 
