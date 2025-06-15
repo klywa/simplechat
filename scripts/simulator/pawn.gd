@@ -82,6 +82,8 @@ var command_game_index : int = 0
 @onready var skill_editor := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer2/Skill
 @onready var kda_info := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/KDA
 
+@onready var cancel_command_button := $PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer4/CancelCommand
+
 
 
 var npc : NPC
@@ -146,6 +148,7 @@ func _ready() -> void:
 	submit_kill_button.pressed.connect(_on_submit_kill_button_pressed)
 
 	move_target_dropdown.item_selected.connect(_on_target_dropdown_item_selected)
+	cancel_command_button.pressed.connect(_on_cancel_command_button_pressed)
 	
 	# 连接检测区域的信号
 	detect_shape.area_entered.connect(_on_detect_area_entered)
@@ -923,6 +926,10 @@ func _on_target_dropdown_item_selected(index: int):
 		# 如果正在平滑移动，停止移动
 		if is_moving:
 			is_moving = false
+
+func _on_cancel_command_button_pressed():
+	under_command = false
+	reselect_move_target()
 
 func get_nearby_string():
 	var status_string = "状态：" + get_self_status()
@@ -1881,8 +1888,11 @@ func refresh_command():
 		elif not is_alive():
 			print("unset because not alive")
 			under_command = false
-		elif move_target == null or not move_target.is_alive():
-			print("unset because move_target is null or not alive")
+		elif move_target == null:
+			print("unset because move_target is null")
+			under_command = false
+		elif move_target.type in ["CHARACTER", "BUILDING"] and not move_target.is_alive():
+			print("unset because move_target is not alive")
 			under_command = false
 		else:
 			print("keep under_command")

@@ -170,15 +170,16 @@ collision_mask = 2
 shape = SubResource("CapsuleShape2D_emxjd")
 
 [node name="PopupPanel" type="PopupPanel" parent="."]
+oversampling_override = 1.0
 initial_position = 1
-size = Vector2i(880, 652)
+size = Vector2i(880, 664)
 theme = ExtResource("2_da0j3")
 
 [node name="PanelContainer" type="PanelContainer" parent="PopupPanel"]
 offset_left = 4.0
 offset_top = 4.0
 offset_right = 876.0
-offset_bottom = 648.0
+offset_bottom = 660.0
 
 [node name="MarginContainer" type="MarginContainer" parent="PopupPanel/PanelContainer"]
 layout_mode = 2
@@ -211,6 +212,10 @@ text = "目标"
 
 [node name="TargetDropdown" type="OptionButton" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer4"]
 layout_mode = 2
+
+[node name="CancelCommand" type="Button" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer4"]
+layout_mode = 2
+text = "撤销指令"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="PopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

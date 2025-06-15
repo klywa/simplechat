@@ -197,30 +197,91 @@ func send_command_to_pawn(command : String):
 
 	command = command.replace("buff", "Buff")
 
-	print("send_command_to_pawn: ", command)
-	var pawn = sender.pawn
-	var target_pawn = null
+	var executors = []
+	var valid_command = false
 
-	for p_name in GameManager.simulator.camp_name_pawn_dict:
-		if p_name in command:
-			target_pawn = GameManager.simulator.camp_name_pawn_dict[p_name]
-			break
+	if command.begins_with("全体") or command.begins_with("全员"):
+		for member in chat.members.values():
+			if member.npc_type == NPC.NPCType.NPC and member.pawn != null:
+				executors.append(member.pawn)
+	else:
+		executors.append(sender.pawn)
 
-	if target_pawn == null:
-		if command.contains("玩家"):
-			target_pawn = GameManager.player.pawn
-	
-	if target_pawn != null and pawn != null and game_index >= GameManager.last_reply_index and game_index >= GameManager.game_index:
-		print("command send to pawn: ", pawn.pawn_name, " -> ", target_pawn.pawn_name)
+	for pawn in executors:
+		print("send_command_to_pawn: ", command, " ", pawn.pawn_name)
 
-		pawn.move_target = target_pawn
+		var target_pawn = null
+
+		for p_name in GameManager.simulator.camp_name_pawn_dict:
+			if p_name in command:
+				target_pawn = GameManager.simulator.camp_name_pawn_dict[p_name]
+				valid_command = true
+				break
+
+		if target_pawn == null:
+			if command.contains("玩家"):
+				target_pawn = GameManager.player.pawn
+				valid_command = true
+
+		if target_pawn == null:
+			if command.contains("推进"):
+				# 找到command中的分路（上路、中路、下路），将target_pawn设置为敌方对应的分路防御塔。如果一塔存活则选择一塔，否则选择二塔，如果二塔已死亡则选择三塔，如果三塔已死亡者选择红方水晶。
+				var candidate_lanes = ["上路", "中路", "下路"]
+				var target_lane = null
+				for lane in candidate_lanes:
+					if lane in command:
+						target_lane = lane
+						break
+				if target_lane != null:
+					var target_tower = null
+					if GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"一塔"] != null and GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"一塔"].is_alive():
+						target_tower = GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"一塔"]
+					elif GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"二塔"] != null and GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"二塔"].is_alive():
+						target_tower = GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"二塔"]
+					elif GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"三塔"] != null and GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"三塔"].is_alive():
+						target_tower = GameManager.simulator.camp_name_pawn_dict["敌方"+target_lane+"三塔"]
+					elif GameManager.simulator.camp_name_pawn_dict["敌方水晶"] != null and GameManager.simulator.camp_name_pawn_dict["敌方水晶"].is_alive():
+						target_tower = GameManager.simulator.camp_name_pawn_dict["敌方水晶"]
+					if target_tower != null:
+						target_pawn = target_tower
+						valid_command = true
+					
+		if target_pawn == null and command.contains("撤退"):
+			var candidate_towers = []
+			for p in GameManager.simulator.camp_name_pawn_dict.values():
+				if p != null and p.type in ["BUILDING"] and p.is_alive() and p.camp == pawn.camp:
+					candidate_towers.append(p)
+			if candidate_towers.size() > 0:
+				# 选择最近的防御塔作为目标
+				var closest_tower = null
+				var min_distance = INF
+				
+				for tower in candidate_towers:
+					var distance = tower.global_position.distance_to(pawn.global_position)
+					if distance < min_distance:
+						min_distance = distance
+						closest_tower = tower
+						
+				if closest_tower != null:
+					target_pawn = closest_tower
+					valid_command = true
 		
-		pawn.under_command = true
-		pawn.command_game_index = game_index
+		if target_pawn == null and command.contains("回城"):
+			target_pawn = GameManager.simulator.camp_name_pawn_dict["我方泉水"]
+			valid_command = true
+		
+		if target_pawn != null and pawn != null and game_index >= GameManager.last_reply_index and game_index >= GameManager.game_index:
+			print("command send to pawn: ", pawn.pawn_name, " -> ", target_pawn.pawn_name)
 
-		print("game_index: ", game_index, " last_reply_index: ", GameManager.last_reply_index, " pawn: ", pawn.pawn_name, " target_pawn: ", target_pawn.pawn_name, " under_command: ", pawn.under_command)
+			pawn.move_target = target_pawn
+			
+			pawn.under_command = true
+			pawn.command_game_index = game_index
 
-	if target_pawn != null and pawn != null:
+			print("game_index: ", game_index, " last_reply_index: ", GameManager.last_reply_index, " pawn: ", pawn.pawn_name, " target_pawn: ", target_pawn.pawn_name, " under_command: ", pawn.under_command)
+
+
+	if valid_command:
 		
 		var frame_index = -1
 		for i in range(GameManager.simulator.replay_info.size()):
@@ -228,10 +289,11 @@ func send_command_to_pawn(command : String):
 				frame_index = i
 				break
 		if frame_index >= 0:
-			GameManager.simulator.replay_info[frame_index]["pawns"][sender.pawn.get_unique_name()]["under_command"] = true
-			GameManager.simulator.replay_info[frame_index]["pawns"][sender.pawn.get_unique_name()]["move_target_name"] = target_pawn.get_unique_name()
-			print("========================= frame updated along with message =========================")
-			print(GameManager.simulator.replay_info[frame_index]["pawns"][sender.pawn.get_unique_name()])
+			for pawn in executors:
+				GameManager.simulator.replay_info[frame_index]["pawns"][pawn.get_unique_name()]["under_command"] = true
+				GameManager.simulator.replay_info[frame_index]["pawns"][pawn.get_unique_name()]["move_target_name"] = pawn.move_target.get_unique_name()
+				print("========================= frame updated along with message =========================")
+				print(GameManager.simulator.replay_info[frame_index]["pawns"][pawn.get_unique_name()])
 		else:
 			if game_index >= GameManager.game_index:
 				GameManager.simulator.update_replay_info(true)
