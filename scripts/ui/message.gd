@@ -276,9 +276,21 @@ func on_revise_button_pressed():
 	# print(GameManager.main_view.chat_view.chat.messages)
 
 func on_delete_button_pressed():
+
+	var frame_index = -1
+	for i in range(GameManager.simulator.replay_info.size()):
+		if GameManager.simulator.replay_info[i]["game_index"] == game_index:
+			frame_index = i
+			break
+	if frame_index >= 0:
+		GameManager.simulator.replay_info.remove_at(frame_index)
+		print("========================= frame removed along with message =========================")
+
 	chat.remove_message(self)
 	get_parent().remove_child(self)
 	# GameManager.main_view.chat_view.save_chat()
+
+
 
 func on_replay_button_pressed():
 	revise_panel.visible = false
