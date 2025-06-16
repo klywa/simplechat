@@ -155,7 +155,7 @@ func init(chat_in : Chat) -> void:
 
 		for member in chat.members.values():
 			if member.npc_type == NPC.NPCType.NPC:
-				dialogue_target.add_item("对" + member.npc_name + "说")
+				dialogue_target.add_item(member.npc_name)
 				dialogue_target.select(dialogue_target.get_item_count() - 1)
 				break
 	else:
@@ -173,7 +173,7 @@ func init(chat_in : Chat) -> void:
 
 		for member in chat.members.values():
 			if member.npc_type == NPC.NPCType.NPC:
-				dialogue_target.add_item("对" + member.npc_name + "说")
+				dialogue_target.add_item(member.npc_name)
 		for i in range(dialogue_target.get_item_count()):
 			if dialogue_target.get_item_text(i) == "对大家说":
 				dialogue_target.select(i)
@@ -216,12 +216,16 @@ func on_send_button_pressed() -> void:
 			if dialogue_target.text == "对大家说":
 				action += dialogue_input.text
 			else:
-				action += "[" + dialogue_target.text + "]" + dialogue_input.text
+				action += dialogue_input.text
 	
 		chat.add_message(GameManager.player, action)
 
 		action_input.text = ""
 		dialogue_input.text = ""
+
+		if dialogue_target.text in chat.members.keys():
+			chat.last_speaker = chat.members[dialogue_target.text]
+			dialogue_target.select(0)
 
 func set_chat(chat_in : Chat) -> void:
 	chat = chat_in
