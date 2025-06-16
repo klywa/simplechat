@@ -14,6 +14,7 @@ var host: Variant
 var host_name : String
 var speaker_index : int
 var last_speaker : NPC
+var last_speaker_assigned : bool = false
 var is_koh : bool = false
 
 const MESSAGE_SCENE := preload("res://scenes/ui/message.tscn") as PackedScene
@@ -236,13 +237,17 @@ func on_message_added(message: Variant):
 		
 		match GameManager.mode:
 			"single":
-				for npc in members.values():
-					if npc.npc_type == NPC.NPCType.PLAYER:
-						continue
-					for alias in npc.alias:
-						if alias in message.message:
-							last_speaker = npc
-							break
+				if last_speaker != null and last_speaker_assigned:
+					pass
+				else:
+					for npc in members.values():
+						if npc.npc_type == NPC.NPCType.PLAYER:
+							continue
+						for alias in npc.alias:
+							if alias in message.message:
+								last_speaker = npc
+								last_speaker_assigned = false
+								break
 				if last_speaker != null:
 					speaker_index = members.values().find(last_speaker)
 					var start_time = Time.get_ticks_msec()

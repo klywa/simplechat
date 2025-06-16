@@ -226,6 +226,7 @@ func on_send_button_pressed() -> void:
 		if dialogue_target.text in chat.members.keys():
 			chat.last_speaker = chat.members[dialogue_target.text]
 			dialogue_target.select(0)
+			chat.last_speaker_assigned = true
 
 func set_chat(chat_in : Chat) -> void:
 	chat = chat_in
