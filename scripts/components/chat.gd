@@ -238,7 +238,7 @@ func on_message_added(message: Variant):
 		match GameManager.mode:
 			"single":
 				if last_speaker != null and last_speaker_assigned:
-					pass
+					last_speaker_assigned = false
 				else:
 					for npc in members.values():
 						if npc.npc_type == NPC.NPCType.PLAYER:
