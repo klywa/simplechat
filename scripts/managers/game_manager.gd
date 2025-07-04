@@ -240,6 +240,8 @@ func get_knowledge(chat : Chat, npc : NPC) -> String:
 
 func new_chat() -> void:
 	game_index = 0
+	chat_view.chat.review_result = "待质检"
+	chat_view.chat.current_file_name = ""
 
 func get_game_index() -> int:
 	game_index += 1

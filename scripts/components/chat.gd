@@ -16,6 +16,8 @@ var speaker_index : int
 var last_speaker : NPC
 var last_speaker_assigned : bool = false
 var is_koh : bool = false
+var review_result : String = ""
+var current_file_name : String = ""
 
 const MESSAGE_SCENE := preload("res://scenes/ui/message.tscn") as PackedScene
 const SYSTEM_MESSAGE_SCENE := preload("res://scenes/ui/system_message.tscn") as PackedScene
@@ -324,6 +326,7 @@ func save_to_json(json_file_path: String):
 	elif host is Location:
 		chat_name = host.location_name
 	var json_dict = {
+		"review_result": review_result,
 		"chat_name": chat_name,
 		"chat_type": "PRIVATE" if chat_type == ChatType.PRIVATE else "GROUP",
 		"members": [],
@@ -482,11 +485,17 @@ func load_from_json(json_file_path: String):
 	# 			members[member["npc_name"]] = GameManager.system
 	# else:
 	# 替换成员
+
+	current_file_name = json_file_path
+	print("current_file_name: ", current_file_name)
+
+	review_result = json_dict.get("review_result", "待质检")
+
 	members.clear()
 	for member in json_dict["members"]:
 		if member["npc_type"] == "NPC":
 			if member["npc_name"] not in GameManager.npc_dict:
-				print("成员不存在", member["npc_name"])
+				# print("成员不存在", member["npc_name"])
 				return
 			members[member["npc_name"]] = GameManager.npc_dict[member["npc_name"]]
 			if "hero_name" in member:
@@ -512,7 +521,7 @@ func load_from_json(json_file_path: String):
 	for member in json_dict["opponent_members"]:
 		if member["npc_type"] == "NPC":
 			if member["npc_name"] not in GameManager.npc_dict:
-				print("成员不存在", member["npc_name"])
+				# print("成员不存在", member["npc_name"])
 				return
 			opponent_members[member["npc_name"]] = GameManager.npc_dict[member["npc_name"]]
 			if "hero_name" in member:
@@ -590,7 +599,7 @@ func load_from_json(json_file_path: String):
 		}, false)
 
 	# 加载模拟数据
-	print(json_dict.get("simulation", []))
+	# print(json_dict.get("simulation", []))
 	GameManager.simulator.replay_info = json_dict.get("simulation", [])
 	if GameManager.simulator.replay_info.size() > 0:
 		GameManager.simulator.init_pawns(GameManager.simulator.replay_info[-1])

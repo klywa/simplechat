@@ -44,6 +44,11 @@ enum ChatType {
 @onready var text_history_model_verstion := $TextHistoryPanel/Panel/MarginContainer/VBoxContainer/ModelVersion
 @onready var text_history := $TextHistoryPanel/Panel/MarginContainer/VBoxContainer/TextHistory
 
+@onready var review_panel := $ReviewPanel
+@onready var review_file_name := $ReviewPanel/PanelContainer/VBoxContainer/MarginContainer3/ReivewFileName
+@onready var review_options := $ReviewPanel/PanelContainer/VBoxContainer/MarginContainer/ReviewOptions
+@onready var review_confirm_button := $ReviewPanel/PanelContainer/VBoxContainer/MarginContainer2/ConfirmReview
+
 @onready var load_file_panel := $LoadFilePanel
 @onready var save_file_panel := $SaveFilePanel
 
@@ -105,12 +110,32 @@ func _ready() -> void:
 
 	expand_button.pressed.connect(on_expand_button_pressed)
 
+	review_confirm_button.pressed.connect(on_review_confirm_button_pressed)
+
 	member_button.visible = false
 	join_group_chat_button.visible = false
 	leave_group_chat_button.visible = false
 	clear_chat_button.visible = false
 	expand_button.text = ">"
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("Review"):
+		review_panel.visible = true
+		review_file_name.text = chat.current_file_name
+
+		for i in range(review_options.get_item_count()):
+			if review_options.get_item_text(i) == chat.review_result:
+				review_options.select(i)
+				break
+
+func on_review_confirm_button_pressed() -> void:
+	chat.review_result = review_options.get_item_text(review_options.selected)
+	print("current_review_result: ", chat.review_result)
+	if chat.current_file_name != "":
+		chat.save_to_json(chat.current_file_name)
+	else:
+		print("current_file_name is empty")
+	review_panel.visible = false
 
 func init(chat_in : Chat) -> void:
 

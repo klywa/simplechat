@@ -209,7 +209,7 @@ func generate_response(chat : Chat, use_ai: bool=false, until_message: Variant=n
 			if response.has("prompt") and response.has("query"):
 				print(response["prompt"] + "\n" + response["query"])
 			return {
-				"response": response.get("response", ""), 
+				"response": response.get("response", "").replace("（无）", "").replace("（无动作）", ""), 
 				"prompt": response.get("prompt", ""), 
 				"query": response.get("query", ""), 
 				"model_version": response.get("model_version", ""),

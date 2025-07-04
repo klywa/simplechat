@@ -319,10 +319,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 4.0
-offset_top = 4.0
-offset_right = 312.0
-offset_bottom = 380.0
+offset_left = -154.0
+offset_top = -188.0
+offset_right = 154.0
+offset_bottom = 188.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -412,6 +412,7 @@ file_mode = 0
 access = 2
 
 [node name="SaveFilePanel" type="FileDialog" parent="."]
+oversampling_override = 1.0
 initial_position = 1
 size = Vector2i(800, 600)
 dialog_autowrap = true
@@ -459,6 +460,65 @@ focus_mode = 2
 theme_override_constants/line_separation = 12
 bbcode_enabled = true
 selection_enabled = true
+
+[node name="ReviewPanel" type="PopupPanel" parent="."]
+oversampling_override = 1.0
+title = "质检"
+initial_position = 2
+size = Vector2i(600, 334)
+
+[node name="PanelContainer" type="PanelContainer" parent="ReviewPanel"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 596.0
+offset_bottom = 330.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ReviewPanel/PanelContainer"]
+layout_mode = 2
+
+[node name="MarginContainer3" type="MarginContainer" parent="ReviewPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="ReivewFileName" type="RichTextLabel" parent="ReviewPanel/PanelContainer/VBoxContainer/MarginContainer3"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+focus_mode = 2
+text = "FileName"
+selection_enabled = true
+
+[node name="MarginContainer" type="MarginContainer" parent="ReviewPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="ReviewOptions" type="OptionButton" parent="ReviewPanel/PanelContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+item_count = 4
+popup/item_0/text = "待质检"
+popup/item_0/id = 0
+popup/item_1/text = "可用"
+popup/item_1/id = 1
+popup/item_2/text = "仅使用更好回复"
+popup/item_2/id = 2
+popup/item_3/text = "弃用"
+popup/item_3/id = 3
+
+[node name="MarginContainer2" type="MarginContainer" parent="ReviewPanel/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="ConfirmReview" type="Button" parent="ReviewPanel/PanelContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+text = "保存质检结果"
 
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message"]
 [editable path="ChatContainer/ChatWindow/MarginContainer/ScrollContainer/MessageList/Message6"]
