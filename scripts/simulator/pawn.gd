@@ -756,16 +756,18 @@ func killed_by(pawn: Pawn, assist_pawns: Array = []):
 				"NEUTRAL":
 					msg = "%s摧毁了%s。" % [killer_name, self_name]
 		"MONSTER":
-			match camp:
-				"NEUTRAL":
-					msg = "%s击杀了%s。" % [killer_name, self_name]
-				"BLUE":
-					msg = "%s被%s击杀。" % [self_name, killer_name]
-				"RED":
-					msg = "%s击杀了%s。" % [killer_name, self_name]
+			if pawn.visible_to_blue:
+				match camp:
+					"NEUTRAL":
+						msg = "%s击杀了%s。" % [killer_name, self_name]
+					"BLUE":
+						msg = "%s被%s击杀。" % [self_name, killer_name]
+					"RED":
+						msg = "%s击杀了%s。" % [killer_name, self_name]
 
 	die()
-	send_message(msg)
+	if msg != "":
+		send_message(msg)
 
 func take_damage(damage: int):
 	var origin_hp = hp
@@ -1263,7 +1265,8 @@ func get_self_status():
 			status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
-		status += name_string + "在" + get_region() + "附近。"
+		status += name_string + "在" + get_region() + "附近，"
+		status += "坐标" + get_corrdinate() + "。"
 		status += name_string + get_money() + "。"
 	elif camp == "RED":
 		var name_string = "“" + npc_name + "”"
@@ -1274,7 +1277,8 @@ func get_self_status():
 			status += name_string + get_in_battle()
 		if get_on_lane() != "":
 			status += name_string + get_on_lane() + "。"
-		status += name_string + "在" + get_region() + "附近。"
+		status += name_string + "在" + get_region() + "附近，"
+		status += "坐标" + get_corrdinate() + "。"
 		status += name_string + get_money() + "。"
 	return status
 
