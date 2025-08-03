@@ -173,6 +173,27 @@ pawn_name = "蓝方泉水"
 camp = "BLUE"
 type = "BUILDING"
 
+[node name="UCross" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
+position = Vector2(127, 133)
+scale = Vector2(0.2, 0.2)
+pawn_name = "上路交汇点"
+type = "POS"
+lane = "上路"
+
+[node name="DCross" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
+position = Vector2(971, 995)
+scale = Vector2(0.2, 0.2)
+pawn_name = "下路交汇点"
+type = "POS"
+lane = "上路"
+
+[node name="MCross" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
+position = Vector2(570, 581)
+scale = Vector2(0.2, 0.2)
+pawn_name = "中路交汇点"
+type = "POS"
+lane = "上路"
+
 [node name="Pawns" type="Node" parent="KoHMap"]
 
 [node name="BlueHero1" parent="KoHMap/Pawns" instance=ExtResource("2_1pue8")]
@@ -224,3 +245,47 @@ lane = "辅助"
 position = Vector2(1057, 760)
 camp = "RED"
 lane = "下路"
+
+[node name="Minions" type="Node" parent="KoHMap"]
+
+[node name="BUM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
+position = Vector2(78, 340)
+pawn_name = "蓝方上路小兵0"
+camp = "BLUE"
+type = "MINION"
+lane = "上路"
+
+[node name="RUM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
+position = Vector2(350, 90)
+pawn_name = "红方上路小兵0"
+camp = "RED"
+type = "MINION"
+lane = "上路"
+
+[node name="BDM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
+position = Vector2(836, 1018)
+pawn_name = "蓝方下路小兵0"
+camp = "BLUE"
+type = "MINION"
+lane = "下路"
+
+[node name="RDM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
+position = Vector2(1047, 828)
+pawn_name = "红方下路小兵0"
+camp = "RED"
+type = "MINION"
+lane = "下路"
+
+[node name="BMM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
+position = Vector2(463, 663)
+pawn_name = "蓝方中路小兵0"
+camp = "BLUE"
+type = "MINION"
+lane = "中路"
+
+[node name="RMM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
+position = Vector2(668, 474)
+pawn_name = "红方中路小兵0"
+camp = "RED"
+type = "MINION"
+lane = "中路"

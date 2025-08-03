@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://cghcgbg824lrh"]
+
+[ext_resource type="Script" path="res://scripts/simulator/pos_area.gd" id="1_5afe7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fy7di"]
+size = Vector2(100, 100)
+
+[node name="PosArea" type="Area2D"]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_5afe7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_fy7di")

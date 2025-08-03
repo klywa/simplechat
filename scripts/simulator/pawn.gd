@@ -5,7 +5,7 @@ extends Node2D
 @export var moveable: bool = true
 @export var max_speed: float = 100
 @export_enum("BLUE", "RED", "NEUTRAL") var camp: String = "NEUTRAL"
-@export_enum("CHARACTER", "BUILDING", "RESOURCE", "MONSTER", "MINION") var type: String = "CHARACTER"
+@export_enum("CHARACTER", "BUILDING", "RESOURCE", "MONSTER", "MINION", "POS") var type: String = "CHARACTER"
 @export_enum("上路", "打野", "中路", "辅助", "下路") var lane: String
 
 @onready var button = $Button
@@ -42,7 +42,7 @@ var kill_number : int = 0
 var death_number : int = 0
 var assist_number : int = 0
 
-var move_target : Pawn = null
+var move_target : Variant = null
 var force_move : bool = false
 var under_command : bool = false
 var command_game_index : int = 0
@@ -154,6 +154,9 @@ func _ready() -> void:
 	detect_shape.area_entered.connect(_on_detect_area_entered)
 	detect_shape.area_exited.connect(_on_detect_area_exited)
 
+	body_shape.area_entered.connect(_on_body_area_entered)
+	# body_shape.area_exited.connect(_on_body_area_exited)
+
 	move_speed = max_speed * scale.x
 
 	match camp:
@@ -185,6 +188,10 @@ func _ready() -> void:
 			hero_icon.visible = false
 			camp_color_flag.modulate.a = 0.5
 			minion_sprite.modulate.a = 0.5
+			minion_sprite.scale *= Vector2(0.5, 0.5)
+			health_bar.visible = false
+			detect_shape.scale *= Vector2(0.1, 0.1)
+
 		"BUILDING":
 			moveable = false
 			name_label.visible = false
@@ -206,6 +213,15 @@ func _ready() -> void:
 			minion_sprite.visible = false
 			camp_color_flag.modulate.a = 0.2
 			health_bar.modulate.a = 0.0
+		"POS":
+			moveable = false
+			name_label.visible = false
+			hero_icon.visible = false
+			minion_sprite.visible = false
+			camp_color_flag.modulate.a = 0.0
+			health_bar.modulate.a = 0.0
+			hp = 0
+			
 	name_label.text = pawn_name
 
 func _show():
@@ -470,9 +486,16 @@ func random_move():
 		# 如果没有目标或目标已死亡，随机移动
 		random_direction = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized()
 		reselect_move_target()
+
+	# if type == "MINION":
+	# 	random_direction = get_nearest_8_direction(random_direction)
 	
 	# 计算随机移动距离
-	var random_distance = randf_range(move_speed * 0.5, move_speed)
+	var random_distance = 0
+	if type == "CHARACTER":
+		random_distance = randf_range(move_speed * 0.5, move_speed)
+	elif type == "MINION":
+		random_distance = move_speed * 0.5
 	
 	# 计算新位置
 	var random_x = position.x + random_direction.x * random_distance
@@ -487,21 +510,44 @@ func random_move():
 	if type == "CHARACTER":
 		move_target_position = Vector2(random_x, random_y)
 	elif type == "MINION":
-		match lane:
-			"上路":
-				if camp == "BLUE":
-					move_target_position = restrict_move_angle(random_x, random_y, "x")
-				else:
-					move_target_position = restrict_move_angle(random_x, random_y, "y")
-			"下路":
-				if camp == "BLUE":
-					move_target_position = restrict_move_angle(random_x, random_y, "y")
-				else:
-					move_target_position = restrict_move_angle(random_x, random_y, "x")
-			"中路":
-				move_target_position = Vector2(random_x, random_y)
+		move_target_position = Vector2(random_x, random_y)
+		# match lane:
+			# "上路":
+			# 	if camp == "BLUE":
+			# 		move_target_position = restrict_move_angle(random_x, random_y, "x")
+			# 	else:
+			# 		move_target_position = restrict_move_angle(random_x, random_y, "y")
+			# "下路":
+			# 	if camp == "BLUE":
+			# 		move_target_position = restrict_move_angle(random_x, random_y, "y")
+			# 	else:
+			# 		move_target_position = restrict_move_angle(random_x, random_y, "x")
+			# "中路":
+			# 	move_target_position = Vector2(random_x, random_y)
 	move_progress = 0.0
 	is_moving = true
+	
+func get_nearest_8_direction(vec: Vector2) -> Vector2:
+	if vec == Vector2.ZERO:
+		return Vector2.ZERO
+	
+	var angle_deg = vec.angle() * 180.0 / PI
+	if angle_deg < 0:
+		angle_deg += 360
+	
+	var directions = [0, 45, 90, 135, 180, 225, 270, 315]
+	var min_diff = 360
+	var nearest_dir = 0
+	for dir in directions:
+		var diff = abs(angle_deg - dir)
+		if diff > 180:
+			diff = 360 - diff
+		if diff < min_diff:
+			min_diff = diff
+			nearest_dir = dir
+	
+	var nearest_rad = deg_to_rad(nearest_dir)
+	return Vector2(cos(nearest_rad), sin(nearest_rad)).normalized()
 
 func restrict_move_angle(x, y, x_or_y: String):
 	if x_or_y == "x":
@@ -624,12 +670,56 @@ func _on_detect_area_exited(area: Area2D) -> void:
 					camp_color_flag.modulate.a = 0.5
 					# print("%s附近没有BLUE阵营单位，变为不可见" % pawn_name)
 
+func _on_body_area_entered(area: Area2D) -> void:
+	var entered_pawn = area.get_parent() as Pawn
+	if self.type == "BUILDING" and entered_pawn.type == "MINION":
+		print("body_area_entered: ", self.name, " ", entered_pawn.pawn_name)
+		if entered_pawn.camp == "BLUE":
+			for lane in ["上路", "下路", "中路"]:
+				if pawn_name == "红方" + lane + "一塔":
+					entered_pawn.move_target = simulator.name_pawn_dict.get("红方" + lane + "二塔", null)
+				elif pawn_name == "红方" + lane + "二塔":
+					entered_pawn.move_target = simulator.name_pawn_dict.get("红方" + lane + "高地塔", null)
+				elif pawn_name == "红方" + lane + "高地塔":
+					entered_pawn.move_target = simulator.name_pawn_dict.get("红方水晶", null)
+		elif entered_pawn.camp == "RED":
+			for lane in ["上路", "下路", "中路"]:
+				if pawn_name == "蓝方" + lane + "一塔":
+					entered_pawn.move_target = simulator.name_pawn_dict.get("蓝方" + lane + "二塔", null)
+				elif pawn_name == "蓝方" + lane + "二塔":
+					entered_pawn.move_target = simulator.name_pawn_dict.get("蓝方" + lane + "高地塔", null)
+				elif pawn_name == "蓝方" + lane + "高地塔":
+					entered_pawn.move_target = simulator.name_pawn_dict.get("蓝方水晶", null)
+
+	if self.type == "POS" and entered_pawn.type == "MINION":
+		if self.pawn_name == "上路交汇点":
+			if entered_pawn.camp == "BLUE":
+				entered_pawn.move_target = simulator.name_pawn_dict.get("红方上路一塔", null)
+			elif entered_pawn.camp == "RED":
+				entered_pawn.move_target = simulator.name_pawn_dict.get("蓝方上路一塔", null)
+		elif self.pawn_name == "下路交汇点":
+			if entered_pawn.camp == "BLUE":
+				entered_pawn.move_target = simulator.name_pawn_dict.get("红方下路一塔", null)
+			elif entered_pawn.camp == "RED":
+				entered_pawn.move_target = simulator.name_pawn_dict.get("蓝方下路一塔", null)
+		elif self.pawn_name == "中路交汇点":
+			if entered_pawn.camp == "BLUE":
+				entered_pawn.move_target = simulator.name_pawn_dict.get("红方中路一塔", null)
+			elif entered_pawn.camp == "RED":
+				entered_pawn.move_target = simulator.name_pawn_dict.get("蓝方中路一塔", null)
+
 func send_message(message: String):
 	simulator.chat.add_message(GameManager.system, message, {}, true, true)
 
 func has_monster_nearby():
 	for p in nearby_pawns:
 		if p.type == "MONSTER" and p.is_alive():
+			return true
+	return false
+
+func has_enemy_nearby():
+	for p in nearby_pawns:
+		if p.camp != camp and p.is_alive() and p.type in ["CHARACTER", "MINION", "BUILDING", "MONSTER"]:
 			return true
 	return false
 
@@ -799,42 +889,52 @@ func heal(heal: int):
 		reselect_move_target()
 
 func reselect_move_target():
+	if self.type == "CHARACTER":
 
-	# print("reselect_move_target: ", get_unique_name(), " ", under_command)
+		# print("reselect_move_target: ", get_unique_name(), " ", under_command)
 
-	if under_command:
-		return
+		if under_command:
+			return
 
-	force_move = false
+		force_move = false
 
-	# select_move_target()
-	# return
+		# select_move_target()
+		# return
 
-	move_target = null
-	if type != "CHARACTER":
-		return 
-	
-	# 如果血量大于50，选择非我方pawn作为目标，否则选择我方pawn作为目标
-	if hp > 50:
-		var potential_targets = []
-		if lane == "辅助":
-			for pawn in simulator.name_pawn_dict.values():
-				if pawn.camp == camp and pawn.is_alive() and pawn.type == "CHARACTER" and pawn != self:
-					potential_targets.append(pawn)
+		move_target = null
+		if type != "CHARACTER":
+			return 
+		
+		# 如果血量大于50，选择非我方pawn作为目标，否则选择我方pawn作为目标
+		if hp > 50:
+			var potential_targets = []
+			if lane == "辅助":
+				for pawn in simulator.name_pawn_dict.values():
+					if pawn.camp == camp and pawn.is_alive() and pawn.type == "CHARACTER" and pawn != self:
+						potential_targets.append(pawn)
+			else:
+				for pawn in simulator.name_pawn_dict.values():
+					if pawn.camp != camp and pawn.is_alive() and pawn.is_attackable() and pawn != self:
+						potential_targets.append(pawn)
+			
+			move_target = select_target_by_distance(potential_targets)
 		else:
+			# 寻找我方的pawn
+			var potential_targets = []
 			for pawn in simulator.name_pawn_dict.values():
-				if pawn.camp != camp and pawn.is_alive() and pawn.is_attackable() and pawn != self:
+				if pawn.camp == camp and pawn.is_alive() and pawn != self:
 					potential_targets.append(pawn)
-		
-		move_target = select_target_by_distance(potential_targets)
-	else:
-		# 寻找我方的pawn
-		var potential_targets = []
-		for pawn in simulator.name_pawn_dict.values():
-			if pawn.camp == camp and pawn.is_alive() and pawn != self:
-				potential_targets.append(pawn)
-		
-		move_target = select_target_by_distance(potential_targets)
+			
+			move_target = select_target_by_distance(potential_targets)
+
+		# if simulator.name_pawn_dict[enemy_camp + "方" + lane + "一塔"].is_alive():
+		# 	move_target = simulator.name_pawn_dict[enemy_camp + "方" + lane + "一塔"]
+		# elif simulator.name_pawn_dict[enemy_camp + "方" + lane + "二塔"].is_alive():
+		# 	move_target = simulator.name_pawn_dict[enemy_camp + "方" + lane + "二塔"]
+		# elif simulator.name_pawn_dict[enemy_camp + "方" + lane + "高地塔"].is_alive():
+		# 	move_target = simulator.name_pawn_dict[enemy_camp + "方" + lane + "高地塔"]
+		# else:
+		# 	move_target = simulator.name_pawn_dict[enemy_camp + "方水晶"]
 	
 func select_target_by_distance(targets: Array):
 	if targets.size() == 0:
@@ -1001,6 +1101,37 @@ func set_init_move_target():
 			# 如果没有找到对应位置的敌方英雄，则选择对方水晶或其他目标
 			if not target_found:
 				reselect_move_target()
+	
+	if self.type == "MINION":
+		var enemy_camp = "红" if camp == "BLUE" else "蓝"
+		var self_camp = "红" if camp == "RED" else "蓝"
+
+		match lane:
+			"上路":
+				move_target = simulator.name_pawn_dict.get("上路交汇点", null)
+			"下路":
+				move_target = simulator.name_pawn_dict.get("下路交汇点", null)
+			"中路":
+				move_target = simulator.name_pawn_dict.get(enemy_camp + "方水晶", null)
+	
+# func set_minion_init_move_target():
+# 	if camp == "BLUE":
+# 		match lane:
+# 			"上路":
+# 				move_target = simulator.name_pos_dict.get("蓝方上路一塔", null)
+# 			"下路":
+# 				move_target = simulator.name_pos_dict.get("蓝方下路一塔", null)
+# 			"中路":
+# 				move_target = simulator.name_pos_dict.get("红方水晶", null)
+# 	elif camp == "RED":
+# 		match lane:
+# 			"上路":
+# 				move_target = simulator.name_pos_dict.get("红方上路一塔", null)
+# 			"下路":
+# 				move_target = simulator.name_pos_dict.get("红方下路一塔", null)
+# 			"中路":
+# 				move_target = simulator.name_pos_dict.get("蓝方水晶", null)
+
 		
 func die():
 	hp = 0
@@ -1028,6 +1159,10 @@ func die():
 		"MONSTER":
 			# sprite.modulate.a = 0.05
 			camp_color_flag.color = Color.BLACK
+		"MINION":
+			simulator.name_pawn_dict.erase(get_unique_name())
+			# print("小兵死亡，移除：", get_unique_name())
+			queue_free()
 
 
 func revive():
@@ -1126,6 +1261,10 @@ func get_money():
 	elif type == "BUILDING":
 		return ""
 	elif type == "MONSTER":
+		return ""
+	elif type == "MINION":
+		return ""
+	else:
 		return ""
 
 func set_on_lane():
@@ -1234,6 +1373,8 @@ func is_attackable():
 				return not simulator.name_poi_dict.get("蓝方下路一塔", null).is_alive()
 			_:
 				return true
+	elif type == "POS":
+		return false
 	else:
 		return true
 

@@ -18,6 +18,8 @@ extends Node2D
 
 @onready var pois := $KoHMap/POIs
 @onready var pawns := $KoHMap/Pawns
+@onready var minions := $KoHMap/Minions
+@onready var positions := $KoHMap/Positions
 @onready var map := $KoHMap
 
 var map_rect 
@@ -30,6 +32,7 @@ var name_poi_dict : Dictionary = {}
 
 var name_pawn_dict : Dictionary = {}
 var camp_name_pawn_dict : Dictionary = {}
+var name_pos_dict : Dictionary = {}
 
 var init_random_range : int = 30
 var chat: Chat
@@ -183,8 +186,13 @@ func init(chat_in: Chat):
 	name_pawn_dict["暴君"].die()
 	name_pawn_dict["主宰"].die()
 
+	for p in minions.get_children():
+		name_pawn_dict[p.get_unique_name()] = p
+
 	for pawn in name_pawn_dict.values():
 		if pawn.type == "CHARACTER":
+			pawn.set_init_move_target()
+		elif pawn.type == "MINION":
 			pawn.set_init_move_target()
 			
 	match_time = 0
@@ -209,7 +217,7 @@ func simulate():
 		pawn.refresh_command()
 
 		if pawn.is_alive():
-			if pawn.type == "CHARACTER":
+			if pawn.type in "CHARACTER":
 
 				if pawn.is_on_lane:
 					pawn.money += randi() % 20 + 20
@@ -224,6 +232,14 @@ func simulate():
 				
 				pawn.random_move()
 				pawn.set_on_lane()
+
+			elif pawn.type == "MINION":
+				var nearby_pawn_names = ""
+				for nearby in pawn.nearby_pawns:
+					nearby_pawn_names += nearby.pawn_name + ", "
+				print("minion: ", pawn.pawn_name, " | ", pawn.has_enemy_nearby(), " | ", pawn.move_target.pawn_name, " | ", nearby_pawn_names)
+				if not pawn.has_enemy_nearby():
+					pawn.random_move()
 		
 			# attack
 			# choose random nearby target with opposite camp
@@ -239,7 +255,7 @@ func simulate():
 			if target != null and pawn.is_alive():
 				var damage : int = 0
 
-				if true:
+				if pawn.type != "POS" and target.type != "POS":
 					damage = calculate_damage(pawn, target)
 				
 					if damage >= target.hp:
