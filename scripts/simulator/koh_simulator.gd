@@ -64,6 +64,12 @@ func _ready() -> void:
 	map_size = map_rect.size * tile_size
 
 func init(chat_in: Chat):
+
+	if not GameManager.main_view.use_minions:
+		for m in minions.get_children():
+			minions.remove_child(m)
+			m.queue_free()
+
 	chat = chat_in
 	replay_info.clear()
 
@@ -327,7 +333,7 @@ func simulate():
 	
 
 	# spawn minions
-	if match_time % 10 == 0:
+	if match_time % 10 == 0 and GameManager.main_view.use_minions:
 		spawn_minions()
 	
 	simulate_finished.emit()
@@ -411,8 +417,8 @@ func calculate_damage(attacker: Pawn, defender: Pawn):
 					if defender.has_friend_hero_nearby():
 						if defender.move_target.type == "CHARACTER" and defender.move_target.camp == defender.camp:
 							return randi() % 50
-						elif defender.is_on_lane:
-							return randi() % 5
+						# elif defender.is_on_lane:
+						# 	return randi() % 5
 						else:
 							return randi() % 20
 					else:

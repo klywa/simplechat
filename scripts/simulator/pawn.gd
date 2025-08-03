@@ -386,7 +386,8 @@ func _on_button_up():
 			print("%s设置移动目标为%s" % [pawn_name, hover_target.pawn_name])
 		else:
 			# 如果没有悬停目标，则重新选择移动目标
-			reselect_move_target()
+			# reselect_move_target()
+			pass
 			
 		# 清除悬停目标
 		hover_target = null

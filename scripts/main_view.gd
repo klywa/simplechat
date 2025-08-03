@@ -13,6 +13,7 @@ extends Control
 @export var command_duration: int = 10
 @export var message_animation_time : float = 0.3
 @export var no_speak_wait_time: int = 6
+@export var use_minions: bool = false
 
 @onready var player_icon := $HBoxContainer/VBoxContainer/ChatPanel/Sidebar/MarginContainer/VBoxContainer/PlayerIcon
 @onready var chat_view : ChatView = $HBoxContainer/VBoxContainer/ChatPanel/ChatWindow/ChatView
