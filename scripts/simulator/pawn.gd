@@ -186,8 +186,10 @@ func _ready() -> void:
 			minion_sprite.visible = true
 			name_label.visible = false
 			hero_icon.visible = false
-			camp_color_flag.modulate.a = 0.5
-			minion_sprite.modulate.a = 0.5
+			if camp == "RED":
+				visible_to_blue = false
+			# camp_color_flag.modulate.a = 0.5
+			# minion_sprite.modulate.a = 0.5
 			minion_sprite.scale *= Vector2(0.5, 0.5)
 			health_bar.visible = false
 			detect_shape.scale *= Vector2(0.1, 0.1)

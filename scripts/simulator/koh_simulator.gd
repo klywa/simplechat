@@ -325,6 +325,11 @@ func simulate():
 			elif pawn.camp == "RED":
 				red_team_total_kill += pawn.kill_number
 	
+
+	# spawn minions
+	if match_time % 10 == 0:
+		spawn_minions()
+	
 	simulate_finished.emit()
 
 	await get_tree().create_timer(GameManager.main_view.simulation_delay * 1.1).timeout
@@ -413,11 +418,15 @@ func calculate_damage(attacker: Pawn, defender: Pawn):
 					else:
 						return 0
 				"MINION":
-					return randi() % 20
+					return randi() % 30
 				_:
 					return 0
 		"MINION":
-			return randi() % 10
+			match defender.type:
+				"MINION":
+					return randi() % 30
+				_:
+					return randi() % 10
 		"MONSTER":
 			return randi() % 10
 
@@ -507,3 +516,19 @@ func init_pawns(frame_info: Dictionary):
 func reset_frame():
 	frame_synced = false
 	set_frame_info(GameManager.simulator.replay_info[-1], 0.0)
+
+func spawn_minions():
+	for lane in ["上路", "中路", "下路"]:
+		for camp in ["BLUE", "RED"]:
+			var minion = PAWN_SCENE.instantiate()
+			var camp_string = "蓝方" if camp == "BLUE" else "红方"
+			minion.pawn_name = camp_string + lane + "小兵" + str(match_time)
+			minion.camp = camp
+			minion.lane = lane
+			minion.type = "MINION"
+			minion.position = name_poi_dict[camp_string + "水晶"].position + Vector2(randf_range(-init_random_range, init_random_range), randf_range(-init_random_range, init_random_range))
+			pawns.add_child(minion)
+			name_pawn_dict[minion.get_unique_name()] = minion
+			minion.set_init_move_target()
+			minion._show()
+			
