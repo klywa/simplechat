@@ -2,7 +2,7 @@
 
 [ext_resource type="TileSet" uid="uid://215g4rx4sy7m" path="res://assets/tileset/miniworld_tiles.tres" id="1_8ejfk"]
 [ext_resource type="Script" uid="uid://chmyifttibanl" path="res://scripts/simulator/koh_map.gd" id="1_ujm8g"]
-[ext_resource type="Texture2D" uid="uid://c7b778s7nwero" path="res://assets/backgrounds/IMG_1818.PNG" id="2_f3x3i"]
+[ext_resource type="Texture2D" uid="uid://cbo1to7yqt2mr" path="res://assets/backgrounds/minimap.jpg" id="2_y6tx8"]
 [ext_resource type="Texture2D" uid="uid://yljchi6a0dk7" path="res://assets/tileset/miniworld.png" id="3_y6tx8"]
 
 [node name="KoHMap" type="Node2D"]
@@ -12,9 +12,10 @@ script = ExtResource("1_ujm8g")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(186.33333, 189.33334)
 scale = Vector2(0.27809867, 0.27809867)
-texture = ExtResource("2_f3x3i")
+texture = ExtResource("2_y6tx8")
 
 [node name="Buildings" type="Node2D" parent="Sprite2D"]
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Sprite2D/Buildings"]
 position = Vector2(-395.5431, 394.34445)
@@ -143,6 +144,7 @@ region_enabled = true
 region_rect = Rect2(16, 160, 16, 16)
 
 [node name="Monsters" type="Node2D" parent="Sprite2D"]
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="Sprite2D/Monsters"]
 position = Vector2(-210.9563, -264.89398)

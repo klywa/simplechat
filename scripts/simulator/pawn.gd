@@ -50,6 +50,7 @@ var command_game_index : int = 0
 @onready var move_target_label := $MoveTarget
 
 @onready var camp_color_flag := $CampColor
+@onready var camp_color_tower_flag := $CampColorTower
 @onready var shield_flag := $ShieldFlag
 @onready var lane_flag := $LaneFlag
 @onready var name_label := $Name
@@ -162,6 +163,7 @@ func _ready() -> void:
 	match camp:
 		"BLUE":
 			camp_color_flag.color = Color.BLUE
+			camp_color_tower_flag.color = Color.BLUE
 			if npc == GameManager.player:
 				hero_icon.color = Color.GREEN
 				hero_icon.scale = Vector2(1.2, 1.2)
@@ -169,9 +171,11 @@ func _ready() -> void:
 				hero_icon.color = Color.BLUE
 		"RED":
 			camp_color_flag.color = Color.RED
+			camp_color_tower_flag.color = Color.RED
 			hero_icon.color = Color.RED
 		"NEUTRAL":
 			camp_color_flag.color = Color.GRAY
+			camp_color_tower_flag.color = Color.GRAY
 
 	match type:
 		"CHARACTER":
@@ -199,8 +203,9 @@ func _ready() -> void:
 			name_label.visible = false
 			hero_icon.visible = false
 			minion_sprite.visible = false
-			camp_color_flag.modulate.a = 0.5
+			camp_color_flag.visible = false
 			health_bar.modulate.a = 0.0
+			camp_color_tower_flag.visible = true
 		"RESOURCE":
 			moveable = false
 			name_label.visible = false
@@ -223,6 +228,7 @@ func _ready() -> void:
 			camp_color_flag.modulate.a = 0.0
 			health_bar.modulate.a = 0.0
 			hp = 0
+			shield_flag.visible = false
 			
 	name_label.text = pawn_name
 

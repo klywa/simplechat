@@ -159,6 +159,14 @@ offset_right = 24.0
 offset_bottom = 23.0
 color = Color(0, 0, 0.988235, 1)
 
+[node name="CampColorTower" type="ColorRect" parent="."]
+visible = false
+offset_left = 26.0
+offset_top = 23.0
+offset_right = 45.0
+offset_bottom = 42.0
+color = Color(0, 0, 0.988235, 1)
+
 [node name="DetectArea" type="Area2D" parent="."]
 collision_layer = 2
 

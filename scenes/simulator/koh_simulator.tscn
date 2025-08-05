@@ -12,137 +12,137 @@ script = ExtResource("1_8anij")
 [node name="POIs" type="Node" parent="KoHMap"]
 
 [node name="BlueCrystal" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
-position = Vector2(136, 991)
+position = Vector2(100, 1029)
 pawn_name = "蓝方水晶"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueUT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(86, 826)
+position = Vector2(67, 845)
 pawn_name = "蓝方上路高地塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueUT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(78, 639)
+position = Vector2(62, 639)
 pawn_name = "蓝方上路二塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueUT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(68, 369)
+position = Vector2(56, 361)
 pawn_name = "蓝方上路一塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueMT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(230, 891)
+position = Vector2(215, 905)
 pawn_name = "蓝方中路高地塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueMT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(359, 787)
+position = Vector2(355, 789)
 pawn_name = "蓝方中路二塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueMT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(445, 654)
+position = Vector2(437, 658)
 pawn_name = "蓝方中路一塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueDT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(293, 1034)
+position = Vector2(288, 1060)
 pawn_name = "蓝方下路高地塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueDT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(526, 1039)
+position = Vector2(531, 1051)
 pawn_name = "蓝方下路二塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="BlueDT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(804, 1042)
+position = Vector2(811, 1043)
 pawn_name = "蓝方下路一塔"
 camp = "BLUE"
 type = "BUILDING"
 
 [node name="RedCrystal" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
-position = Vector2(974, 150)
+position = Vector2(1012, 104)
 pawn_name = "红方水晶"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedUT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(809, 97)
+position = Vector2(828, 85)
 pawn_name = "红方上路高地塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedUT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(582, 103)
+position = Vector2(587, 79)
 pawn_name = "红方上路二塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedUT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(355, 97)
+position = Vector2(359, 84)
 pawn_name = "红方上路一塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedMT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(892, 234)
+position = Vector2(895, 227)
 pawn_name = "红方中路高地塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedMT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(744, 351)
+position = Vector2(755, 341)
 pawn_name = "红方中路二塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedMT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(660, 484)
+position = Vector2(672, 483)
 pawn_name = "红方中路一塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedDT0" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(1028, 311)
+position = Vector2(1040, 297)
 pawn_name = "红方下路高地塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedDT1" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(1035, 492)
+position = Vector2(1047, 501)
 pawn_name = "红方下路二塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="RedDT2" parent="KoHMap/POIs" groups=["tower"] instance=ExtResource("2_1pue8")]
-position = Vector2(1036, 807)
+position = Vector2(1035, 827)
 pawn_name = "红方下路一塔"
 camp = "RED"
 type = "BUILDING"
 
 [node name="BlueBlueBuff" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
-position = Vector2(311, 545)
+position = Vector2(303, 548)
 pawn_name = "蓝方蓝Buff"
 type = "MONSTER"
 
 [node name="BlueRedBuff" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
-position = Vector2(586, 873)
+position = Vector2(585, 878)
 pawn_name = "蓝方红Buff"
 type = "MONSTER"
 
 [node name="RedBlueBuff" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
-position = Vector2(798, 587)
+position = Vector2(804, 582)
 pawn_name = "红方蓝Buff"
 type = "MONSTER"
 
@@ -152,17 +152,17 @@ pawn_name = "红方红Buff"
 type = "MONSTER"
 
 [node name="Dragon1" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
-position = Vector2(384, 348)
+position = Vector2(364, 348)
 pawn_name = "主宰"
 type = "MONSTER"
 
 [node name="Dragon2" parent="KoHMap/POIs" groups=["monster"] instance=ExtResource("2_1pue8")]
-position = Vector2(732, 793)
+position = Vector2(745, 789)
 pawn_name = "暴君"
 type = "MONSTER"
 
 [node name="RedFountain" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
-position = Vector2(1084, 52)
+position = Vector2(1076, 48)
 pawn_name = "红方泉水"
 camp = "RED"
 type = "BUILDING"
@@ -174,6 +174,7 @@ camp = "BLUE"
 type = "BUILDING"
 
 [node name="UCross" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
+modulate = Color(1, 1, 1, 0)
 position = Vector2(127, 133)
 scale = Vector2(0.2, 0.2)
 pawn_name = "上路交汇点"
@@ -181,18 +182,20 @@ type = "POS"
 lane = "上路"
 
 [node name="DCross" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
+modulate = Color(1, 1, 1, 0)
 position = Vector2(971, 995)
 scale = Vector2(0.2, 0.2)
 pawn_name = "下路交汇点"
 type = "POS"
-lane = "上路"
+lane = "下路"
 
 [node name="MCross" parent="KoHMap/POIs" instance=ExtResource("2_1pue8")]
-position = Vector2(570, 581)
+modulate = Color(1, 1, 1, 0)
+position = Vector2(550, 570)
 scale = Vector2(0.2, 0.2)
 pawn_name = "中路交汇点"
 type = "POS"
-lane = "上路"
+lane = "中路"
 
 [node name="Pawns" type="Node" parent="KoHMap"]
 
@@ -249,42 +252,42 @@ lane = "下路"
 [node name="Minions" type="Node" parent="KoHMap"]
 
 [node name="BUM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
-position = Vector2(78, 340)
+position = Vector2(78, 339)
 pawn_name = "蓝方上路小兵0"
 camp = "BLUE"
 type = "MINION"
 lane = "上路"
 
 [node name="RUM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
-position = Vector2(350, 90)
+position = Vector2(350, 89)
 pawn_name = "红方上路小兵0"
 camp = "RED"
 type = "MINION"
 lane = "上路"
 
 [node name="BDM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
-position = Vector2(836, 1018)
+position = Vector2(836, 1017)
 pawn_name = "蓝方下路小兵0"
 camp = "BLUE"
 type = "MINION"
 lane = "下路"
 
 [node name="RDM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
-position = Vector2(1047, 828)
+position = Vector2(1047, 827)
 pawn_name = "红方下路小兵0"
 camp = "RED"
 type = "MINION"
 lane = "下路"
 
 [node name="BMM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
-position = Vector2(463, 663)
+position = Vector2(463, 662)
 pawn_name = "蓝方中路小兵0"
 camp = "BLUE"
 type = "MINION"
 lane = "中路"
 
 [node name="RMM0" parent="KoHMap/Minions" instance=ExtResource("2_1pue8")]
-position = Vector2(668, 474)
+position = Vector2(668, 473)
 pawn_name = "红方中路小兵0"
 camp = "RED"
 type = "MINION"
