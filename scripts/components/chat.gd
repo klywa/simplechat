@@ -518,7 +518,7 @@ func load_from_json(json_file_path: String):
 			members[member["npc_name"]] = GameManager.system
 
 	opponent_members.clear()
-	for member in json_dict["opponent_members"]:
+	for member in json_dict.get("opponent_members", []):
 		if member["npc_type"] == "NPC":
 			if member["npc_name"] not in GameManager.npc_dict:
 				# print("成员不存在", member["npc_name"])
@@ -569,7 +569,7 @@ func load_from_json(json_file_path: String):
 		sender.npc_skill = message["npc_skill"]
 		sender.hero_name = message["npc_hero_name"]
 		sender.hero_lane = message["npc_hero_lane"]
-		sender.memory = message["memory"]
+		sender.memory = message.get("memory", "")
 		add_message(sender, message["message"], {
 			"game_index": message.get("game_index", -1),
 			"negative_message": message["negative_message"],
